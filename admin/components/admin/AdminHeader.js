@@ -135,18 +135,11 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
             aria-label="Admin Profile Menu"
           >
             <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-              {currentUser?.name
-                ? currentUser.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .substring(0, 2)
-                    .toUpperCase()
-                : "SA"}
+              SA
             </div>
             <div className="hidden sm:block text-left leading-tight">
               <div className="text-sm font-bold text-slate-900 truncate max-w-[120px]">
-                {currentUser?.name || "Super Admin"}
+                Super Admin
               </div>
               <div className="text-[11px] font-mono text-emerald-600 font-semibold flex items-center gap-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -159,13 +152,13 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
             <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white shadow-xl p-3 text-sm z-50">
               <div className="p-3 border-b border-slate-100">
                 <div className="font-bold text-slate-900 truncate">
-                  {currentUser?.name || "Super Administrator"}
+                  Super Admin
                 </div>
                 <div className="text-xs text-slate-500 font-mono mt-0.5 truncate">
                   {currentUser?.email || "admin@dezoryn.com"}
                 </div>
                 <div className="mt-1 inline-block text-[10px] font-mono font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
-                  Role: {currentUser?.role?.name || "super_admin"}
+                  Role: Super Admin
                 </div>
               </div>
               <div className="py-2 space-y-1">

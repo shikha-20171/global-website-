@@ -110,7 +110,7 @@ export async function adminLogin(email, password) {
       const staticUser = {
         id: "cmvahys3v0017tpwifbf51ule",
         email: cleanEmail || "admin@dezoryn.com",
-        name: "Shikha Gour",
+        name: "Super Admin",
         role: "Super Administrator",
         roleId: "super_admin",
         permissions: [

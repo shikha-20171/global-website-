@@ -167,11 +167,6 @@ export const ADMIN_NAV_GROUPS = [
         href: "/admin/settings",
         icon: Settings,
       },
-      {
-        label: "Admin Users & RBAC",
-        href: "/admin/users",
-        icon: Shield,
-      },
     ],
   },
 ];

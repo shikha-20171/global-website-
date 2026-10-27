@@ -16,7 +16,7 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default("http://localhost:3000,http://localhost:3001"),
   ADMIN_BOOTSTRAP_EMAIL: z.string().email().default("admin@dezoryn.com"),
   ADMIN_BOOTSTRAP_PASSWORD: z.string().min(8).default("SuperSecretAdminPassword2026!"),
-  ADMIN_BOOTSTRAP_NAME: z.string().default("Shikha Gour"),
+  ADMIN_BOOTSTRAP_NAME: z.string().default("Super Admin"),
   ADMIN_URL: z.string().optional(),
   SMTP_SERVICE: z.string().optional(),
   SMTP_HOST: z.string().optional(),
