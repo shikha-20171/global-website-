@@ -7,7 +7,6 @@ import Intro from "@/components/Intro";
 import CompareTray from "@/components/CompareTray";
 import { CompareProvider } from "@/components/CompareContext";
 import ScrollToTop from "@/components/ScrollToTop";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 import {
   SITE_URL,
@@ -124,7 +123,6 @@ export default function RootLayout({ children }) {
           <Navbar />
           <main id="main">{children}</main>
           <Footer />
-          <FloatingWhatsApp />
           <CompareTray />
         </CompareProvider>
         </MotionRoot>
