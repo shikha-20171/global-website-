@@ -1,0 +1,548 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300..900;1,300..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes angle-spin {
+  to {
+    --angle: 360deg;
+  }
+}
+
+:root {
+  color-scheme: dark;
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
+html,
+body,
+button,
+input,
+textarea,
+select,
+code,
+kbd,
+samp,
+pre {
+  font-family: 'Exo 2', sans-serif !important;
+}
+
+html {
+  background: #020617;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'Exo 2', sans-serif;
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  @apply bg-ink text-white antialiased;
+  font-family: 'Exo 2', sans-serif !important;
+  font-feature-settings: "cv11", "ss01";
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+}
+
+::selection {
+  background: rgba(47, 107, 255, .45);
+}
+
+:focus-visible {
+  outline: 2px solid #5b8cff;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-[1240px] px-4 sm:px-6 lg:px-8;
+  }
+
+  .section {
+    @apply py-12 sm:py-16 lg:py-20;
+  }
+
+  /* Broad, bold, impactful typography for all page headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .h-display,
+  .h-section {
+    font-family: 'Exo 2', sans-serif !important;
+    font-weight: 800;
+    letter-spacing: 0.02em !important;
+  }
+
+  h1,
+  .h-display {
+    @apply text-white;
+    font-weight: 850;
+    line-height: 1.15;
+    letter-spacing: 0.025em !important;
+  }
+
+  h2,
+  .h-section {
+    @apply text-2xl sm:text-4xl lg:text-[3.25rem] text-white;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0.02em !important;
+  }
+
+  h3 {
+    font-weight: 750;
+    letter-spacing: 0.015em !important;
+  }
+
+  .lead {
+    @apply text-base sm:text-lg lg:text-xl text-cool/90;
+    line-height: 1.6;
+  }
+
+  .card {
+    @apply relative rounded-xl border border-line bg-graphite/80 transition duration-300;
+  }
+
+  .card-hover:hover {
+    @apply -translate-y-1.5 border-electric/40;
+    box-shadow: 0 20px 60px -20px rgba(47, 107, 255, .4), 0 0 1px 1px rgba(91, 140, 255, 0.25);
+  }
+
+  .btn {
+    @apply inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 sm:px-5 text-sm font-semibold transition-all duration-200 active:scale-[.98];
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #3b82f6 100%);
+    color: #ffffff !important;
+    border: 1px solid rgba(96, 165, 250, 0.5);
+    box-shadow: 0 8px 25px -4px rgba(37, 99, 235, 0.6), 0 0 20px rgba(59, 130, 246, 0.45);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, #2563eb 100%);
+    border-color: #60a5fa;
+    box-shadow: 0 12px 32px -2px rgba(37, 99, 235, 0.75), 0 0 30px rgba(59, 130, 246, 0.65);
+    transform: translateY(-2px);
+    color: #ffffff !important;
+  }
+
+  .btn-primary::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -70%;
+    width: 40%;
+    transform: skewX(-20deg);
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+    transition: left .7s cubic-bezier(.22, 1, .36, 1);
+  }
+
+  .btn-primary:hover::before {
+    left: 130%;
+  }
+
+  .btn-secondary {
+    background: rgba(37, 99, 235, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.45);
+    color: #60a5fa !important;
+    box-shadow: 0 4px 18px rgba(37, 99, 235, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(37, 99, 235, 0.25);
+    border-color: #60a5fa;
+    color: #ffffff !important;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    @apply px-2 text-[#60a5fa] hover:text-white font-medium;
+  }
+
+  .tag {
+    @apply inline-flex items-center rounded-md border border-line bg-white/[0.04] px-2 py-0.5 text-[11px] text-cool;
+  }
+
+  /* iOS-friendly 16px font-size to prevent automatic Safari input zoom-in */
+  .input {
+    @apply h-11 w-full rounded-lg border border-line bg-midnight px-3.5 text-base sm:text-sm text-white placeholder:text-cool/70 outline-none transition focus:border-electric focus:ring-2 focus:ring-electric/25;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-medium text-cool;
+  }
+
+  .grid-bg {
+    background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse at 50% 30%, #000 20%, transparent 75%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(90deg, #2f6bff, #7c5cff 70%, #9db8ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .text-gradient-blue {
+    background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.55));
+  }
+
+  /* cursor spotlight inside cards (vars set by Effects.js) */
+  .card::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity .3s;
+    background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(91, 140, 255, .16), transparent 70%);
+  }
+
+  .card:hover::after {
+    opacity: 1;
+  }
+
+  /* rotating gradient border */
+  .glow-border {
+    position: relative;
+  }
+
+  .glow-border::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    z-index: 2;
+    background: conic-gradient(from var(--angle), transparent 0 55%, #2f6bff, #7c5cff 80%, transparent);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: angle-spin 5s linear infinite;
+  }
+
+  /* Prisma Pricing Cards: 3D prismatic glowing border & ambient  */
+  .prisma-border {
+    position: relative;
+  }
+
+  .prisma-border::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: -1.5px;
+    border-radius: inherit;
+    padding: 1.5px;
+    z-index: 3;
+    background: conic-gradient(from var(--angle), #38bdf8 0%, #3b82f6 25%, #8b5cf6 50%, #ec4899 75%, #38bdf8 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: angle-spin 6s linear infinite;
+  }
+
+  .prisma-aura {
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--angle), rgba(56, 189, 248, 0.35) 0%, rgba(59, 130, 246, 0.35) 25%, rgba(139, 92, 246, 0.35) 50%, rgba(236, 72, 153, 0.35) 75%, rgba(56, 189, 248, 0.35) 100%);
+    filter: blur(24px);
+    opacity: 0.65;
+    animation: angle-spin 6s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .text-sheen {
+    background: linear-gradient(100deg, #fff 30%, #9db8ff 45%, #b5a4ff 50%, #9db8ff 55%, #fff 70%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden bg-white/5;
+  }
+
+  .skeleton::after {
+    content: "";
+    @apply absolute inset-0 animate-shimmer;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .07), transparent);
+    transform: translateX(-100%);
+  }
+
+  /* Micro-animation utilities */
+  .animate-float-subtle {
+    animation: float 5s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.85;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @keyframes marquee-reverse {
+    0% {
+      transform: translate3d(-50%, 0, 0);
+    }
+
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 36s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .animate-marquee-reverse {
+    animation: marquee-reverse 36s linear infinite;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Cyber Laser Scanline & Continuous Image Animations for Architecture Cards */
+@keyframes cyber-scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.9;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translateY(280%);
+    opacity: 0;
+  }
+}
+
+@keyframes ken-burns {
+  0% {
+    transform: scale(1) translate(0%, 0%);
+  }
+
+  35% {
+    transform: scale(1.12) translate(-1.5%, -1%);
+  }
+
+  70% {
+    transform: scale(1.08) translate(1.5%, -0.5%);
+  }
+
+  100% {
+    transform: scale(1.14) translate(0%, -1.5%);
+  }
+}
+
+@keyframes radar-pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.3);
+    opacity: 0.2;
+  }
+
+  100% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.animate-cyber-scan {
+  animation: cyber-scan 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform, opacity;
+}
+
+.animate-ken-burns {
+  animation: ken-burns 12s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-radar-pulse {
+  animation: radar-pulse 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.animate-shimmer-sweep {
+  animation: shimmer-sweep 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Universal Mobile & iOS Safeguards (iPhone, iPad & Android) */
+@media (max-width: 768px) {
+  html,
+  body,
+  main {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+
+  /* Prevent automatic iOS Safari viewport zoom on form inputs */
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+
+  /* Optimize touch responsiveness and remove tap flicker */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Responsive typography scaling for phone viewports */
+  .h-display {
+    font-size: clamp(2rem, 7.5vw, 2.75rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  .h-section {
+    font-size: clamp(1.65rem, 6vw, 2.25rem) !important;
+    line-height: 1.2 !important;
+  }
+}
+
+/* Safe area padding utilities for iOS notch, Dynamic Island, and home bar */
+.pb-safe {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+}
+
+.pt-safe {
+  padding-top: max(1rem, env(safe-area-inset-top, 0px));
+}
+
+.pl-safe {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+}
+
+.pr-safe {
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+/* Smooth native inertia scrolling on iOS touch devices */
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}

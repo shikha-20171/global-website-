@@ -1,0 +1,866 @@
+// ==============================================================================
+// DEZORYN TECHNOLOGY — Enterprise Relational Database Schema
+// PostgreSQL + Prisma ORM
+// ==============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------------------------------
+// Enums
+// ------------------------------------------------------------------------------
+
+enum AdminStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum LeadSource {
+  CONTACT_SALES
+  DEMO_REQUEST
+  START_TRIAL
+  GENERAL_CONTACT
+  PARTNERSHIP
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  DEMO
+  PROPOSAL
+  NEGOTIATING
+  WON
+  LOST
+  CLOSED
+}
+
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum DemoStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum NewsletterStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+}
+
+enum AuditResult {
+  SUCCESS
+  FAILURE
+}
+
+enum MenuLocation {
+  HEADER
+  FOOTER
+  MOBILE
+}
+
+enum SettingGroup {
+  GENERAL
+  SOCIAL
+  BRANDING
+  LOCALIZATION
+  CONTACT
+  SECURITY
+}
+
+enum AssetType {
+  PRODUCT_ART
+  RESOURCE_BANNER
+  TEXTURE_3D
+  LOGO
+  DOCUMENT
+  GENERAL
+}
+
+enum ComparisonCategory {
+  ARCHITECTURE
+  SECURITY
+  OPERATIONS
+  INTEGRATION
+  DATA
+  COMPLIANCE
+}
+
+enum AttributeDataType {
+  BOOLEAN
+  TEXT
+}
+
+enum DeploymentType {
+  CLOUD
+  HYBRID
+  ON_PREMISE
+}
+
+enum BusinessSize {
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+enum PartnerTier {
+  TECHNOLOGY
+  SOLUTION
+  CHANNEL
+}
+
+enum HttpMethod {
+  GET
+  POST
+  PUT
+  DELETE
+  PATCH
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  REMOTE
+}
+
+// ------------------------------------------------------------------------------
+// 1. Admin Authentication & Role-Based Access Control (RBAC)
+// ------------------------------------------------------------------------------
+
+model AdminUser {
+  id                String       @id @default(cuid())
+  email             String       @unique
+  passwordHash      String
+  name              String
+  roleId            String
+  status            AdminStatus  @default(ACTIVE)
+  twoFactorEnforced Boolean      @default(true)
+  lastLoginAt       DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  role              Role         @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  sessions          AdminSession[]
+  passwordResetTokens PasswordResetToken[]
+  auditLogs         AuditLog[]
+  assignedLeads     LeadEnquiry[]
+  assignedDemos     DemoRequest[]
+  uploadedMedia     MediaAsset[]
+
+  @@index([email])
+  @@index([roleId])
+  @@index([status])
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  isSystem    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  users       AdminUser[]
+  permissions RolePermission[]
+
+  @@index([name])
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  code        String           @unique
+  name        String
+  module      String
+  description String?
+  createdAt   DateTime         @default(now())
+
+  roles       RolePermission[]
+
+  @@index([code])
+  @@index([module])
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  permissionId String
+  grantedAt    DateTime   @default(now())
+
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+}
+
+model AdminSession {
+  id          String     @id @default(cuid())
+  adminUserId String
+  tokenHash   String     @unique
+  userAgent   String?
+  ipAddress   String?
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime   @default(now())
+
+  adminUser   AdminUser  @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId])
+  @@index([tokenHash])
+}
+
+model PasswordResetToken {
+  id          String     @id @default(cuid())
+  adminUserId String
+  tokenHash   String     @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime   @default(now())
+
+  adminUser   AdminUser  @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId])
+  @@index([tokenHash])
+}
+
+// ------------------------------------------------------------------------------
+// 2. Audit Logging
+// ------------------------------------------------------------------------------
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  adminUserId String?
+  adminName   String
+  action      String
+  module      String
+  entityType  String
+  entityId    String?
+  ipAddress   String?
+  userAgent   String?
+  details     String?
+  metadata    Json?
+  result      AuditResult @default(SUCCESS)
+  createdAt   DateTime    @default(now())
+
+  adminUser   AdminUser?  @relation(fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([adminUserId])
+  @@index([module])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// ------------------------------------------------------------------------------
+// 3. Global Website Content Management System (CMS)
+// ------------------------------------------------------------------------------
+
+model WebsitePage {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  title           String
+  subtitle        String?
+  pageType        String        @default("Core") // Core, Corporate, Solutions, Conversion, Portfolio, Content, Legal
+  template        String        @default("Standard")
+  status          PublishStatus @default(PUBLISHED)
+  seoTitle        String?
+  metaDescription String?
+  canonicalUrl    String?
+  ogImage         String?
+  publishedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  sections        PageSection[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([pageType])
+}
+
+model PageSection {
+  id           String      @id @default(cuid())
+  pageId       String
+  sectionKey   String      // e.g., sec_hero, sec_trust, sec_what_we_build
+  name         String
+  displayOrder Int         @default(0)
+  isEnabled    Boolean     @default(true)
+  headline     String?
+  subheadline  String?
+  content      String?     @db.Text
+  settings     Json?       // Structured JSON for CTAs, statistics, custom cards
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  page         WebsitePage @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  @@unique([pageId, sectionKey])
+  @@index([pageId])
+  @@index([displayOrder])
+}
+
+model NavigationItem {
+  id           String           @id @default(cuid())
+  menuLocation MenuLocation     @default(HEADER)
+  label        String
+  href         String
+  parentId     String?
+  displayOrder Int              @default(0)
+  hasMegaMenu  Boolean          @default(false)
+  icon         String?
+  badge        String?
+  isExternal   Boolean          @default(false)
+  isPublished  Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  parent       NavigationItem?  @relation("NavHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children     NavigationItem[] @relation("NavHierarchy")
+
+  @@index([menuLocation])
+  @@index([parentId])
+  @@index([displayOrder])
+}
+
+model SiteSetting {
+  id          String       @id @default(cuid())
+  key         String       @unique
+  value       String       @db.Text
+  description String?
+  group       SettingGroup @default(GENERAL)
+  isSecret    Boolean      @default(false)
+  updatedAt   DateTime     @updatedAt
+
+  @@index([key])
+  @@index([group])
+}
+
+model MediaAsset {
+  id          String     @id @default(cuid())
+  name        String
+  altText     String?
+  filePath    String
+  mimeType    String?
+  sizeBytes   Int?
+  dimensions  String?
+  assetType   AssetType  @default(PRODUCT_ART)
+  usageCount  Int        @default(0)
+  uploaderId  String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  uploader    AdminUser? @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+
+  @@index([name])
+  @@index([assetType])
+  @@index([uploaderId])
+}
+
+model CompanyProfile {
+  id               String   @id @default(cuid())
+  siteName         String   @default("DEZORYN TECHNOLOGY")
+  tagline          String   @default("Technology That Moves Businesses Forward")
+  mission          String   @db.Text
+  vision           String   @db.Text
+  values           Json     // Array of { title, statement, tag }
+  leadershipRoster Json     // Array of { name, role, bio, location, avatar }
+  officeLocations  Json     // Array of { city, type, address, phone, email, timezone, teamCount }
+  stats            Json     // Highlight metrics
+  updatedAt        DateTime @updatedAt
+}
+
+model LegalPolicy {
+  id               String        @id @default(cuid())
+  slug             String        @unique // privacy, terms, security, refund, cookies, acceptable-use
+  title            String
+  subtitle         String?
+  version          String        @default("v1.0")
+  lastReviewedDate String
+  status           PublishStatus @default(PUBLISHED)
+  frameworks       Json          // ["GDPR Compliant", "SOC 2 Type II", "CCPA Ready"]
+  clauses          Json          // Array of { heading, content }
+  displayOrder     Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([status])
+}
+
+// ------------------------------------------------------------------------------
+// 4. Products, Marketplace & Comparison Engine
+// ------------------------------------------------------------------------------
+
+model ProductCategory {
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  description  String?
+  displayOrder Int           @default(0)
+  isFeatured   Boolean       @default(false)
+  badge        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  products     Product[]
+
+  @@index([slug])
+  @@index([displayOrder])
+}
+
+model Product {
+  id               String                   @id @default(cuid())
+  slug             String                   @unique
+  name             String
+  tagline          String
+  description      String                   @db.Text
+  categoryId       String
+  image            String?
+  size             BusinessSize             @default(MEDIUM)
+  deployment       DeploymentType           @default(CLOUD)
+  isAiPowered      Boolean                  @default(false)
+  isFeatured       Boolean                  @default(false)
+  isTrending       Boolean                  @default(false)
+  rating           String                   @default("4.9/5")
+  hue              Int                      @default(210)
+  status           PublishStatus            @default(PUBLISHED)
+  displayOrder     Int                      @default(0)
+  tags             Json                     // ["Student ERP", "Fees & Billing", ...]
+  benefits         Json                     // ["Benefit 1", ...]
+  featuresList     Json                     // Array of [title, description]
+  modules          Json                     // ["Dashboard", "Students", ...]
+  integrations     Json                     // ["Stripe", "Zoom", ...]
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  category         ProductCategory          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  features         ProductFeature[]
+  plans            ProductPlan[]
+  comparisonValues ProductComparisonValue[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([status])
+  @@index([isFeatured])
+}
+
+model ProductFeature {
+  id           String   @id @default(cuid())
+  productId    String
+  title        String
+  description  String   @db.Text
+  displayOrder Int      @default(0)
+  isHighlight  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([displayOrder])
+}
+
+model ProductPlan {
+  id                    String        @id @default(cuid())
+  productId             String?       // null indicates universal default ladder plan
+  slug                  String        // starter, growth, business, enterprise
+  name                  String
+  description           String?
+  monthlyPriceUsd       Float?        // null for custom enterprise quote
+  annualPriceUsd        Float?
+  annualDiscountPercent Int           @default(20)
+  userLimit             String?
+  usageQuota            String?
+  features              Json          // Array of feature bullet points
+  isHighlighted         Boolean       @default(false)
+  isTrialEligible       Boolean       @default(true)
+  isEnterprise          Boolean       @default(false)
+  displayOrder          Int           @default(0)
+  status                PublishStatus @default(PUBLISHED)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  product               Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([slug])
+  @@index([displayOrder])
+}
+
+model ComparisonAttribute {
+  id            String                   @id @default(cuid())
+  key           String                   @unique // attr_multi_tenant, attr_rbac, etc.
+  name          String
+  category      ComparisonCategory       @default(ARCHITECTURE)
+  dataType      AttributeDataType        @default(BOOLEAN)
+  defaultValue  String?
+  displayOrder  Int                      @default(0)
+  isPublished   Boolean                  @default(true)
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+
+  productValues ProductComparisonValue[]
+
+  @@index([key])
+  @@index([category])
+  @@index([displayOrder])
+}
+
+model ProductComparisonValue {
+  id          String              @id @default(cuid())
+  productId   String
+  attributeId String
+  valueBool   Boolean?
+  valueText   String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  product     Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attribute   ComparisonAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, attributeId])
+  @@index([productId])
+  @@index([attributeId])
+}
+
+// ------------------------------------------------------------------------------
+// 5. Solutions Architecture & Industry Verticals
+// ------------------------------------------------------------------------------
+
+model Solution {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  name             String
+  tagline          String
+  problemStatement String?       @db.Text
+  description      String        @db.Text
+  capabilities     Json          // Array of key capability points
+  relatedProducts  Json          // Array of product slugs or references
+  icon             String?
+  status           PublishStatus @default(PUBLISHED)
+  displayOrder     Int           @default(0)
+  seoTitle         String?
+  seoDescription   String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([status])
+  @@index([displayOrder])
+}
+
+model Industry {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  name             String
+  icon             String?
+  shortDescription String?
+  fullDescription  String        @db.Text
+  metrics          Json          // Array of { value, label }
+  challenges       Json          // Array of challenge strings
+  solutions        Json          // Array of solution strings
+  productsUsed     Json          // Array of product slugs
+  status           PublishStatus @default(PUBLISHED)
+  displayOrder     Int           @default(0)
+  seoTitle         String?
+  seoDescription   String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([status])
+  @@index([displayOrder])
+}
+
+// ------------------------------------------------------------------------------
+// 6. Projects & Case Studies
+// ------------------------------------------------------------------------------
+
+model Project {
+  id               String        @id @default(cuid())
+  slug             String        @unique
+  name             String
+  client           String
+  category         String        @default("Enterprise") // SaaS, Web, Mobile, AI, Enterprise, Automation
+  shortDescription String
+  fullDescription  String?       @db.Text
+  industry         String
+  metrics          Json          // Array of { value, label }
+  techStack        Json          // Array of technology names
+  demoUrl          String?
+  featuredImage    String?
+  isFeatured       Boolean       @default(false)
+  status           PublishStatus @default(PUBLISHED)
+  displayOrder     Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+  @@index([isFeatured])
+}
+
+model CaseStudy {
+  id                String        @id @default(cuid())
+  slug              String        @unique
+  title             String
+  client            String
+  industry          String
+  timeframe         String?
+  metricHighlight   String?
+  overview          String        @db.Text
+  challenge         String        @db.Text
+  solution          String        @db.Text
+  results           String        @db.Text
+  architectureDesc  String?       @db.Text
+  techStack         Json          // Array of tech tags
+  testimonialAuthor String?
+  testimonialRole   String?
+  testimonialQuote  String?       @db.Text
+  status            PublishStatus @default(PUBLISHED)
+  displayOrder      Int           @default(0)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([status])
+  @@index([client])
+}
+
+// ------------------------------------------------------------------------------
+// 7. Website Content & Resources Hub
+// ------------------------------------------------------------------------------
+
+model BlogPost {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  title           String
+  excerpt         String        @db.Text
+  content         String        @db.Text
+  authorName      String
+  authorRole      String?
+  category        String
+  readTimeMinutes Int           @default(5)
+  coverImage      String?
+  tags            Json          // Array of tag strings
+  status          PublishStatus @default(PUBLISHED)
+  publishedAt     DateTime?
+  seoTitle        String?
+  seoDescription  String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model InsightReport {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  title         String
+  sector        String
+  author        String
+  pagesCount    Int           @default(20)
+  downloadCount Int           @default(0)
+  pdfAssetUrl   String?
+  summary       String?       @db.Text
+  tags          Json
+  status        PublishStatus @default(PUBLISHED)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([sector])
+  @@index([status])
+}
+
+model DocumentationRunbook {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  title        String
+  category     String
+  version      String        @default("v2.4")
+  codeSample   String?       @db.Text
+  content      String?       @db.Text
+  displayOrder Int           @default(0)
+  status       PublishStatus @default(PUBLISHED)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([slug])
+  @@index([category])
+  @@index([status])
+}
+
+model ApiResource {
+  id               String        @id @default(cuid())
+  title            String
+  method           HttpMethod    @default(GET)
+  endpoint         String
+  description      String?       @db.Text
+  authType         String        @default("Bearer JWT")
+  rateLimit        String        @default("1,000 req / min")
+  parametersSchema Json?
+  responseSchema   Json?
+  status           PublishStatus @default(PUBLISHED)
+  displayOrder     Int           @default(0)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([method])
+  @@index([status])
+  @@index([displayOrder])
+}
+
+model Faq {
+  id             String   @id @default(cuid())
+  question       String
+  answer         String   @db.Text
+  category       String
+  relatedProduct String?
+  displayOrder   Int      @default(0)
+  isPublished    Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([category])
+  @@index([isPublished])
+  @@index([displayOrder])
+}
+
+model JobPosting {
+  id              String        @id @default(cuid())
+  title           String
+  department      String
+  location        String
+  employmentType  JobType       @default(FULL_TIME)
+  experienceLevel String?
+  salaryRange     String?
+  description     String        @db.Text
+  requirements    Json
+  applicantCount  Int           @default(0)
+  status          PublishStatus @default(PUBLISHED)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([department])
+  @@index([status])
+}
+
+model Partner {
+  id             String        @id @default(cuid())
+  name           String
+  category       String
+  tier           PartnerTier   @default(TECHNOLOGY)
+  websiteUrl     String?
+  logoUrl        String?
+  commissionRate String?
+  displayOrder   Int           @default(0)
+  status         PublishStatus @default(PUBLISHED)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([tier])
+  @@index([status])
+  @@index([displayOrder])
+}
+
+// ------------------------------------------------------------------------------
+// 8. Lead Ingestion, Demo Booking & Newsletter
+// ------------------------------------------------------------------------------
+
+model LeadEnquiry {
+  id                  String       @id @default(cuid())
+  name                String
+  company             String
+  email               String
+  phone               String?
+  country             String
+  companySize         String?
+  interestedSolution  String?
+  budgetRange         String?
+  requirement         String       @db.Text
+  source              LeadSource   @default(GENERAL_CONTACT)
+  estimatedValueUsd   Float?
+  priority            LeadPriority @default(MEDIUM)
+  status              LeadStatus   @default(NEW)
+  assignedOwnerId     String?
+  administrativeNotes String?      @db.Text
+  timeline            Json?        // Array of { date, text }
+  submittedAt         DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  assignedOwner       AdminUser?   @relation(fields: [assignedOwnerId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([status])
+  @@index([priority])
+  @@index([source])
+  @@index([assignedOwnerId])
+  @@index([submittedAt])
+}
+
+model DemoRequest {
+  id              String     @id @default(cuid())
+  contactName     String
+  company         String
+  businessEmail   String
+  country         String
+  productSlug     String
+  preferredDate   String
+  preferredTime   String
+  timeZone        String     @default("UTC")
+  meetingLink     String?
+  attendeesCount  Int        @default(1)
+  notes           String?    @db.Text
+  assignedOwnerId String?
+  status          DemoStatus @default(PENDING)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  assignedOwner   AdminUser? @relation(fields: [assignedOwnerId], references: [id], onDelete: SetNull)
+
+  @@index([businessEmail])
+  @@index([status])
+  @@index([productSlug])
+  @@index([assignedOwnerId])
+  @@index([createdAt])
+}
+
+model NewsletterSubscription {
+  id             String           @id @default(cuid())
+  email          String           @unique
+  status         NewsletterStatus @default(SUBSCRIBED)
+  source         String           @default("website_footer")
+  subscribedAt   DateTime         @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([email])
+  @@index([status])
+}

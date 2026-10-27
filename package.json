@@ -1,0 +1,24 @@
+{
+  "name": "dezoryn",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:admin": "npm run dev --prefix admin",
+    "dev:backend": "npm run dev --prefix backend",
+    "build": "npm run build:frontend && npm run build:admin && npm run build:backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:admin": "npm run build --prefix admin",
+    "build:backend": "npm run build --prefix backend",
+    "start:frontend": "npm run start --prefix frontend",
+    "start:admin": "npm run start --prefix admin",
+    "start:backend": "npm run start --prefix backend",
+    "db:generate": "npm run db:generate --prefix backend",
+    "db:migrate": "npm run db:migrate --prefix backend",
+    "db:seed": "npm run db:seed --prefix backend",
+    "db:test": "npm run test:db --prefix backend",
+    "test:integration": "npm run test:integration --prefix backend",
+    "db:studio": "npm run db:studio --prefix backend"
+  }
+}

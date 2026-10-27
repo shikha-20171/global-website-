@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Next.js & Build Output
+.next/
+*/.next/
+out/
+*/out/
+build/
+*/build/
+dist/
+*/dist/
+
+# Environment & Local Secrets
+.env
+.env.local
+.env.*.local
+*.env
+*/.env
+*/.env.local
+*/.env.*.local
+!.env.example
+!*/.env.example
+
+# OS & Editor Files
+.DS_Store
+*/.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.vscode/
