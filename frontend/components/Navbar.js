@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Search, Menu, X, ChevronDown } from "lucide-react";
+import { Search, Menu, X, ChevronDown, Sparkles } from "lucide-react";
 import Logo from "./Logo";
 import SearchModal from "./SearchModal";
 import Icon from "./Icon";
@@ -20,33 +20,119 @@ const solutionLinks = [
   ["Mobile Solutions", "/solutions/mobile"],
 ];
 
-function Mega({ id, liveProducts = products, liveIndustries = industries }) {
+function Mega({ id, liveProducts = products, liveIndustries = industries, onClose }) {
   if (id === "products") {
     const list = liveProducts.length > 0 ? liveProducts : products;
     return (
-      <div className="grid w-[640px] grid-cols-2 gap-1 p-3">
-        {list.slice(0, 6).map((p) => (
-          <Link key={p.slug} href={`/products/${p.slug}`} className="rounded-lg p-3 hover:bg-white/[0.05]">
-            <div className="flex items-center justify-between"><span className="text-sm font-medium">{p.name}</span><span className="text-xs text-cool">from {formatPrice(startingPrice(p))}</span></div>
-            <div className="mt-0.5 line-clamp-1 text-xs text-cool">{p.description}</div>
+      <div className="w-[660px] p-3">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 mb-1">
+          <span className="text-xs font-semibold uppercase tracking-wider text-cool/70">
+            Enterprise SaaS Platforms ({list.length})
+          </span>
+          <Link
+            href="/products"
+            onClick={onClose}
+            className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition"
+          >
+            All Products Page →
           </Link>
-        ))}
-        <Link href="/marketplace" className="col-span-2 mt-1 rounded-lg bg-electric/10 px-3.5 py-2.5 text-sm text-[#9db8ff] hover:bg-electric/20">Browse all {list.length} products in the Marketplace →</Link>
+        </div>
+        <div className="grid grid-cols-2 gap-1">
+          {list.slice(0, 6).map((p) => (
+            <Link
+              key={p.slug}
+              href={`/products/${p.slug}`}
+              onClick={onClose}
+              className="rounded-lg p-2.5 hover:bg-white/[0.06] transition group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-white/95 group-hover:text-blue-300 transition">
+                  {p.name}
+                </span>
+                <span className="text-[11px] text-cool font-mono">
+                  from {formatPrice(startingPrice(p))}
+                </span>
+              </div>
+              <div className="mt-0.5 line-clamp-1 text-xs text-cool/70">
+                {p.tagline || p.description}
+              </div>
+            </Link>
+          ))}
+        </div>
+        <Link
+          href="/marketplace"
+          onClick={onClose}
+          className="mt-2 flex items-center justify-between rounded-lg bg-electric/15 px-3.5 py-2 text-xs font-semibold text-blue-300 hover:bg-electric/25 transition"
+        >
+          <span>Explore All {list.length} Products in Software Marketplace</span>
+          <span className="font-mono">→</span>
+        </Link>
       </div>
     );
   }
-  if (id === "solutions")
+
+  if (id === "solutions") {
     return (
-      <div className="w-[320px] p-2">
-        {solutionLinks.map(([l, h]) => <Link key={l} href={h} className="block rounded-lg px-3 py-2 text-sm text-white/85 hover:bg-white/[0.05] hover:text-white">{l}</Link>)}
+      <div className="w-[340px] p-3">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 mb-1">
+          <span className="text-xs font-semibold uppercase tracking-wider text-cool/70">
+            Solutions Architecture
+          </span>
+          <Link
+            href="/solutions"
+            onClick={onClose}
+            className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition"
+          >
+            All Solutions →
+          </Link>
+        </div>
+        <div className="space-y-0.5">
+          {solutionLinks.map(([l, h]) => (
+            <Link
+              key={l}
+              href={h}
+              onClick={onClose}
+              className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-white/85 hover:bg-white/[0.06] hover:text-white transition group"
+            >
+              <span>{l}</span>
+              <span className="text-xs text-cool group-hover:text-blue-400 transition font-mono">
+                →
+              </span>
+            </Link>
+          ))}
+        </div>
       </div>
     );
+  }
+
   const indList = liveIndustries.length > 0 ? liveIndustries : industries;
   return (
-    <div className="grid w-[520px] grid-cols-2 gap-1 p-2">
-      {indList.map((i) => (
-        <Link key={i.slug} href={`/industries/${i.slug}`} className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-white/85 hover:bg-white/[0.05] hover:text-white"><Icon name={i.icon} size={16} className="text-electric" />{i.name}</Link>
-      ))}
+    <div className="w-[540px] p-3">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-white/5 mb-1">
+        <span className="text-xs font-semibold uppercase tracking-wider text-cool/70">
+          Industry Verticals ({indList.length})
+        </span>
+        <Link
+          href="/industries"
+          onClick={onClose}
+          className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition"
+        >
+          All Industries →
+        </Link>
+      </div>
+      <div className="grid grid-cols-2 gap-1">
+        {indList.map((i) => (
+          <Link
+            key={i.slug}
+            href={`/industries/${i.slug}`}
+            onClick={onClose}
+            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-white/85 hover:bg-white/[0.06] hover:text-white transition group"
+          >
+            <Icon name={i.icon} size={15} className="text-electric group-hover:scale-110 transition shrink-0" />
+            <span className="truncate">{i.name}</span>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
@@ -60,35 +146,91 @@ export default function Navbar() {
   const [liveProducts, setLiveProducts] = useState(products);
   const [liveIndustries, setLiveIndustries] = useState(industries);
   const path = usePathname();
+  const router = useRouter();
+  const navRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
-    // [API IMPLEMENTATION] getLiveProducts() -> GET /api/v1/products
-    getLiveProducts().then((p) => {
-      if (mounted && Array.isArray(p) && p.length > 0) setLiveProducts(p);
-    }).catch(() => {});
+    getLiveProducts()
+      .then((p) => {
+        if (mounted && Array.isArray(p) && p.length > 0) setLiveProducts(p);
+      })
+      .catch(() => {});
 
-    // [API IMPLEMENTATION] getLiveIndustries() -> GET /api/v1/industries
-    getLiveIndustries().then((ind) => {
-      if (mounted && Array.isArray(ind) && ind.length > 0) setLiveIndustries(ind);
-    }).catch(() => {});
-    return () => { mounted = false; };
+    getLiveIndustries()
+      .then((ind) => {
+        if (mounted && Array.isArray(ind) && ind.length > 0) setLiveIndustries(ind);
+      })
+      .catch(() => {});
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  useEffect(() => { const f = () => setScrolled(window.scrollY > 24); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
-  useEffect(() => { setMobile(false); setMenu(null); setMobileSection(null); }, [path]);
-  useEffect(() => { document.body.style.overflow = mobile ? "hidden" : ""; }, [mobile]);
+  useEffect(() => {
+    const f = () => setScrolled(window.scrollY > 24);
+    f();
+    window.addEventListener("scroll", f, { passive: true });
+    return () => window.removeEventListener("scroll", f);
+  }, []);
+
+  useEffect(() => {
+    setMobile(false);
+    setMenu(null);
+    setMobileSection(null);
+  }, [path]);
+
+  useEffect(() => {
+    if (mobile) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobile]);
+
+  // Click outside listener for desktop mega menus
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (navRef.current && !navRef.current.contains(e.target)) {
+        setMenu(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   useEffect(() => {
     const k = (e) => {
-      if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName))) { e.preventDefault(); setSearch(true); }
+      if (
+        (e.key === "k" && (e.metaKey || e.ctrlKey)) ||
+        (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName))
+      ) {
+        e.preventDefault();
+        setSearch(true);
+      }
     };
-    window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k);
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
   }, []);
 
   if (path?.startsWith("/admin")) return null;
 
   const toggleMobileSec = (id) => {
     setMobileSection((prev) => (prev === id ? null : id));
+  };
+
+  const handleNav = (href) => {
+    setMobile(false);
+    setMenu(null);
+    if (path === href) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      router.push(href);
+    }
   };
 
   return (
@@ -102,64 +244,116 @@ export default function Navbar() {
         style={scrolled || mobile ? { backgroundColor: "#030712" } : {}}
       >
         <div className="container-x flex h-16 items-center justify-between gap-4">
-          <Logo />
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="Main" onMouseLeave={() => setMenu(null)}>
-            {nav.map((n) => (
-              <div key={n.label} className="relative" onMouseEnter={() => setMenu(n.mega || null)}>
-                <Link
-                  href={n.href}
-                  className={`flex items-center gap-1 rounded-md px-3 py-2 text-[13px] transition ${
-                    path === n.href ? "text-white" : "text-white/70 hover:text-white"
+          <div onClick={() => handleNav("/")}>
+            <Logo />
+          </div>
+
+          {/* ─── DESKTOP NAVIGATION BAR ─── */}
+          <nav
+            ref={navRef}
+            className="hidden items-center gap-1 lg:flex"
+            aria-label="Main"
+          >
+            {nav.map((n) => {
+              const isMega = Boolean(n.mega);
+              const isOpen = menu === n.mega;
+              const isActive = path === n.href || (isMega && path.startsWith(n.href));
+
+              if (isMega) {
+                return (
+                  <div
+                    key={n.label}
+                    className="relative"
+                    onMouseEnter={() => setMenu(n.mega)}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setMenu(isOpen ? null : n.mega)}
+                      className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-[13px] transition cursor-pointer select-none ${
+                        isActive || isOpen ? "text-white font-semibold" : "text-white/70 hover:text-white"
+                      }`}
+                      aria-expanded={isOpen}
+                    >
+                      <span>{n.label}</span>
+                      <ChevronDown
+                        size={12}
+                        className={`transition-transform duration-200 ${isOpen ? "rotate-180 text-electric" : ""}`}
+                      />
+                    </button>
+
+                    {/* Desktop Dropdown with transparent hover bridge */}
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 4 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute left-0 top-full pt-2 z-50"
+                        >
+                          <div className="rounded-xl border border-white/10 bg-[#070e24]/95 shadow-2xl backdrop-blur-2xl">
+                            <Mega
+                              id={n.mega}
+                              liveProducts={liveProducts}
+                              liveIndustries={liveIndustries}
+                              onClose={() => setMenu(null)}
+                            />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              }
+
+              return (
+                <button
+                  key={n.label}
+                  type="button"
+                  onClick={() => handleNav(n.href)}
+                  className={`flex items-center rounded-md px-3 py-2 text-[13px] transition cursor-pointer ${
+                    isActive ? "text-white font-semibold" : "text-white/70 hover:text-white"
                   }`}
                 >
                   {n.label}
-                  {n.mega && (
-                    <ChevronDown
-                      size={12}
-                      className={`transition-transform duration-200 ${menu === n.mega ? "rotate-180" : ""}`}
-                    />
-                  )}
-                </Link>
-                <AnimatePresence>
-                  {menu && menu === n.mega && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 6 }}
-                      transition={{ duration: 0.16 }}
-                      className="absolute left-0 top-full pt-3"
-                    >
-                      <div className="rounded-xl border border-line bg-graphite/95 shadow-2xl backdrop-blur-xl">
-                        <Mega id={menu} liveProducts={liveProducts} liveIndustries={liveIndustries} />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
-            <Link
-              href="/pricing"
-              className={`rounded-md px-3 py-2 text-[13px] ${
-                path === "/pricing" ? "text-white" : "text-white/70 hover:text-white"
+                </button>
+              );
+            })}
+
+            <button
+              type="button"
+              onClick={() => handleNav("/pricing")}
+              className={`rounded-md px-3 py-2 text-[13px] transition cursor-pointer ${
+                path === "/pricing" ? "text-white font-semibold" : "text-white/70 hover:text-white"
               }`}
             >
               Pricing
-            </Link>
+            </button>
           </nav>
+
+          {/* Desktop & Mobile Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
-              onClick={() => setSearch(true)}
-              className="hidden h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/5 hover:text-white lg:flex"
+              onClick={() => {
+                setMobile(false);
+                setMenu(null);
+                setSearch(true);
+              }}
+              className="hidden h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/5 hover:text-white lg:flex cursor-pointer transition"
               aria-label="Search (Ctrl K)"
             >
               <Search size={17} />
             </button>
-            <Link href="/demo" className="btn btn-primary h-9 px-3.5 sm:px-4 text-[13px]">
+            <button
+              type="button"
+              onClick={() => handleNav("/demo")}
+              className="btn btn-primary h-9 px-3.5 sm:px-4 text-[13px] cursor-pointer"
+            >
               Get Started
-            </Link>
+            </button>
             <button
               onClick={() => setMobile(!mobile)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-white hover:bg-white/10 active:scale-95 transition lg:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-white hover:bg-white/10 active:scale-95 transition lg:hidden cursor-pointer"
               aria-label={mobile ? "Close menu" : "Open menu"}
               aria-expanded={mobile}
             >
@@ -187,11 +381,12 @@ export default function Navbar() {
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 overscroll-contain">
               {/* Search Bar Shortcut */}
               <button
+                type="button"
                 onClick={() => {
                   setMobile(false);
                   setSearch(true);
                 }}
-                className="flex h-11 w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-3.5 text-xs text-cool hover:border-white/20 active:bg-white/[0.08] transition shadow-inner"
+                className="flex h-11 w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-3.5 text-xs text-cool hover:border-white/20 active:bg-white/[0.08] transition shadow-inner cursor-pointer"
               >
                 <span className="flex items-center gap-2.5">
                   <Search size={15} className="text-electric" />
@@ -204,22 +399,23 @@ export default function Navbar() {
 
               {/* Navigation Items */}
               <nav className="divide-y divide-white/5 rounded-2xl border border-white/5 bg-white/[0.02] p-1.5 shadow-lg">
-                <Link
-                  href="/"
-                  onClick={() => setMobile(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                <button
+                  type="button"
+                  onClick={() => handleNav("/")}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer text-left ${
                     path === "/" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
                   }`}
                 >
                   <span>Home</span>
                   <span className="text-xs text-cool font-mono">01</span>
-                </Link>
+                </button>
 
                 {/* Solutions Accordion */}
                 <div className="pt-0.5">
                   <button
+                    type="button"
                     onClick={() => toggleMobileSec("solutions")}
-                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer ${
                       mobileSection === "solutions" ? "bg-white/5 text-white" : "text-white/85 hover:bg-white/5"
                     }`}
                     aria-expanded={mobileSection === "solutions"}
@@ -246,24 +442,25 @@ export default function Navbar() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden px-2 pb-2 pt-1 space-y-1"
                       >
+                        <button
+                          type="button"
+                          onClick={() => handleNav("/solutions")}
+                          className="flex w-full items-center justify-between rounded-lg bg-electric/15 px-3 py-2 text-xs font-semibold text-blue-300 hover:bg-electric/25 transition cursor-pointer"
+                        >
+                          <span>Explore All Solutions Architecture</span>
+                          <span className="font-mono">→</span>
+                        </button>
                         {solutionLinks.map(([title, href]) => (
-                          <Link
+                          <button
                             key={title}
-                            href={href}
-                            onClick={() => setMobile(false)}
-                            className="flex items-center justify-between rounded-lg px-3 py-2 text-xs text-cool hover:bg-white/5 hover:text-white transition"
+                            type="button"
+                            onClick={() => handleNav(href)}
+                            className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs text-cool hover:bg-white/5 hover:text-white transition cursor-pointer text-left"
                           >
                             <span>{title}</span>
                             <span className="text-electric font-mono text-xs">→</span>
-                          </Link>
+                          </button>
                         ))}
-                        <Link
-                          href="/solutions"
-                          onClick={() => setMobile(false)}
-                          className="block rounded-lg bg-electric/10 px-3 py-2 text-center text-xs font-semibold text-blue-400 hover:bg-electric/20 transition mt-1"
-                        >
-                          Browse All Enterprise Solutions →
-                        </Link>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -272,8 +469,9 @@ export default function Navbar() {
                 {/* Products Accordion */}
                 <div className="pt-0.5">
                   <button
+                    type="button"
                     onClick={() => toggleMobileSec("products")}
-                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer ${
                       mobileSection === "products" ? "bg-white/5 text-white" : "text-white/85 hover:bg-white/5"
                     }`}
                     aria-expanded={mobileSection === "products"}
@@ -300,12 +498,20 @@ export default function Navbar() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden px-2 pb-2 pt-1 space-y-1"
                       >
+                        <button
+                          type="button"
+                          onClick={() => handleNav("/products")}
+                          className="flex w-full items-center justify-between rounded-lg bg-electric/15 px-3 py-2 text-xs font-semibold text-blue-300 hover:bg-electric/25 transition cursor-pointer"
+                        >
+                          <span>Open All Products Catalog</span>
+                          <span className="font-mono">→</span>
+                        </button>
                         {(liveProducts.length > 0 ? liveProducts : products).slice(0, 7).map((p) => (
-                          <Link
+                          <button
                             key={p.slug}
-                            href={`/products/${p.slug}`}
-                            onClick={() => setMobile(false)}
-                            className="block rounded-lg px-3 py-2 text-xs hover:bg-white/5 transition"
+                            type="button"
+                            onClick={() => handleNav(`/products/${p.slug}`)}
+                            className="block w-full text-left rounded-lg px-3 py-2 text-xs hover:bg-white/5 transition cursor-pointer"
                           >
                             <div className="flex items-center justify-between">
                               <span className="font-semibold text-white/95">{p.name}</span>
@@ -316,15 +522,15 @@ export default function Navbar() {
                             <div className="text-[11px] text-cool/70 truncate mt-0.5">
                               {p.tagline || p.description}
                             </div>
-                          </Link>
+                          </button>
                         ))}
-                        <Link
-                          href="/marketplace"
-                          onClick={() => setMobile(false)}
-                          className="block rounded-lg bg-electric/10 px-3 py-2 text-center text-xs font-semibold text-blue-400 hover:bg-electric/20 transition mt-1"
+                        <button
+                          type="button"
+                          onClick={() => handleNav("/marketplace")}
+                          className="block w-full rounded-lg bg-electric/10 px-3 py-2 text-center text-xs font-semibold text-blue-400 hover:bg-electric/20 transition mt-1 cursor-pointer"
                         >
                           View All {liveProducts.length > 0 ? liveProducts.length : products.length} Products in Marketplace →
-                        </Link>
+                        </button>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -333,8 +539,9 @@ export default function Navbar() {
                 {/* Industries Accordion */}
                 <div className="pt-0.5">
                   <button
+                    type="button"
                     onClick={() => toggleMobileSec("industries")}
-                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer ${
                       mobileSection === "industries" ? "bg-white/5 text-white" : "text-white/85 hover:bg-white/5"
                     }`}
                     aria-expanded={mobileSection === "industries"}
@@ -361,16 +568,24 @@ export default function Navbar() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden px-2 pb-2 pt-1 space-y-1"
                       >
+                        <button
+                          type="button"
+                          onClick={() => handleNav("/industries")}
+                          className="flex w-full items-center justify-between rounded-lg bg-electric/15 px-3 py-2 text-xs font-semibold text-cyan-300 hover:bg-electric/25 transition cursor-pointer"
+                        >
+                          <span>Explore All Industry Verticals</span>
+                          <span className="font-mono">→</span>
+                        </button>
                         {(liveIndustries.length > 0 ? liveIndustries : industries).map((ind) => (
-                          <Link
+                          <button
                             key={ind.slug}
-                            href={`/industries/${ind.slug}`}
-                            onClick={() => setMobile(false)}
-                            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-cool hover:bg-white/5 hover:text-white transition"
+                            type="button"
+                            onClick={() => handleNav(`/industries/${ind.slug}`)}
+                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-cool hover:bg-white/5 hover:text-white transition cursor-pointer text-left"
                           >
                             <Icon name={ind.icon} size={14} className="text-electric shrink-0" />
                             <span>{ind.name}</span>
-                          </Link>
+                          </button>
                         ))}
                       </motion.div>
                     )}
@@ -378,65 +593,65 @@ export default function Navbar() {
                 </div>
 
                 {/* Standalone Navigation Links */}
-                <Link
-                  href="/pricing"
-                  onClick={() => setMobile(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                <button
+                  type="button"
+                  onClick={() => handleNav("/pricing")}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer text-left ${
                     path === "/pricing" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
                   }`}
                 >
                   <span>Pricing &amp; Plans</span>
                   <span className="text-xs text-cool font-mono">USD</span>
-                </Link>
+                </button>
 
-                <Link
-                  href="/marketplace"
-                  onClick={() => setMobile(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                <button
+                  type="button"
+                  onClick={() => handleNav("/marketplace")}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer text-left ${
                     path === "/marketplace" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
                   }`}
                 >
                   <span>Software Marketplace</span>
                   <span className="text-xs text-cool font-mono">11+</span>
-                </Link>
+                </button>
 
-                <Link
-                  href="/portfolio"
-                  onClick={() => setMobile(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                <button
+                  type="button"
+                  onClick={() => handleNav("/portfolio")}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer text-left ${
                     path === "/portfolio" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
                   }`}
                 >
                   <span>Portfolio &amp; Case Studies</span>
                   <span className="text-xs text-cool font-mono">ROI</span>
-                </Link>
+                </button>
 
-                <Link
-                  href="/resources"
-                  onClick={() => setMobile(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                <button
+                  type="button"
+                  onClick={() => handleNav("/resources")}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer text-left ${
                     path === "/resources" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
                   }`}
                 >
                   <span>Resources &amp; Blog</span>
                   <span className="text-xs text-cool">Articles</span>
-                </Link>
+                </button>
 
-                <Link
-                  href="/company"
-                  onClick={() => setMobile(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                <button
+                  type="button"
+                  onClick={() => handleNav("/company")}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer text-left ${
                     path === "/company" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
                   }`}
                 >
                   <span>Company &amp; Leadership</span>
                   <span className="text-xs text-cool">About</span>
-                </Link>
+                </button>
 
-                <Link
-                  href="/careers"
-                  onClick={() => setMobile(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                <button
+                  type="button"
+                  onClick={() => handleNav("/careers")}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer text-left ${
                     path === "/careers" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
                   }`}
                 >
@@ -444,36 +659,36 @@ export default function Navbar() {
                   <span className="text-[11px] font-mono font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
                     We&apos;re Hiring
                   </span>
-                </Link>
+                </button>
 
-                <Link
-                  href="/contact"
-                  onClick={() => setMobile(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                <button
+                  type="button"
+                  onClick={() => handleNav("/contact")}
+                  className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition cursor-pointer text-left ${
                     path === "/contact" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
                   }`}
                 >
                   <span>Contact Sales</span>
                   <span className="text-xs text-electric">Helpdesk</span>
-                </Link>
+                </button>
               </nav>
 
               {/* Bottom CTAs */}
               <div className="pt-2 pb-6 space-y-2.5">
-                <Link
-                  href="/demo"
-                  onClick={() => setMobile(false)}
-                  className="btn btn-primary h-12 w-full justify-center text-sm font-bold shadow-lg shadow-blue-600/30"
+                <button
+                  type="button"
+                  onClick={() => handleNav("/demo")}
+                  className="btn btn-primary h-12 w-full justify-center text-sm font-bold shadow-lg shadow-blue-600/30 cursor-pointer"
                 >
                   Book an Interactive Product Demo
-                </Link>
-                <Link
-                  href="/contact"
-                  onClick={() => setMobile(false)}
-                  className="btn btn-secondary h-11 w-full justify-center text-xs font-semibold text-white/90"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleNav("/contact")}
+                  className="btn btn-secondary h-11 w-full justify-center text-xs font-semibold text-white/90 cursor-pointer"
                 >
                   Talk to a Solutions Architect
-                </Link>
+                </button>
                 <div className="pt-2 text-center text-[11px] text-cool/60">
                   DEZORYN TECHNOLOGY PRIVATE LIMITED • Global SaaS
                 </div>
@@ -482,6 +697,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
       <SearchModal open={search} onClose={() => setSearch(false)} />
     </>
   );
