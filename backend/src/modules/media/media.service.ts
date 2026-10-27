@@ -55,9 +55,9 @@ export class MediaService {
     // Stream to disk
     await new Promise<void>((resolve, reject) => {
       const writeStream = fs.createWriteStream(destinationPath);
-      part.file.pipe(writeStream);
+      (part.file as any).pipe(writeStream);
       writeStream.on("finish", () => resolve());
-      writeStream.on("error", (err) => reject(err));
+      writeStream.on("error", (err: any) => reject(err));
     });
 
     const stats = fs.statSync(destinationPath);

@@ -54,21 +54,21 @@ export class NotificationsService {
 
     return {
       unreadCount: newInquiries.length + pendingDemos.length + failedLogins.length,
-      inquiries: newInquiries.map((i) => ({
+      inquiries: newInquiries.map((i: any) => ({
         id: i.id,
         type: "lead_inquiry",
         title: `New enterprise lead from ${i.company}`,
         message: `${i.name} (${i.email}) submitted an inquiry via ${i.source}`,
         timestamp: i.submittedAt,
       })),
-      demos: pendingDemos.map((d) => ({
+      demos: pendingDemos.map((d: any) => ({
         id: d.id,
         type: "demo_request",
         title: `Walkthrough requested for ${d.productSlug}`,
         message: `${d.contactName} (${d.company}) scheduled for ${d.preferredDate} at ${d.preferredTime}`,
         timestamp: d.createdAt,
       })),
-      securityAlerts: failedLogins.map((s) => ({
+      securityAlerts: failedLogins.map((s: any) => ({
         id: s.id,
         type: "security_alert",
         title: "Administrative Login Failed",

@@ -100,7 +100,7 @@ export class AuthService {
       result: AuditResult.SUCCESS,
     });
 
-    const permissions = user.role.permissions.map((rp) => rp.permission.code);
+    const permissions = user.role.permissions.map((rp: any) => rp.permission.code);
 
     return {
       token: rawToken,
@@ -164,7 +164,7 @@ export class AuthService {
       throw new UnauthorizedError("User record no longer exists");
     }
 
-    const permissions = user.role.permissions.map((rp) => rp.permission.code);
+    const permissions = user.role.permissions.map((rp: any) => rp.permission.code);
 
     return {
       id: user.id,

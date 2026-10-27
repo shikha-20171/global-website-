@@ -23,7 +23,7 @@ export class SettingsService {
     });
 
     // Mask secret values in response for safety
-    return settings.map((s) => ({
+    return settings.map((s: any) => ({
       ...s,
       value: s.isSecret ? "••••••••••••••••" : s.value,
     }));

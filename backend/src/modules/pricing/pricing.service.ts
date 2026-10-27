@@ -21,8 +21,8 @@ export class PricingService {
       orderBy: [{ productId: "asc" }, { displayOrder: "asc" }],
     });
 
-    const defaultPlans = plans.filter((p) => !p.productId);
-    const productPlans = plans.filter((p) => !!p.productId);
+    const defaultPlans = plans.filter((p: any) => !p.productId);
+    const productPlans = plans.filter((p: any) => !!p.productId);
 
     return {
       defaultTiers: defaultPlans,

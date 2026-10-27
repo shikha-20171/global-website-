@@ -7,13 +7,13 @@ declare global {
 }
 
 export const prisma =
-  global.__prismaClient ||
+  (globalThis as any).__prismaClient ||
   new PrismaClient({
     log: env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 
 if (env.NODE_ENV !== "production") {
-  global.__prismaClient = prisma;
+  (globalThis as any).__prismaClient = prisma;
 }
 
 export async function connectDatabase() {

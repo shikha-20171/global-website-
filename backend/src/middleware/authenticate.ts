@@ -58,7 +58,7 @@ export async function authenticate(request: FastifyRequest, _reply: FastifyReply
     throw new UnauthorizedError("Administrative account is inactive or suspended");
   }
 
-  const permissions = user.role.permissions.map((rp) => rp.permission.code);
+  const permissions = user.role.permissions.map((rp: any) => rp.permission.code);
 
   (request as AuthenticatedRequest).adminUser = {
     id: user.id,

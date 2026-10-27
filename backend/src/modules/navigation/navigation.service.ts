@@ -20,9 +20,9 @@ export class NavigationService {
       orderBy: { displayOrder: "asc" },
     });
 
-    const header = items.filter((i) => i.menuLocation === MenuLocation.HEADER);
-    const footer = items.filter((i) => i.menuLocation === MenuLocation.FOOTER);
-    const mobile = items.filter((i) => i.menuLocation === MenuLocation.MOBILE);
+    const header = items.filter((i: any) => i.menuLocation === MenuLocation.HEADER);
+    const footer = items.filter((i: any) => i.menuLocation === MenuLocation.FOOTER);
+    const mobile = items.filter((i: any) => i.menuLocation === MenuLocation.MOBILE);
 
     return {
       header,
