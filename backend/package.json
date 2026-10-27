@@ -1,6 +1,8 @@
 {
   "name": "dezoryn-backend",
   "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "description": "Enterprise Backend and Database Service for DEZORYN TECHNOLOGY Global Website and Admin Panel",
   "main": "dist/server.js",
