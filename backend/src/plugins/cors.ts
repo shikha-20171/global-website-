@@ -7,8 +7,16 @@ export function registerCors(app: FastifyInstance) {
 
   app.register(cors, {
     origin: (origin, cb) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-      if (!origin || allowedOrigins.includes(origin) || env.NODE_ENV === "development" || env.NODE_ENV === "test") {
+      // Allow requests with no origin, matched origin, cloud preview domains, or dev/test
+      if (
+        !origin ||
+        allowedOrigins.includes("*") ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".onrender.com") ||
+        origin.endsWith(".vercel.app") ||
+        env.NODE_ENV === "development" ||
+        env.NODE_ENV === "test"
+      ) {
         cb(null, true);
         return;
       }

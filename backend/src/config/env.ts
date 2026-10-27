@@ -8,7 +8,10 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(5001),
   HOST: z.string().default("0.0.0.0"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  JWT_SECRET: z.string().min(16, "JWT_SECRET must be at least 16 characters long"),
+  JWT_SECRET: z
+    .string()
+    .min(16, "JWT_SECRET must be at least 16 characters long")
+    .default("dezoryn-super-secret-jwt-key-2026-production-grade"),
   JWT_EXPIRES_IN: z.string().default("7d"),
   CORS_ORIGIN: z.string().default("http://localhost:3000,http://localhost:3001"),
   ADMIN_BOOTSTRAP_EMAIL: z.string().email().default("admin@dezoryn.com"),
