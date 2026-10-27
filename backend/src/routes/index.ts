@@ -51,6 +51,25 @@ function registerDomainModules(app: FastifyInstance) {
 }
 
 export function registerRoutes(app: FastifyInstance) {
+  // 0. Root status endpoint for Render health probes and root browser visits
+  app.route({
+    method: ["GET", "HEAD"],
+    url: "/",
+    handler: async (_req, reply) => {
+      return reply.status(200).send({
+        success: true,
+        message: "DEZORYN TECHNOLOGY Backend & API Engine is online",
+        version: "1.0.0",
+        environment: process.env.NODE_ENV || "production",
+        endpoints: {
+          health: "/health",
+          documentation: "/documentation",
+          apiV1: "/api/v1",
+        },
+      });
+    },
+  });
+
   // 1. Root /health endpoint
   app.register(healthRoutes);
 
