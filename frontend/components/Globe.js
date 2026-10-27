@@ -333,11 +333,11 @@ export default function Globe({ className = "" }) {
         const py = ((-tempPos.y + 1) * height) / 2;
 
         // ALL 6 POINTS REMAIN VISIBLE AT ALL TIMES!
-        // Front points are bright white & vibrant (opacity ~ 0.98, scale ~ 1.05)
-        // Back points inside the globe are softly translucent (opacity ~ 0.65, scale ~ 0.82)
+        // Adapt scale for mobile viewports to prevent clipping and overlap
+        const isMobileScreen = width < 520;
         const depthFactor = (worldZ + 1.0) / 2.0; // 0 (back) to 1 (front)
         const opacity = 0.58 + 0.42 * depthFactor;
-        const scale = 0.80 + 0.25 * depthFactor;
+        const scale = (isMobileScreen ? 0.68 : 0.80) + (isMobileScreen ? 0.18 : 0.25) * depthFactor;
 
         el.style.opacity = opacity.toFixed(2);
         el.style.transform = `translate3d(${px}px, ${py}px, 0) translate(-50%, -50%) scale(${scale.toFixed(2)})`;
@@ -419,15 +419,15 @@ export default function Globe({ className = "" }) {
           style={{ opacity: 0 }}
         >
           {/* Card-matching Badge: Pure White Text + Royal Blue Glowing Border + Deep Sapphire Glass */}
-          <div className="relative flex items-center gap-1.5 whitespace-nowrap rounded-full border border-[#60a5fa]/70 bg-gradient-to-r from-[#0e276b]/95 to-[#091e52]/95 px-3 py-1 shadow-[0_4px_16px_rgba(29,78,216,0.6)] backdrop-blur-md">
+          <div className="relative flex items-center gap-1 sm:gap-1.5 whitespace-nowrap rounded-full border border-[#60a5fa]/70 bg-gradient-to-r from-[#0e276b]/95 to-[#091e52]/95 px-2 py-0.5 sm:px-3 sm:py-1 shadow-[0_4px_16px_rgba(29,78,216,0.6)] backdrop-blur-md">
             {/* Glowing Pure White Beacon with Radar Ping */}
-            <span className="relative flex h-2 w-2">
+            <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-70" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-white shadow-[0_0_8px_#ffffff]" />
+              <span className="relative inline-flex h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-white shadow-[0_0_8px_#ffffff]" />
             </span>
 
             {/* Clear Crisp White Text for 100% High Visibility */}
-            <span className="text-[11.5px] sm:text-xs font-black tracking-wide text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.95)]">
+            <span className="text-[10px] sm:text-xs font-black tracking-wide text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.95)]">
               {kp.name}
             </span>
           </div>

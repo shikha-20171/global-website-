@@ -93,81 +93,176 @@ export default function Navbar() {
 
   return (
     <>
-      <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled || mobile ? "border-b border-line bg-ink/90 backdrop-blur-xl" : "border-b border-transparent bg-transparent"}`}>
+      <header
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+          scrolled || mobile
+            ? "border-b border-white/10 bg-[#030712] shadow-2xl backdrop-blur-2xl"
+            : "border-b border-transparent bg-transparent"
+        }`}
+        style={scrolled || mobile ? { backgroundColor: "#030712" } : {}}
+      >
         <div className="container-x flex h-16 items-center justify-between gap-4">
           <Logo />
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Main" onMouseLeave={() => setMenu(null)}>
             {nav.map((n) => (
               <div key={n.label} className="relative" onMouseEnter={() => setMenu(n.mega || null)}>
-                <Link href={n.href} className={`flex items-center gap-1 rounded-md px-3 py-2 text-[13px] transition ${path === n.href ? "text-white" : "text-white/70 hover:text-white"}`}>
-                  {n.label}{n.mega && <ChevronDown size={12} className={`transition-transform ${menu === n.mega ? "rotate-180" : ""}`} />}
+                <Link
+                  href={n.href}
+                  className={`flex items-center gap-1 rounded-md px-3 py-2 text-[13px] transition ${
+                    path === n.href ? "text-white" : "text-white/70 hover:text-white"
+                  }`}
+                >
+                  {n.label}
+                  {n.mega && (
+                    <ChevronDown
+                      size={12}
+                      className={`transition-transform duration-200 ${menu === n.mega ? "rotate-180" : ""}`}
+                    />
+                  )}
                 </Link>
                 <AnimatePresence>
                   {menu && menu === n.mega && (
-                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }} transition={{ duration: 0.16 }}
-                      className="absolute left-0 top-full pt-3">
-                      <div className="rounded-xl border border-line bg-graphite/95 shadow-2xl backdrop-blur-xl"><Mega id={menu} liveProducts={liveProducts} liveIndustries={liveIndustries} /></div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 6 }}
+                      transition={{ duration: 0.16 }}
+                      className="absolute left-0 top-full pt-3"
+                    >
+                      <div className="rounded-xl border border-line bg-graphite/95 shadow-2xl backdrop-blur-xl">
+                        <Mega id={menu} liveProducts={liveProducts} liveIndustries={liveIndustries} />
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             ))}
-            <Link href="/pricing" className={`rounded-md px-3 py-2 text-[13px] ${path === "/pricing" ? "text-white" : "text-white/70 hover:text-white"}`}>Pricing</Link>
+            <Link
+              href="/pricing"
+              className={`rounded-md px-3 py-2 text-[13px] ${
+                path === "/pricing" ? "text-white" : "text-white/70 hover:text-white"
+              }`}
+            >
+              Pricing
+            </Link>
           </nav>
           <div className="flex items-center gap-2 sm:gap-3">
-            <button onClick={() => setSearch(true)} className="hidden h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/5 hover:text-white lg:flex" aria-label="Search (Ctrl K)"><Search size={17} /></button>
-            <Link href="/demo" className="btn btn-primary h-9 px-3.5 sm:px-4 text-[13px]">Get Started</Link>
-            <button onClick={() => setMobile(!mobile)} className="flex h-10 w-10 items-center justify-center rounded-lg hover:bg-white/5 lg:hidden text-white" aria-label={mobile ? "Close menu" : "Open menu"} aria-expanded={mobile}>{mobile ? <X size={22} /> : <Menu size={22} />}</button>
+            <button
+              onClick={() => setSearch(true)}
+              className="hidden h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/5 hover:text-white lg:flex"
+              aria-label="Search (Ctrl K)"
+            >
+              <Search size={17} />
+            </button>
+            <Link href="/demo" className="btn btn-primary h-9 px-3.5 sm:px-4 text-[13px]">
+              Get Started
+            </Link>
+            <button
+              onClick={() => setMobile(!mobile)}
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-white hover:bg-white/10 active:scale-95 transition lg:hidden"
+              aria-label={mobile ? "Close menu" : "Open menu"}
+              aria-expanded={mobile}
+            >
+              {mobile ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </div>
       </header>
 
+      {/* ─── FULL-SCREEN HIGH-DEPTH MOBILE NAVIGATION DRAWER ─── */}
       <AnimatePresence>
         {mobile && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 overflow-y-auto bg-[#020617]/98 pt-20 pb-safe safe-bottom scroll-touch overscroll-contain lg:hidden"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="fixed inset-0 z-40 flex flex-col bg-[#030712] pt-16 overflow-hidden lg:hidden"
+            style={{ backgroundColor: "#030712" }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile Navigation Menu"
           >
-            <nav className="container-x pb-20 safe-bottom" aria-label="Mobile Navigation">
+            {/* Scrollable Nav Content */}
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 overscroll-contain">
+              {/* Search Bar Shortcut */}
               <button
                 onClick={() => {
                   setMobile(false);
                   setSearch(true);
                 }}
-                className="mb-5 flex h-12 w-full items-center gap-3 rounded-xl border border-line bg-white/[0.03] px-4 text-sm text-cool hover:border-white/25 active:bg-white/[0.08] transition"
+                className="flex h-11 w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-3.5 text-xs text-cool hover:border-white/20 active:bg-white/[0.08] transition shadow-inner"
               >
-                <Search size={16} />
-                <span>Search products, solutions…</span>
+                <span className="flex items-center gap-2.5">
+                  <Search size={15} className="text-electric" />
+                  <span>Search products, solutions, docs…</span>
+                </span>
+                <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono text-cool/80">
+                  Ctrl K
+                </span>
               </button>
 
-              <div className="divide-y divide-line/60">
-                <Link href="/" onClick={() => setMobile(false)} className="block py-3 text-lg font-medium text-white/90 hover:text-white">
-                  Home
+              {/* Navigation Items */}
+              <nav className="divide-y divide-white/5 rounded-2xl border border-white/5 bg-white/[0.02] p-1.5 shadow-lg">
+                <Link
+                  href="/"
+                  onClick={() => setMobile(false)}
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    path === "/" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
+                  }`}
+                >
+                  <span>Home</span>
+                  <span className="text-xs text-cool font-mono">01</span>
                 </Link>
 
                 {/* Solutions Accordion */}
-                <div className="py-2">
+                <div className="pt-0.5">
                   <button
                     onClick={() => toggleMobileSec("solutions")}
-                    className="flex w-full items-center justify-between py-2 text-lg font-medium text-white/90"
+                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                      mobileSection === "solutions" ? "bg-white/5 text-white" : "text-white/85 hover:bg-white/5"
+                    }`}
                     aria-expanded={mobileSection === "solutions"}
                   >
-                    <span>Solutions</span>
-                    <ChevronDown size={18} className={`transition-transform duration-200 text-cool ${mobileSection === "solutions" ? "rotate-180 text-electric" : ""}`} />
+                    <span className="flex items-center gap-2">
+                      <span>Solutions</span>
+                      <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-medium text-blue-400 border border-blue-500/20">
+                        {solutionLinks.length}
+                      </span>
+                    </span>
+                    <ChevronDown
+                      size={16}
+                      className={`transition-transform duration-200 text-cool ${
+                        mobileSection === "solutions" ? "rotate-180 text-electric" : ""
+                      }`}
+                    />
                   </button>
                   <AnimatePresence>
                     {mobileSection === "solutions" && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden pl-3 pb-2 space-y-1">
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden px-2 pb-2 pt-1 space-y-1"
+                      >
                         {solutionLinks.map(([title, href]) => (
-                          <Link key={title} href={href} onClick={() => setMobile(false)} className="block py-2 text-sm text-cool hover:text-white flex items-center justify-between">
+                          <Link
+                            key={title}
+                            href={href}
+                            onClick={() => setMobile(false)}
+                            className="flex items-center justify-between rounded-lg px-3 py-2 text-xs text-cool hover:bg-white/5 hover:text-white transition"
+                          >
                             <span>{title}</span>
-                            <span className="text-xs text-electric">→</span>
+                            <span className="text-electric font-mono text-xs">→</span>
                           </Link>
                         ))}
-                        <Link href="/solutions" onClick={() => setMobile(false)} className="block pt-2 text-xs font-medium text-electric hover:underline">
-                          Browse Solutions Overview →
+                        <Link
+                          href="/solutions"
+                          onClick={() => setMobile(false)}
+                          className="block rounded-lg bg-electric/10 px-3 py-2 text-center text-xs font-semibold text-blue-400 hover:bg-electric/20 transition mt-1"
+                        >
+                          Browse All Enterprise Solutions →
                         </Link>
                       </motion.div>
                     )}
@@ -175,54 +270,106 @@ export default function Navbar() {
                 </div>
 
                 {/* Products Accordion */}
-                <div className="py-2">
+                <div className="pt-0.5">
                   <button
                     onClick={() => toggleMobileSec("products")}
-                    className="flex w-full items-center justify-between py-2 text-lg font-medium text-white/90"
+                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                      mobileSection === "products" ? "bg-white/5 text-white" : "text-white/85 hover:bg-white/5"
+                    }`}
                     aria-expanded={mobileSection === "products"}
                   >
-                    <span>Products</span>
-                    <ChevronDown size={18} className={`transition-transform duration-200 text-cool ${mobileSection === "products" ? "rotate-180 text-electric" : ""}`} />
+                    <span className="flex items-center gap-2">
+                      <span>Products</span>
+                      <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-medium text-purple-400 border border-purple-500/20">
+                        {liveProducts.length > 0 ? liveProducts.length : products.length}
+                      </span>
+                    </span>
+                    <ChevronDown
+                      size={16}
+                      className={`transition-transform duration-200 text-cool ${
+                        mobileSection === "products" ? "rotate-180 text-electric" : ""
+                      }`}
+                    />
                   </button>
                   <AnimatePresence>
                     {mobileSection === "products" && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden pl-3 pb-2 space-y-1">
-                        {products.slice(0, 5).map((p) => (
-                          <Link key={p.slug} href={`/products/${p.slug}`} onClick={() => setMobile(false)} className="block py-1.5 text-sm text-cool hover:text-white">
-                            <div className="font-medium text-white/80">{p.name}</div>
-                            <div className="text-[11px] text-cool/70 truncate">{p.tagline}</div>
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden px-2 pb-2 pt-1 space-y-1"
+                      >
+                        {(liveProducts.length > 0 ? liveProducts : products).slice(0, 7).map((p) => (
+                          <Link
+                            key={p.slug}
+                            href={`/products/${p.slug}`}
+                            onClick={() => setMobile(false)}
+                            className="block rounded-lg px-3 py-2 text-xs hover:bg-white/5 transition"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold text-white/95">{p.name}</span>
+                              <span className="text-[10px] text-cool font-mono">
+                                from {formatPrice(startingPrice(p))}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-cool/70 truncate mt-0.5">
+                              {p.tagline || p.description}
+                            </div>
                           </Link>
                         ))}
-                        <Link href="/marketplace" onClick={() => setMobile(false)} className="block pt-2 text-xs font-medium text-electric hover:underline">
-                          View all {products.length} products in Marketplace →
+                        <Link
+                          href="/marketplace"
+                          onClick={() => setMobile(false)}
+                          className="block rounded-lg bg-electric/10 px-3 py-2 text-center text-xs font-semibold text-blue-400 hover:bg-electric/20 transition mt-1"
+                        >
+                          View All {liveProducts.length > 0 ? liveProducts.length : products.length} Products in Marketplace →
                         </Link>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
 
-                {/* Other Nav Links */}
-                <Link href="/marketplace" onClick={() => setMobile(false)} className="block py-3 text-lg font-medium text-white/90 hover:text-white">
-                  Marketplace
-                </Link>
-
                 {/* Industries Accordion */}
-                <div className="py-2">
+                <div className="pt-0.5">
                   <button
                     onClick={() => toggleMobileSec("industries")}
-                    className="flex w-full items-center justify-between py-2 text-lg font-medium text-white/90"
+                    className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                      mobileSection === "industries" ? "bg-white/5 text-white" : "text-white/85 hover:bg-white/5"
+                    }`}
                     aria-expanded={mobileSection === "industries"}
                   >
-                    <span>Industries</span>
-                    <ChevronDown size={18} className={`transition-transform duration-200 text-cool ${mobileSection === "industries" ? "rotate-180 text-electric" : ""}`} />
+                    <span className="flex items-center gap-2">
+                      <span>Industries</span>
+                      <span className="rounded-full bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium text-cyan-400 border border-cyan-500/20">
+                        {liveIndustries.length > 0 ? liveIndustries.length : industries.length}
+                      </span>
+                    </span>
+                    <ChevronDown
+                      size={16}
+                      className={`transition-transform duration-200 text-cool ${
+                        mobileSection === "industries" ? "rotate-180 text-electric" : ""
+                      }`}
+                    />
                   </button>
                   <AnimatePresence>
                     {mobileSection === "industries" && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden pl-3 pb-2 space-y-1">
-                        {industries.map((i) => (
-                          <Link key={i.slug} href={`/industries/${i.slug}`} onClick={() => setMobile(false)} className="flex items-center gap-2 py-2 text-sm text-cool hover:text-white">
-                            <Icon name={i.icon} size={14} className="text-electric" />
-                            <span>{i.name}</span>
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden px-2 pb-2 pt-1 space-y-1"
+                      >
+                        {(liveIndustries.length > 0 ? liveIndustries : industries).map((ind) => (
+                          <Link
+                            key={ind.slug}
+                            href={`/industries/${ind.slug}`}
+                            onClick={() => setMobile(false)}
+                            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs text-cool hover:bg-white/5 hover:text-white transition"
+                          >
+                            <Icon name={ind.icon} size={14} className="text-electric shrink-0" />
+                            <span>{ind.name}</span>
                           </Link>
                         ))}
                       </motion.div>
@@ -230,38 +377,108 @@ export default function Navbar() {
                   </AnimatePresence>
                 </div>
 
-                <Link href="/pricing" onClick={() => setMobile(false)} className="block py-3 text-lg font-medium text-white/90 hover:text-white">
-                  Pricing
+                {/* Standalone Navigation Links */}
+                <Link
+                  href="/pricing"
+                  onClick={() => setMobile(false)}
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    path === "/pricing" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
+                  }`}
+                >
+                  <span>Pricing &amp; Plans</span>
+                  <span className="text-xs text-cool font-mono">USD</span>
                 </Link>
 
-                <Link href="/portfolio" onClick={() => setMobile(false)} className="block py-3 text-lg font-medium text-white/90 hover:text-white">
-                  Portfolio
+                <Link
+                  href="/marketplace"
+                  onClick={() => setMobile(false)}
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    path === "/marketplace" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
+                  }`}
+                >
+                  <span>Software Marketplace</span>
+                  <span className="text-xs text-cool font-mono">11+</span>
                 </Link>
 
-                <Link href="/resources" onClick={() => setMobile(false)} className="block py-3 text-lg font-medium text-white/90 hover:text-white">
-                  Resources
+                <Link
+                  href="/portfolio"
+                  onClick={() => setMobile(false)}
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    path === "/portfolio" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
+                  }`}
+                >
+                  <span>Portfolio &amp; Case Studies</span>
+                  <span className="text-xs text-cool font-mono">ROI</span>
                 </Link>
 
-                <Link href="/company" onClick={() => setMobile(false)} className="block py-3 text-lg font-medium text-white/90 hover:text-white">
-                  Company
+                <Link
+                  href="/resources"
+                  onClick={() => setMobile(false)}
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    path === "/resources" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
+                  }`}
+                >
+                  <span>Resources &amp; Blog</span>
+                  <span className="text-xs text-cool">Articles</span>
                 </Link>
 
-                <Link href="/careers" onClick={() => setMobile(false)} className="block py-3 text-lg font-medium text-white/90 hover:text-white flex items-center justify-between">
+                <Link
+                  href="/company"
+                  onClick={() => setMobile(false)}
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    path === "/company" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
+                  }`}
+                >
+                  <span>Company &amp; Leadership</span>
+                  <span className="text-xs text-cool">About</span>
+                </Link>
+
+                <Link
+                  href="/careers"
+                  onClick={() => setMobile(false)}
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    path === "/careers" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
+                  }`}
+                >
                   <span>Careers</span>
-                  <span className="text-xs font-mono font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">We&apos;re Hiring</span>
+                  <span className="text-[11px] font-mono font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                    We&apos;re Hiring
+                  </span>
                 </Link>
 
-                <Link href="/contact" onClick={() => setMobile(false)} className="block py-3 text-lg font-medium text-white/90 hover:text-white">
-                  Contact Sales
+                <Link
+                  href="/contact"
+                  onClick={() => setMobile(false)}
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition ${
+                    path === "/contact" ? "bg-electric/15 text-white font-semibold" : "text-white/85 hover:bg-white/5"
+                  }`}
+                >
+                  <span>Contact Sales</span>
+                  <span className="text-xs text-electric">Helpdesk</span>
                 </Link>
-              </div>
+              </nav>
 
-              <div className="mt-8 flex flex-col gap-3">
-                <Link href="/demo" onClick={() => setMobile(false)} className="btn btn-primary h-12 w-full justify-center text-sm font-semibold">
-                  Get Started / Request Demo
+              {/* Bottom CTAs */}
+              <div className="pt-2 pb-6 space-y-2.5">
+                <Link
+                  href="/demo"
+                  onClick={() => setMobile(false)}
+                  className="btn btn-primary h-12 w-full justify-center text-sm font-bold shadow-lg shadow-blue-600/30"
+                >
+                  Book an Interactive Product Demo
                 </Link>
+                <Link
+                  href="/contact"
+                  onClick={() => setMobile(false)}
+                  className="btn btn-secondary h-11 w-full justify-center text-xs font-semibold text-white/90"
+                >
+                  Talk to a Solutions Architect
+                </Link>
+                <div className="pt-2 text-center text-[11px] text-cool/60">
+                  DEZORYN TECHNOLOGY PRIVATE LIMITED • Global SaaS
+                </div>
               </div>
-            </nav>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

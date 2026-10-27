@@ -75,7 +75,13 @@ export default function PricingCard({
 
   const price = getPlanPrice(plan, cycle);
   const q = product ? `?product=${product}&plan=${plan.id}` : `?plan=${plan.id}`;
-  const isMostPopular = !!plan.highlighted;
+  const isMostPopular = Boolean(
+    plan.highlighted ||
+    plan.highlight ||
+    plan.isHighlighted ||
+    plan.id === "business" ||
+    plan.slug === "business"
+  );
 
   return (
     <div
@@ -125,15 +131,35 @@ export default function PricingCard({
           }}
         />
 
-        {/* Floating "Most Popular" Badge (Layered 3D Z-Depth: 35px) */}
+        {/* Floating "Most Popular" Badge (Centered with 3D Z-Depth: 35px & Shimmer Animation) */}
         {isMostPopular && (
-          <div
-            style={{ transform: "translateZ(35px)" }}
-            className="absolute -top-3.5 left-1/2 -translate-x-1/2"
-          >
-            <div className="flex items-center gap-1.5 rounded-full border border-sky-400/50 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 px-3.5 py-1 text-[10.5px] font-bold uppercase tracking-wider text-white shadow-[0_0_20px_rgba(59,130,246,0.6)] backdrop-blur-md">
-              <Sparkles size={11} aria-hidden="true" className="text-yellow-300" />
-              <span>Most Popular</span>
+          <div className="absolute -top-3.5 inset-x-0 z-30 flex justify-center pointer-events-none">
+            <div
+              style={{ transform: "translateZ(35px)" }}
+              className="pointer-events-auto"
+            >
+              <div className="relative overflow-hidden flex items-center gap-1.5 rounded-full border border-sky-400/80 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 px-3.5 py-1 text-[10.5px] font-extrabold uppercase tracking-wider text-white shadow-[0_0_22px_rgba(59,130,246,0.7),0_4px_12px_rgba(0,0,0,0.5)] backdrop-blur-md">
+                {/* Continuous Shimmer Sweep Animation */}
+                <motion.span
+                  className="pointer-events-none absolute inset-0 z-10 w-full"
+                  animate={{
+                    x: ["-100%", "200%"],
+                  }}
+                  transition={{
+                    duration: 2.2,
+                    repeat: Infinity,
+                    repeatDelay: 1.0,
+                    ease: "easeInOut",
+                  }}
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent)",
+                  }}
+                  aria-hidden="true"
+                />
+                <Sparkles size={11} aria-hidden="true" className="text-yellow-300 shrink-0 animate-pulse" />
+                <span className="relative z-20 font-black">Most Popular</span>
+              </div>
             </div>
           </div>
         )}

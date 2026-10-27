@@ -43,14 +43,14 @@ export default function AnimatedHeroTitle({
 
   return (
     <motion.span
-      className="relative inline-block leading-[1.08] tracking-tight overflow-visible select-none"
+      className="relative inline-block leading-[1.18] sm:leading-[1.08] tracking-tight overflow-visible select-none"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
       {/* ─── CONTINUOUS METALLIC LIGHT SHEEN SWEEP (Sweeps across the heading every 4.5s) ─── */}
       <motion.span
-        className="pointer-events-none absolute -inset-y-2 -inset-x-6 z-20 overflow-hidden"
+        className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
         aria-hidden="true"
       >
         <motion.span
@@ -80,11 +80,11 @@ export default function AnimatedHeroTitle({
             <motion.span
               key={index}
               variants={wordVariants}
-              className="relative inline-block mx-1.5 align-baseline"
+              className="relative inline-block mx-1 sm:mx-1.5 align-baseline my-0.5"
             >
               {/* Radial Sapphire / Globe Glow Aura behind "Businesses" */}
               <motion.span
-                className="pointer-events-none absolute -inset-x-3 -inset-y-2 rounded-2xl bg-gradient-to-r from-[#1d4ed8]/40 via-[#3b82f6]/45 to-[#60a5fa]/40 blur-xl"
+                className="pointer-events-none absolute -inset-x-2.5 -inset-y-1.5 rounded-2xl bg-gradient-to-r from-[#1d4ed8]/40 via-[#3b82f6]/45 to-[#60a5fa]/40 blur-xl"
                 animate={{
                   opacity: [0.55, 0.95, 0.55],
                   scale: [0.96, 1.05, 0.96],
@@ -124,13 +124,13 @@ export default function AnimatedHeroTitle({
 
               {/* Dynamic Laser Underline Beam Matching 3D Globe Halo */}
               <motion.span
-                className="absolute left-0 -bottom-1.5 right-0 h-[2.5px] rounded-full overflow-hidden bg-white/10"
+                className="absolute left-0 bottom-0 sm:-bottom-1 right-0 h-[3px] rounded-full overflow-hidden bg-white/15 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
                 aria-hidden="true"
               >
                 <motion.span
-                  className="absolute inset-y-0 w-1/2 rounded-full bg-gradient-to-r from-transparent via-[#3b82f6] to-transparent shadow-[0_0_14px_#3b82f6]"
+                  className="absolute inset-y-0 w-3/5 rounded-full bg-gradient-to-r from-transparent via-[#60a5fa] to-transparent shadow-[0_0_16px_#38bdf8]"
                   animate={{
-                    x: ["-100%", "200%"],
+                    x: ["-100%", "220%"],
                   }}
                   transition={{
                     duration: 2.2,
@@ -153,7 +153,7 @@ export default function AnimatedHeroTitle({
           <motion.span
             key={index}
             variants={wordVariants}
-            className="inline-block mr-[0.28em] text-white transition-colors duration-300 hover:text-sky-200"
+            className="inline-block mr-[0.24em] text-white transition-colors duration-300 hover:text-sky-200"
           >
             {hasDot ? (
               <>

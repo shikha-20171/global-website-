@@ -36,13 +36,14 @@ export default function PricingView({ productSlug }) {
 
         if (planResult.status === "fulfilled" && planResult.value) {
           const tiers =
+            planResult.value.plans ||
             planResult.value.productSpecificTiers ||
             planResult.value.defaultTiers ||
             (Array.isArray(planResult.value) ? planResult.value : []);
           if (Array.isArray(tiers) && tiers.length > 0) {
             prods = prods.map((prod) => {
               const matchingPlans = tiers.filter(
-                (t) => t.productId === prod.id || t.productSlug === prod.slug
+                (t) => t.productId === prod.id || t.productSlug === prod.slug || t.product?.slug === prod.slug
               );
               if (matchingPlans.length > 0) {
                 return {
@@ -81,11 +82,13 @@ export default function PricingView({ productSlug }) {
   }, []);
 
   const product = liveProducts.find((p) => p.slug === slug) || liveProducts[0] || products[0];
-  const plans = Array.isArray(product?.plans) && product.plans.length > 0 ? product.plans : (products.find((p) => p.slug === slug)?.plans || []);
+  const plans = (Array.isArray(product?.plans) && product.plans.length > 0)
+    ? product.plans
+    : ((products.find((p) => p.slug === slug)?.plans) || products[0]?.plans || []);
 
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
-  const defaultPopularIdx = plans.findIndex((p) => p.highlighted || p.highlight);
+  const defaultPopularIdx = plans.findIndex((p) => p.highlighted || p.highlight || p.isHighlighted || p.id === "business" || p.slug === "business");
   const activePlanIdx = hoveredIdx !== null ? hoveredIdx : (defaultPopularIdx !== -1 ? defaultPopularIdx : 1);
 
   return (
@@ -112,11 +115,11 @@ export default function PricingView({ productSlug }) {
           onMouseLeave={() => setHoveredIdx(null)}
         >
           {plans.map((pl, i) => (
-            <Reveal key={pl.id} delay={i * 0.05} className="h-full">
+            <div key={pl.id || i} className="h-full">
               <PricingCard
                 plan={pl}
                 cycle={cycle}
-                product={product.slug}
+                product={product?.slug}
                 index={i}
                 isActive={i === activePlanIdx}
                 isHoveredDirectly={i === hoveredIdx}
@@ -124,7 +127,7 @@ export default function PricingView({ productSlug }) {
                 onHover={() => setHoveredIdx(i)}
                 onLeave={() => {}}
               />
-            </Reveal>
+            </div>
           ))}
         </div>
         <p className="mt-4 text-center text-xs text-cool">All plans billed in USD ($) with transparent enterprise invoicing.</p>

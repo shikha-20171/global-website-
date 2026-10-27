@@ -152,7 +152,7 @@ export default async function Home() {
               <span>SOFTWARE PRODUCTS &amp; ENTERPRISE PLATFORMS</span>
             </div>
 
-            <h1 className="h-display text-[2.6rem] sm:text-6xl xl:text-7xl">
+            <h1 className="h-display text-[2.25rem] xs:text-[2.5rem] sm:text-6xl xl:text-7xl">
               <AnimatedHeroTitle text={heroHeadline} />
             </h1>
 
