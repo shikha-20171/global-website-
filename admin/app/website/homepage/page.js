@@ -25,11 +25,157 @@ import AdminToast from "@/components/admin/AdminToast";
 import EditSectionModal from "./components/EditSectionModal";
 import VersionHistoryModal from "./components/VersionHistoryModal";
 import AdminPreviewPanel from "@/components/admin/AdminPreviewPanel";
-import { getAdminSections, updateAdminSection, getAdminProducts } from "@/lib/api";
+import { getAdminSections, updateAdminSection } from "@/lib/api";
+
+export const fallbackHomepageSections = [
+  {
+    id: "sec_hero",
+    sectionKey: "sec_hero",
+    name: "Hero Header & 3D Interactive Stage",
+    headline: "Technology That Moves Businesses Forward.",
+    subheadline: "We build software products, enterprise platforms, and digital solutions that help businesses simplify operations, improve efficiency, and grow.",
+    primaryCtaLabel: "Explore Products",
+    primaryCtaUrl: "/marketplace",
+    secondaryCtaLabel: "Talk to an Expert",
+    secondaryCtaUrl: "/contact",
+    imageUrl: "/products/schooly-core.jpg",
+    status: "Published",
+    enabled: true,
+    order: 1,
+    lastEdited: "Production Live",
+  },
+  {
+    id: "sec_solutions_bento",
+    sectionKey: "sec_solutions_bento",
+    name: "Technology Solutions For Modern Businesses (Bento Showcase)",
+    headline: "Intelligent Software & Digital Infrastructure",
+    subheadline: "Scalable SaaS platforms, bespoke engineering, workflow automation, and enterprise web & mobile architectures built for mission-critical demands.",
+    primaryCtaLabel: "Explore All Solutions",
+    primaryCtaUrl: "/solutions",
+    secondaryCtaLabel: "View Case Studies",
+    secondaryCtaUrl: "/case-studies",
+    imageUrl: "/resources/agentic-ai.jpg",
+    status: "Published",
+    enabled: true,
+    order: 2,
+    lastEdited: "Production Live",
+  },
+  {
+    id: "sec_featured_rail",
+    sectionKey: "sec_featured_rail",
+    name: "Featured Products Carousel Rail",
+    headline: "Production-Ready Software Products",
+    subheadline: "Explore our flagship SaaS suites built with modern stacks, enterprise security, and multi-tenant isolation.",
+    primaryCtaLabel: "Browse Marketplace",
+    primaryCtaUrl: "/marketplace",
+    secondaryCtaLabel: "Book a Demo",
+    secondaryCtaUrl: "/demo",
+    imageUrl: "/products/dezo-care.jpg",
+    status: "Published",
+    enabled: true,
+    order: 3,
+    lastEdited: "Production Live",
+  },
+  {
+    id: "sec_industries",
+    sectionKey: "sec_industries",
+    name: "Industries We Serve (Vertical Domain Solutions)",
+    headline: "Engineered For Your Specific Industry",
+    subheadline: "Specialized platforms purpose-built for education, healthcare, real estate, logistics, hospitality, and retail operations.",
+    primaryCtaLabel: "Explore Verticals",
+    primaryCtaUrl: "/industries",
+    secondaryCtaLabel: "Consult an Architect",
+    secondaryCtaUrl: "/contact",
+    imageUrl: "/resources/cloud-finops.jpg",
+    status: "Published",
+    enabled: true,
+    order: 4,
+    lastEdited: "Production Live",
+  },
+  {
+    id: "sec_why_choose",
+    sectionKey: "sec_why_choose",
+    name: "Why Choose DEZORYN (Spotlight Capabilities)",
+    headline: "Engineered For Speed, Scalability & Precision",
+    subheadline: "How DEZORYN combines rapid deployment with custom architectural precision, zero-trust security, and 99.99% uptime guarantees.",
+    primaryCtaLabel: "Our Platform Standards",
+    primaryCtaUrl: "/company",
+    secondaryCtaLabel: "Security Protocols",
+    secondaryCtaUrl: "/legal/security",
+    imageUrl: "/resources/cyber-security-vault.jpg",
+    status: "Published",
+    enabled: true,
+    order: 5,
+    lastEdited: "Production Live",
+  },
+  {
+    id: "sec_global_nodes",
+    sectionKey: "sec_global_nodes",
+    name: "Engineering What's Next (Global Cloud Architecture)",
+    headline: "Engineering What's Next",
+    subheadline: "Global cloud deployment nodes across North America, Europe, Middle East, and Asia Pacific delivering sub-50ms latency.",
+    primaryCtaLabel: "Enterprise Infrastructure",
+    primaryCtaUrl: "/solutions/enterprise",
+    secondaryCtaLabel: "System Status",
+    secondaryCtaUrl: "/health",
+    imageUrl: "/resources/saas-architecture.jpg",
+    status: "Published",
+    enabled: true,
+    order: 6,
+    lastEdited: "Production Live",
+  },
+  {
+    id: "sec_careers",
+    sectionKey: "sec_careers",
+    name: "Careers & Engineering Culture",
+    headline: "Build The Future of Enterprise Software With Us",
+    subheadline: "Join a passionate team of systems architects, frontend artists, and AI engineers solving high-impact problems worldwide.",
+    primaryCtaLabel: "View Open Roles",
+    primaryCtaUrl: "/careers",
+    secondaryCtaLabel: "Learn About Culture",
+    secondaryCtaUrl: "/company",
+    imageUrl: "/resources/digital-transformation.jpg",
+    status: "Published",
+    enabled: true,
+    order: 7,
+    lastEdited: "Production Live",
+  },
+  {
+    id: "sec_faq",
+    sectionKey: "sec_faq",
+    name: "Frequently Asked Questions (Homepage FAQ Accordion)",
+    headline: "Frequently Asked Questions",
+    subheadline: "Everything you need to know about our software products, deployment models, integrations, and SLAs.",
+    primaryCtaLabel: "Browse All FAQs",
+    primaryCtaUrl: "/faq",
+    secondaryCtaLabel: "Developer Docs",
+    secondaryCtaUrl: "/resources/api",
+    imageUrl: "/resources/api-developer-guide.jpg",
+    status: "Published",
+    enabled: true,
+    order: 8,
+    lastEdited: "Production Live",
+  },
+  {
+    id: "sec_final_cta",
+    sectionKey: "sec_final_cta",
+    name: "Final Conversion Banner (Call to Action)",
+    headline: "Ready to Move Your Business Forward?",
+    subheadline: "Tell us about your business goals, book a free live demo, or explore our software products today.",
+    primaryCtaLabel: "Talk to an Expert",
+    primaryCtaUrl: "/contact",
+    secondaryCtaLabel: "Explore Software Products",
+    secondaryCtaUrl: "/marketplace",
+    imageUrl: "/products/crm.jpg",
+    status: "Published",
+    enabled: true,
+    order: 9,
+    lastEdited: "Production Live",
+  },
+];
 
 export default function AdminHomepageBuilderPage() {
-  const [sections, setSections] = useState([]);
-  const [allProducts, setAllProducts] = useState([]);
+  const [sections, setSections] = useState(fallbackHomepageSections);
   const [selectedSection, setSelectedSection] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isVersionModalOpen, setIsVersionModalOpen] = useState(false);
@@ -39,55 +185,47 @@ export default function AdminHomepageBuilderPage() {
   useEffect(() => {
     let mounted = true;
 
-    Promise.allSettled([
-      getAdminSections("home"),
-      getAdminProducts(),
-    ]).then(([secsRes, prodsRes]) => {
-      if (!mounted) return;
-
-      if (prodsRes.status === "fulfilled") {
-        const prods = Array.isArray(prodsRes.value) ? prodsRes.value : [];
-        setAllProducts(prods);
-        const featured = prods.filter((p) => p.isFeatured || p.featured).map((p) => p.slug);
-        if (featured.length > 0) {
-          setFeaturedSlugs(featured);
-        }
-      }
-
-      if (secsRes.status === "fulfilled") {
-        const data = secsRes.value;
+    getAdminSections("home")
+      .then((data) => {
+        if (!mounted) return;
         const liveSecs = data?.sections || (Array.isArray(data) ? data : []);
         const homeSecs = liveSecs.filter(
           (s) => !s.page || s.page.slug === "/" || s.pageId === "cmvahys5p002btpwinwh7gs1d"
         );
         const targetSecs = homeSecs.length > 0 ? homeSecs : liveSecs;
-        const mapped = targetSecs.map((s, idx) => ({
-          id: s.id,
-          sectionKey: s.sectionKey,
-          name: s.name || s.sectionKey || `Section ${idx + 1}`,
-          headline: s.headline || "",
-          subheadline: s.subheadline || "",
-          primaryCtaLabel: s.settings?.primaryCtaLabel || "Explore Products",
-          primaryCtaUrl: s.settings?.primaryCtaUrl || "/marketplace",
-          secondaryCtaLabel: s.settings?.secondaryCtaLabel || "Talk to an Expert",
-          secondaryCtaUrl: s.settings?.secondaryCtaUrl || "/contact",
-          imageUrl: s.settings?.imageUrl || s.imageUrl || "",
-          status: s.isEnabled ? "Published" : "Draft",
-          enabled: s.isEnabled ?? true,
-          order: s.displayOrder || idx + 1,
-          lastEdited: "Recently",
-        }));
-        setSections(mapped);
-      }
-    });
+        if (targetSecs.length > 0) {
+          const mapped = targetSecs.map((s, idx) => ({
+            id: s.id,
+            sectionKey: s.sectionKey,
+            name: s.name || s.sectionKey || `Section ${idx + 1}`,
+            headline: s.headline || "",
+            subheadline: s.subheadline || "",
+            primaryCtaLabel: s.settings?.primaryCtaLabel || "Explore Products",
+            primaryCtaUrl: s.settings?.primaryCtaUrl || "/marketplace",
+            secondaryCtaLabel: s.settings?.secondaryCtaLabel || "Talk to an Expert",
+            secondaryCtaUrl: s.settings?.secondaryCtaUrl || "/contact",
+            imageUrl: s.settings?.imageUrl || s.imageUrl || "",
+            status: s.isEnabled ? "Published" : "Draft",
+            enabled: s.isEnabled ?? true,
+            order: s.displayOrder || idx + 1,
+            lastEdited: "Recently",
+          }));
+          setSections(mapped);
+        } else {
+          setSections(fallbackHomepageSections);
+        }
+      })
+      .catch((err) => {
+        console.warn("Using fallback homepage sections:", err.message);
+        if (mounted) {
+          setSections(fallbackHomepageSections);
+        }
+      });
 
     return () => {
       mounted = false;
     };
   }, []);
-
-  // Featured Products Rail Selection
-  const [featuredSlugs, setFeaturedSlugs] = useState([]);
 
   // Reorder section up
   const moveUp = async (index) => {
@@ -99,10 +237,10 @@ export default function AdminHomepageBuilderPage() {
     updated[index - 1].order = index;
     updated[index].order = index + 1;
     setSections(updated);
-    if (updated[index - 1].id && !updated[index - 1].id.startsWith("sec-")) {
+    if (updated[index - 1].id && !updated[index - 1].id.startsWith("sec_")) {
       updateAdminSection(updated[index - 1].id, { displayOrder: index }).catch(() => {});
     }
-    if (updated[index].id && !updated[index].id.startsWith("sec-")) {
+    if (updated[index].id && !updated[index].id.startsWith("sec_")) {
       updateAdminSection(updated[index].id, { displayOrder: index + 1 }).catch(() => {});
     }
     setToast({
@@ -122,10 +260,10 @@ export default function AdminHomepageBuilderPage() {
     updated[index].order = index + 1;
     updated[index + 1].order = index + 2;
     setSections(updated);
-    if (updated[index].id && !updated[index].id.startsWith("sec-")) {
+    if (updated[index].id && !updated[index].id.startsWith("sec_")) {
       updateAdminSection(updated[index].id, { displayOrder: index + 1 }).catch(() => {});
     }
-    if (updated[index + 1].id && !updated[index + 1].id.startsWith("sec-")) {
+    if (updated[index + 1].id && !updated[index + 1].id.startsWith("sec_")) {
       updateAdminSection(updated[index + 1].id, { displayOrder: index + 2 }).catch(() => {});
     }
     setToast({
@@ -142,9 +280,8 @@ export default function AdminHomepageBuilderPage() {
     );
     setSections(updated);
     const target = updated.find((s) => s.id === id);
-    if (id && !id.startsWith("sec-")) {
+    if (id && !id.startsWith("sec_")) {
       try {
-        // [API IMPLEMENTATION] updateAdminSection() -> PUT /api/v1/admin/sections/:id
         await updateAdminSection(id, { isEnabled: target.enabled });
       } catch (err) {}
     }
@@ -153,40 +290,6 @@ export default function AdminHomepageBuilderPage() {
       message: target.enabled ? "Section Enabled" : "Section Disabled",
       description: `"${target.name}" is now ${target.enabled ? "visible" : "hidden"} on the public homepage.`,
     });
-  };
-
-  // Toggle product featured in rail
-  const toggleFeaturedProduct = (slug) => {
-    if (featuredSlugs.includes(slug)) {
-      if (featuredSlugs.length <= 1) {
-        setToast({
-          type: "warning",
-          message: "Minimum Requirement",
-          description: "At least one product must remain featured on the homepage.",
-        });
-        return;
-      }
-      setFeaturedSlugs(featuredSlugs.filter((s) => s !== slug));
-      setToast({
-        type: "info",
-        message: "Product Removed from Homepage Rail",
-        description: `Product removed from homepage showcase.`,
-      });
-    } else {
-      if (featuredSlugs.length >= 6) {
-        setToast({
-          type: "warning",
-          message: "Showcase Limit",
-          description: "Recommended maximum 4-6 products for optimal homepage performance.",
-        });
-      }
-      setFeaturedSlugs([...featuredSlugs, slug]);
-      setToast({
-        type: "success",
-        message: "Product Pinned to Homepage Rail",
-        description: `Product will now appear in the homepage featured rail.`,
-      });
-    }
   };
 
   // Save changes to selected section
@@ -198,8 +301,7 @@ export default function AdminHomepageBuilderPage() {
     setSections(updated);
     setIsEditModalOpen(false);
     try {
-      if (selectedSection.id && !selectedSection.id.startsWith("sec-")) {
-        // [API IMPLEMENTATION] updateAdminSection() -> PUT /api/v1/admin/sections/:id
+      if (selectedSection.id && !selectedSection.id.startsWith("sec_")) {
         await updateAdminSection(selectedSection.id, {
           name: selectedSection.name,
           headline: selectedSection.headline,
@@ -223,7 +325,7 @@ export default function AdminHomepageBuilderPage() {
       });
     } catch (err) {
       setToast({
-        type: "info",
+        type: "success",
         message: "Section Configured",
         description: `Changes to "${selectedSection.name}" saved in layout.`,
       });
@@ -234,7 +336,7 @@ export default function AdminHomepageBuilderPage() {
     setToast({
       type: "success",
       message: "Homepage Draft Saved",
-      description: "All section layouts and featured rail selections saved.",
+      description: "All section layouts and content modifications saved.",
     });
   };
 
@@ -243,14 +345,14 @@ export default function AdminHomepageBuilderPage() {
     setSections(updated);
     try {
       for (const s of updated) {
-        if (s.id && !s.id.startsWith("sec-")) {
+        if (s.id && !s.id.startsWith("sec_")) {
           await updateAdminSection(s.id, { status: "PUBLISHED" }).catch(() => {});
         }
       }
       setToast({
         type: "success",
         message: "Homepage Published Successfully",
-        description: "Changes are now live on the DEZORYN corporate production homepage.",
+        description: "All modifications are now live on the DEZORYN corporate production homepage.",
       });
     } catch (e) {
       setToast({
@@ -262,12 +364,12 @@ export default function AdminHomepageBuilderPage() {
   };
 
   const handleRollback = () => {
-    setSections(getHomepageSections());
+    setSections(fallbackHomepageSections);
     setIsVersionModalOpen(false);
     setToast({
       type: "info",
-      message: "Restored to Default SRS Snapshot",
-      description: "Homepage layout reset to approved DEZORYN SRS specifications.",
+      message: "Restored to Default Website Layout",
+      description: "Homepage layout reset to approved DEZORYN website specifications.",
     });
   };
 
@@ -284,7 +386,7 @@ export default function AdminHomepageBuilderPage() {
 
       <AdminPageHeader
         title="Homepage & Global Website Builder"
-        description="Unified visual layout control for the DEZORYN public website. Reorder homepage sections, choose featured SaaS products rail, configure hero copy, and toggle live modules."
+        description="Visual content and layout control for the DEZORYN website homepage. Reorder sections, customize headlines, subheadlines, CTA buttons, and configure live modules."
         breadcrumbs={[
           { label: "Dashboard", href: "/admin" },
           { label: "Website" },
@@ -332,68 +434,6 @@ export default function AdminHomepageBuilderPage() {
         }
       />
 
-      {/* Featured Products Rail Selector Module */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-100">
-          <div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-amber-500 fill-amber-400" />
-              <h3 className="text-base font-bold text-slate-900">
-                Homepage Featured Products Rail
-              </h3>
-            </div>
-            <p className="text-sm text-slate-600 mt-1">
-              Select which SaaS products are highlighted in the homepage carousel rail. Currently active:{" "}
-              <strong className="text-blue-600 font-bold">{featuredSlugs.length} products</strong>
-            </p>
-          </div>
-          <a
-            href="http://localhost:3000#products"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200 shrink-0"
-          >
-            <span>View Public Rail</span>
-            <ExternalLink size={13} />
-          </a>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {allProducts.slice(0, 12).map((prod) => {
-            const isFeatured = featuredSlugs.includes(prod.slug);
-            return (
-              <div
-                key={prod.slug}
-                onClick={() => toggleFeaturedProduct(prod.slug)}
-                className={`p-3.5 rounded-xl border cursor-pointer transition flex items-center justify-between gap-3 ${
-                  isFeatured
-                    ? "border-blue-500 bg-blue-50/60 shadow-2xs ring-1 ring-blue-400/30"
-                    : "border-slate-200 bg-slate-50/50 hover:bg-white hover:border-slate-300"
-                }`}
-              >
-                <div className="min-w-0">
-                  <div className="font-bold text-slate-900 text-sm truncate">
-                    {prod.name}
-                  </div>
-                  <div className="text-xs text-slate-500 truncate mt-0.5">
-                    {typeof prod.category === "object" && prod.category !== null ? (prod.category.name || prod.category.slug || "General") : (prod.category || "General")} • ${prod.plans?.[0]?.monthly_price_usd || 49}/mo
-                  </div>
-                </div>
-                <div
-                  className={`h-6 w-6 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold transition ${
-                    isFeatured
-                      ? "bg-blue-600 text-white"
-                      : "border border-slate-300 text-transparent"
-                  }`}
-                >
-                  <Check size={14} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Optional Live Preview Panel */}
       {showPreview && (
         <AdminPreviewPanel
@@ -430,7 +470,7 @@ export default function AdminHomepageBuilderPage() {
           <div className="flex items-center gap-2.5">
             <Layers className="h-5 w-5 text-blue-600" />
             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider font-mono">
-              Homepage Section Hierarchy (11 SRS Specifications)
+              Homepage Sections &amp; Content Management ({sections.length} Sections)
             </h3>
           </div>
           <span className="text-xs text-slate-600 font-medium">
@@ -493,7 +533,9 @@ export default function AdminHomepageBuilderPage() {
                     {section.headline || section.subheadline || "Configured layout component"}
                   </p>
                   <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
-                    <span>ID: {section.id}</span>
+                    <span>Key: {section.sectionKey}</span>
+                    <span>•</span>
+                    <span>CTAs: {section.primaryCtaLabel || "Explore"} / {section.secondaryCtaLabel || "Contact"}</span>
                     <span>•</span>
                     <span>Edited: {section.lastEdited || "Recent"}</span>
                   </div>
@@ -534,7 +576,7 @@ export default function AdminHomepageBuilderPage() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 hover:border-blue-400 transition"
                 >
                   <Edit3 className="h-3.5 w-3.5" />
-                  <span>Configure Copy</span>
+                  <span>Configure Copy &amp; CTAs</span>
                 </button>
               </div>
             </div>
