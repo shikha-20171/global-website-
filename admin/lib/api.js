@@ -1,11 +1,25 @@
 import axios from "axios";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+export function getAdminApiBase() {
+  if (typeof window !== "undefined") {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const paramUrl = params.get("api_url") || params.get("backend");
+      if (paramUrl) {
+        localStorage.setItem("dezoryn_backend_url", paramUrl);
+        return paramUrl.replace(/\/+$/, "");
+      }
+      const custom = localStorage.getItem("dezoryn_backend_url");
+      if (custom) return custom.replace(/\/+$/, "");
+    } catch (_) {}
+  }
+  return (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001").replace(/\/+$/, "");
+}
 
 // Centralized Axios instance for DEZORYN TECHNOLOGY Admin Console
 export const adminApiClient = axios.create({
-  baseURL: API_BASE,
-  timeout: 15000,
+  baseURL: getAdminApiBase(),
+  timeout: 25000,
   withCredentials: true, // Send and receive HttpOnly session cookies
   headers: {
     "Content-Type": "application/json",
@@ -13,9 +27,13 @@ export const adminApiClient = axios.create({
   },
 });
 
-// Request interceptor to attach Bearer token if stored in sessionStorage/cookie
+// Request interceptor to dynamically update baseURL and attach Bearer token
 adminApiClient.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
+    const activeBase = getAdminApiBase();
+    if (activeBase && !config.url?.startsWith("http")) {
+      config.baseURL = activeBase;
+    }
     const token = sessionStorage.getItem("dezoryn_admin_token");
     if (token && !config.headers.Authorization) {
       config.headers.Authorization = `Bearer ${token}`;

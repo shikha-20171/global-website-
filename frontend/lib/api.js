@@ -18,6 +18,19 @@ import {
  *   attempting localhost connections that do not exist in serverless environments.
  */
 function getApiBaseUrl() {
+  if (typeof window !== "undefined") {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const paramUrl = params.get("api_url") || params.get("backend");
+      if (paramUrl) {
+        localStorage.setItem("dezoryn_backend_url", paramUrl);
+        return paramUrl.replace(/\/+$/, "");
+      }
+      const custom = localStorage.getItem("dezoryn_backend_url");
+      if (custom) return custom.replace(/\/+$/, "");
+    } catch (_) {}
+  }
+
   const envUrl = (
     process.env.BACKEND_INTERNAL_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
