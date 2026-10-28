@@ -112,3 +112,4 @@ export const fallbackSolutions = [
     relatedProducts: ["society-management", "schooly-core", "hrms-enterprise"],
   },
 ];
+

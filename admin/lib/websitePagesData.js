@@ -30,3 +30,4 @@ export const fallbackWebsitePages = [
   { id: "page_insights", slug: "/resources/insights", title: "Executive Whitepapers & Benchmark Reports", pageType: "Resources", template: "Research Vault", status: "Published" },
   { id: "page_login", slug: "/login", title: "Client Customer Portal Authentication", pageType: "Utility", template: "Auth Portal", status: "Published" },
 ];
+
