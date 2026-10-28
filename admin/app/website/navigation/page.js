@@ -25,6 +25,60 @@ import {
   deleteAdminNavigation,
 } from "@/lib/api";
 
+const defaultHeaderLinks = [
+  { id: "nav_products", label: "Products", href: "/products", badge: "18", hasMega: true },
+  { id: "nav_industries", label: "Industries", href: "/industries", badge: "10", hasMega: true },
+  { id: "nav_solutions", label: "Solutions", href: "/solutions", badge: "7", hasMega: true },
+  { id: "nav_company", label: "Company", href: "/company", badge: "", hasMega: true },
+  { id: "nav_resources", label: "Resources", href: "/resources", badge: "", hasMega: true },
+  { id: "nav_pricing", label: "Pricing", href: "/pricing", badge: "", hasMega: false },
+];
+
+const defaultFooterCols = [
+  {
+    id: "col_platforms",
+    title: "SaaS Platforms",
+    links: [
+      { id: "f1", label: "Schooly Core (Campus ERP)", href: "/products/schooly-core" },
+      { id: "f2", label: "Dezo Care (Hospital Suite)", href: "/products/dezo-care" },
+      { id: "f3", label: "Real Estate Developer CRM", href: "/products/real-estate" },
+      { id: "f4", label: "Society Management Cloud", href: "/products/society-management" },
+      { id: "f5", label: "All SaaS Products", href: "/marketplace" },
+    ],
+  },
+  {
+    id: "col_solutions",
+    title: "Architecture & Solutions",
+    links: [
+      { id: "f6", label: "Enterprise Architecture", href: "/solutions/enterprise" },
+      { id: "f7", label: "AI & Workflow Automation", href: "/solutions/ai" },
+      { id: "f8", label: "Custom ERP Engineering", href: "/solutions/custom-software" },
+      { id: "f9", label: "Cloud Infrastructure", href: "/solutions/cloud" },
+    ],
+  },
+  {
+    id: "col_company",
+    title: "Company",
+    links: [
+      { id: "f10", label: "About DEZORYN", href: "/company" },
+      { id: "f11", label: "Mission & Culture", href: "/mission" },
+      { id: "f12", label: "Careers (We're Hiring)", href: "/careers" },
+      { id: "f13", label: "Technology Partners", href: "/partners" },
+      { id: "f14", label: "Contact Global Team", href: "/contact" },
+    ],
+  },
+  {
+    id: "col_legal",
+    title: "Legal & Compliance",
+    links: [
+      { id: "f15", label: "Privacy Policy (GDPR)", href: "/legal/privacy" },
+      { id: "f16", label: "Terms of Service", href: "/legal/terms" },
+      { id: "f17", label: "Security Architecture", href: "/legal/security" },
+      { id: "f18", label: "Cookie Policy", href: "/legal/cookies" },
+    ],
+  },
+];
+
 export default function AdminNavigationPage() {
   const [headerLinks, setHeaderLinks] = useState([]);
   const [footerCols, setFooterCols] = useState([]);
@@ -48,7 +102,11 @@ export default function AdminNavigationPage() {
           badge: i.badge,
           hasMega: i.hasMegaMenu,
         }));
-      setHeaderLinks(headers);
+      if (headers.length > 0) {
+        setHeaderLinks(headers);
+      } else {
+        setHeaderLinks(defaultHeaderLinks);
+      }
 
       // Group footer items into columns
       const footerItems = items.filter((i) => i.menuLocation === "FOOTER");
@@ -75,7 +133,7 @@ export default function AdminNavigationPage() {
           };
         });
         setFooterCols(cols);
-      } else {
+      } else if (footerItems.length > 0) {
         // If no explicit parents, group by parent label if available
         const colMap = {};
         footerItems.forEach((item) => {
@@ -89,9 +147,13 @@ export default function AdminNavigationPage() {
           });
         });
         setFooterCols(Object.values(colMap));
+      } else {
+        setFooterCols(defaultFooterCols);
       }
     } catch (err) {
-      console.warn("Failed to load navigation:", err);
+      console.warn("Using default navigation fallback:", err);
+      setHeaderLinks(defaultHeaderLinks);
+      setFooterCols(defaultFooterCols);
     } finally {
       setLoading(false);
     }

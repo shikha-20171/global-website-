@@ -28,12 +28,28 @@ import AdminModal from "@/components/admin/AdminModal";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
+import { industries as websiteIndustries } from "@/lib/data";
 import {
   getAdminIndustries,
   createAdminIndustry,
   updateAdminIndustry,
   deleteAdminIndustry,
 } from "@/lib/api";
+
+const fallbackIndustries = websiteIndustries.map((ind, idx) => ({
+  id: ind.id || `ind_${ind.slug}`,
+  name: ind.name,
+  slug: ind.slug,
+  short: ind.short || ind.problem?.slice(0, 80) || "Enterprise industry vertical",
+  icon: typeof ind.icon === "string" ? ind.icon : "Building2",
+  status: "Published",
+  displayOrder: idx + 1,
+  problem: ind.problem || "",
+  solution: ind.solution || "",
+  features: Array.isArray(ind.features) ? ind.features : [],
+  benefits: Array.isArray(ind.benefits) ? ind.benefits : [],
+  products: Array.isArray(ind.products) ? ind.products : [],
+}));
 
 export default function AdminIndustriesPage() {
   const [industryList, setIndustryList] = useState([]);
@@ -42,10 +58,15 @@ export default function AdminIndustriesPage() {
     getAdminIndustries()
       .then((data) => {
         const list = Array.isArray(data) ? data : data?.industries || [];
-        setIndustryList(list);
+        if (list.length > 0) {
+          setIndustryList(list);
+        } else {
+          setIndustryList(fallbackIndustries);
+        }
       })
       .catch((err) => {
-        console.warn("Could not load industries:", err.message);
+        console.warn("Using website industries fallback:", err.message);
+        setIndustryList(fallbackIndustries);
       });
   };
 

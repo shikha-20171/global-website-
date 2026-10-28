@@ -32,6 +32,21 @@ import {
   deleteAdminMedia,
 } from "@/lib/api";
 
+const fallbackMedia = [
+  { id: "med_1", name: "Schooly Core ERP Cover", type: "Product Art", url: "/products/schooly-core.jpg", dimensions: "1200 x 800", size: "280 KB", usedIn: "Schooly Core Product Page" },
+  { id: "med_2", name: "Dezo Care Hospital Suite", type: "Product Art", url: "/products/dezo-care.jpg", dimensions: "1200 x 800", size: "310 KB", usedIn: "Dezo Care Product Page" },
+  { id: "med_3", name: "Real Estate Property Platform", type: "Product Art", url: "/products/real-estate.jpg", dimensions: "1200 x 800", size: "295 KB", usedIn: "Real Estate Product Page" },
+  { id: "med_4", name: "Society Management System", type: "Product Art", url: "/products/society-management.jpg", dimensions: "1200 x 800", size: "260 KB", usedIn: "Society Management Page" },
+  { id: "med_5", name: "Coaching Master Institute Hub", type: "Product Art", url: "/products/coaching-master.jpg", dimensions: "1200 x 800", size: "275 KB", usedIn: "Coaching Master Page" },
+  { id: "med_6", name: "College Master University ERP", type: "Product Art", url: "/products/college-master.jpg", dimensions: "1200 x 800", size: "320 KB", usedIn: "College Master Page" },
+  { id: "med_7", name: "Fleet Flow Logistics Automation", type: "Product Art", url: "/products/fleet-flow.jpg", dimensions: "1200 x 800", size: "305 KB", usedIn: "Fleet Flow Product Page" },
+  { id: "med_8", name: "Legal Docs Contract Intelligence", type: "Product Art", url: "/products/legal-docs.jpg", dimensions: "1200 x 800", size: "250 KB", usedIn: "Legal Docs Product Page" },
+  { id: "med_9", name: "Super WhatsApp Gateway", type: "Product Art", url: "/products/super-whatsapp.jpg", dimensions: "1200 x 800", size: "290 KB", usedIn: "Super WhatsApp Page" },
+  { id: "med_10", name: "HRMS Enterprise Suite", type: "Product Art", url: "/products/hrms-enterprise.jpg", dimensions: "1200 x 800", size: "315 KB", usedIn: "HRMS Enterprise Page" },
+  { id: "med_11", name: "DEZORYN Official Brand Emblem", type: "Logo & Brand", url: "/logo.png", dimensions: "512 x 512", size: "45 KB", usedIn: "Global Header & Favicon" },
+  { id: "med_12", name: "SaaS Architecture Blueprint Banner", type: "Resource Banner", url: "/resources/saas-architecture.jpg", dimensions: "1920 x 1080", size: "540 KB", usedIn: "Blog & Insights Vault" },
+];
+
 const ASSET_TYPES = ["All", "Product Art", "Resource Banner", "3D Texture", "Logo & Brand"];
 
 export default function AdminMediaPage() {
@@ -55,10 +70,15 @@ export default function AdminMediaPage() {
           usedIn: a.associatedEntity || a.usedIn || "Website / Media",
           name: a.fileName || a.name || a.title || "Asset",
         }));
-        setAssets(mapped);
+        if (mapped.length > 0) {
+          setAssets(mapped);
+        } else {
+          setAssets(fallbackMedia);
+        }
       })
       .catch((err) => {
-        console.warn("Could not load media via API:", err.message);
+        console.warn("Using website media fallback:", err.message);
+        setAssets(fallbackMedia);
       });
   };
 

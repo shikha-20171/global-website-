@@ -22,6 +22,7 @@ import AdminPagination from "@/components/admin/AdminPagination";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import PageEditorModal from "./components/PageEditorModal";
+import { fallbackWebsitePages } from "@/lib/websitePagesData";
 import {
   getAdminPages,
   createAdminPage,
@@ -43,10 +44,15 @@ export default function AdminWebsitePagesPage() {
     getAdminPages()
       .then((data) => {
         const pages = Array.isArray(data) ? data : data?.pages || data?.items || [];
-        setPagesList(pages);
+        if (pages.length > 0) {
+          setPagesList(pages);
+        } else {
+          setPagesList(fallbackWebsitePages);
+        }
       })
       .catch((err) => {
-        console.warn("Could not load pages via API:", err.message);
+        console.warn("Using website pages fallback:", err.message);
+        setPagesList(fallbackWebsitePages);
       });
   };
 

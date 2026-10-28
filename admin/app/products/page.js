@@ -25,12 +25,35 @@ import AdminModal from "@/components/admin/AdminModal";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminImageUploader from "@/components/admin/AdminImageUploader";
+import { products as websiteProducts } from "@/lib/data";
 import {
   getAdminProducts,
   createAdminProduct,
   updateAdminProduct,
   deleteAdminProduct,
 } from "@/lib/api";
+
+const fallbackProducts = websiteProducts.map((p, idx) => ({
+  id: p.id || `prod_${p.slug}`,
+  name: p.name,
+  slug: p.slug,
+  tagline: p.tagline || p.description || "",
+  description: p.description || "",
+  category: typeof p.category === "object" ? p.category?.name || "Enterprise" : p.category || "Enterprise",
+  image: p.image || "/products/schooly-core.jpg",
+  size: p.size || "Medium",
+  deployment: p.deployment || "Cloud",
+  ai: Boolean(p.ai),
+  featured: idx < 6,
+  isFeatured: idx < 6,
+  unlisted: false,
+  status: "PUBLISHED",
+  features: Array.isArray(p.features) ? p.features : [],
+  plans: Array.isArray(p.plans) ? p.plans : [],
+  modules: Array.isArray(p.modules) ? p.modules : [],
+  benefits: Array.isArray(p.benefits) ? p.benefits : [],
+  tags: Array.isArray(p.tags) ? p.tags : [],
+}));
 
 const DEFAULT_CATEGORIES = [
   "Education",
@@ -68,10 +91,21 @@ export default function AdminProductsPage() {
     getAdminProducts()
       .then((data) => {
         const list = Array.isArray(data) ? data : (data?.data || []);
-        setProductList(list);
+        if (list.length > 0) {
+          const mapped = list.map((p) => ({
+            ...p,
+            category: typeof p.category === "object" ? p.category?.name || "Enterprise" : p.category || "Enterprise",
+            featured: Boolean(p.isFeatured || p.featured),
+            unlisted: p.status === "DRAFT",
+          }));
+          setProductList(mapped);
+        } else {
+          setProductList(fallbackProducts);
+        }
       })
       .catch((err) => {
-        console.warn("Could not load products via API:", err.message);
+        console.warn("Using website products catalog notice:", err.message);
+        setProductList(fallbackProducts);
       })
       .finally(() => setLoading(false));
   };

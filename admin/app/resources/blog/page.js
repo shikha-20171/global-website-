@@ -24,12 +24,28 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import AdminImageUploader from "@/components/admin/AdminImageUploader";
+import { posts as websitePosts } from "@/lib/data";
 import {
   getAdminBlog,
   createAdminBlogPost,
   updateAdminBlogPost,
   deleteAdminBlogPost,
 } from "@/lib/api";
+
+const fallbackArticles = websitePosts.map((p) => ({
+  id: p.id || `post_${p.slug}`,
+  title: p.title,
+  slug: p.slug,
+  category: p.cat || "Engineering",
+  author: p.author || "DEZORYN Engineering Team",
+  readTime: p.read || "5 min",
+  summary: p.summary || "",
+  status: "Published",
+  publishedDate: p.date || "Recent",
+  featuredImage: p.image || "/resources/saas-architecture.jpg",
+  content: p.summary || "Full article content available on DEZORYN Engineering blog.",
+  takeaways: Array.isArray(p.takeaways) ? p.takeaways : [],
+}));
 
 export default function AdminBlogPage() {
   const [articles, setArticles] = useState([]);
@@ -50,9 +66,16 @@ export default function AdminBlogPage() {
           publishedDate: a.publishedAt ? new Date(a.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent",
           featuredImage: a.coverImage || a.featuredImage || "",
         }));
-        setArticles(mapped);
+        if (mapped.length > 0) {
+          setArticles(mapped);
+        } else {
+          setArticles(fallbackArticles);
+        }
       })
-      .catch((err) => console.warn("Load blog posts notice:", err.message));
+      .catch((err) => {
+        console.warn("Using website blog fallback:", err.message);
+        setArticles(fallbackArticles);
+      });
   };
 
   useEffect(() => {

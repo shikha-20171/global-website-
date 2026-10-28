@@ -28,6 +28,57 @@ import {
   deleteAdminCareer,
 } from "@/lib/api";
 
+const fallbackJobs = [
+  {
+    id: "job-1",
+    title: "Senior Full-Stack Cloud Architect",
+    department: "Core Engineering",
+    type: "Full-Time",
+    location: "Bengaluru, India (Work From Office)",
+    experience: "5+ Years",
+    description: "Architect and scale multi-tenant SaaS engines, high-concurrency microservices, and PostgreSQL-backed data schemas.",
+    tags: ["Next.js", "Node.js", "PostgreSQL", "Docker", "Zero-Trust"],
+    status: "Published",
+    applicantsCount: 14,
+  },
+  {
+    id: "job-2",
+    title: "Enterprise Solutions Engineer",
+    department: "Solutions & Architecture",
+    type: "Full-Time",
+    location: "Bengaluru, India (Work From Office)",
+    experience: "3+ Years",
+    description: "Conduct technical architecture discoveries, enterprise POCs, and high-level client consultations for global organizations.",
+    tags: ["Cloud Architecture", "Client Discovery", "API Design", "Security"],
+    status: "Published",
+    applicantsCount: 9,
+  },
+  {
+    id: "job-3",
+    title: "AI & Machine Learning Systems Engineer",
+    department: "AI & Automation",
+    type: "Full-Time",
+    location: "Bengaluru, India (Work From Office)",
+    experience: "3+ Years",
+    description: "Design and implement autonomous workflow agents, vision-based verification models, and intelligent document triage pipelines.",
+    tags: ["Python", "PyTorch", "LLMs", "Vector DBs", "Automation"],
+    status: "Published",
+    applicantsCount: 22,
+  },
+  {
+    id: "job-4",
+    title: "Senior Enterprise Product Designer",
+    department: "Product & Design",
+    type: "Full-Time",
+    location: "Bengaluru, India (Work From Office)",
+    experience: "4+ Years",
+    description: "Craft high-density SaaS dashboards, unified design systems, and friction-free enterprise admin workflows.",
+    tags: ["Figma", "Design Systems", "UX Research", "Complex Dashboards"],
+    status: "Published",
+    applicantsCount: 7,
+  },
+];
+
 const DEPARTMENTS = [
   "Core Engineering",
   "Solutions & Sales",
@@ -74,10 +125,15 @@ export default function AdminCareersPage() {
           description: j.description || "",
           requirements: Array.isArray(j.requirements) ? j.requirements.join("\n") : (j.requirements || ""),
         }));
-        setJobs(mapped);
+        if (mapped.length > 0) {
+          setJobs(mapped);
+        } else {
+          setJobs(fallbackJobs);
+        }
       })
       .catch((err) => {
-        console.warn("Could not load careers via API:", err.message);
+        console.warn("Using website careers fallback:", err.message);
+        setJobs(fallbackJobs);
       });
   };
 

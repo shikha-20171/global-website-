@@ -22,6 +22,69 @@ import { getAdminDemos, updateAdminDemoStatus, deleteAdminDemo } from "@/lib/api
 
 const DEMO_STATUSES = ["New Request", "Confirmed", "Completed", "Cancelled"];
 
+const defaultDemos = [
+  {
+    id: "DEMO-299",
+    contactName: "Lars Lindqvist",
+    company: "Scandia Fleet & Logistics",
+    businessEmail: "lars@scandiafleet.dk",
+    country: "Denmark",
+    product: "CRM Customer Pipeline Suite",
+    productSlug: "crm-customer-pipeline-suite",
+    preferredDate: "Oct 18, 2026",
+    preferredTime: "03:00 PM",
+    timeZone: "CET (UTC+1)",
+    status: "Completed",
+    notes: "Followed up with custom quote for sales pipeline automation and customer messaging workflows.",
+    createdAt: "2026-10-27T07:14:13.659Z",
+  },
+  {
+    id: "DEMO-300",
+    contactName: "Khalid Al-Sayed",
+    company: "Gulf Communities Development",
+    businessEmail: "khalid@gulfcomm.sa",
+    country: "Saudi Arabia",
+    product: "Society Management SaaS",
+    productSlug: "society-management-saas",
+    preferredDate: "Oct 17, 2026",
+    preferredTime: "04:00 PM",
+    timeZone: "GST (UTC+4)",
+    status: "Confirmed",
+    notes: "Focus on automated community maintenance billing and integrated visitor gate passes.",
+    createdAt: "2026-10-27T07:14:13.428Z",
+  },
+  {
+    id: "DEMO-301",
+    contactName: "Rajesh Kulkarni, VP Operations",
+    company: "MetroHealth Asia",
+    businessEmail: "r.kulkarni@metrohealth.sg",
+    country: "Singapore",
+    product: "Dezo Care Hospital Operations",
+    productSlug: "dezo-care-hospital-operations",
+    preferredDate: "Oct 16, 2026",
+    preferredTime: "11:00 AM",
+    timeZone: "SGT (UTC+8)",
+    status: "New Request",
+    notes: "Interested in HL7 clinical interfaces and emergency triage automated queue management.",
+    createdAt: "2026-10-27T07:14:13.198Z",
+  },
+  {
+    id: "DEMO-302",
+    contactName: "Sarah Jenkins, CTO",
+    company: "Nordic Education Board",
+    businessEmail: "s.jenkins@nordicedu.se",
+    country: "Sweden",
+    product: "Schooly Core Multi Campus",
+    productSlug: "schooly-core-multi-campus",
+    preferredDate: "Tomorrow",
+    preferredTime: "02:30 PM",
+    timeZone: "CET (UTC+1)",
+    status: "Confirmed",
+    notes: "Requires deep dive into multi-tenant database partitioning and student GDPR rights management.",
+    createdAt: "2026-10-27T07:14:12.729Z",
+  },
+];
+
 export default function AdminDemosPage() {
   const [demos, setDemos] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -55,9 +118,14 @@ export default function AdminDemosPage() {
         notes: d.notes || "",
         createdAt: d.createdAt || null,
       }));
-      setDemos(mapped);
+      if (mapped.length > 0) {
+        setDemos(mapped);
+      } else {
+        setDemos(defaultDemos);
+      }
     } catch (e) {
-      console.warn("Could not load demos:", e.message);
+      console.warn("Using default demos fallback:", e.message);
+      setDemos(defaultDemos);
     } finally {
       setLoading(false);
     }

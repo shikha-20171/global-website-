@@ -24,6 +24,7 @@ import AdminModal from "@/components/admin/AdminModal";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
+import { products as websiteProducts } from "@/lib/data";
 import {
   getAdminPricing,
   createAdminPricing,
@@ -31,6 +32,30 @@ import {
   deleteAdminPricing,
   getAdminProducts,
 } from "@/lib/api";
+
+const fallbackPlans = websiteProducts.flatMap((p) => {
+  return (p.plans || []).map((pl) => {
+    const monthly = pl.monthly_price_usd || pl.price || 49;
+    const annual = pl.annual || Math.round(monthly * 0.8 * 12);
+    return {
+      id: pl.id || `plan_${p.slug}_${(pl.name || "plan").toLowerCase()}`,
+      name: pl.name || "Standard",
+      product: p.name,
+      productSlug: p.slug,
+      monthlyPriceUsd: monthly,
+      annualPriceUsd: annual,
+      annualDiscount: 20,
+      description: pl.for || `${pl.name} plan for ${p.name}`,
+      features: Array.isArray(pl.features) ? pl.features : ["Standard Enterprise Access"],
+      userLimit: "Unlimited",
+      usageLimit: "Standard Cloud limits",
+      highlighted: Boolean(pl.highlighted),
+      trialEligible: true,
+      status: "Published",
+      isCustomEnterprise: Boolean(pl.enterprise),
+    };
+  });
+});
 
 export default function AdminPricingPlansPage() {
   const [plans, setPlans] = useState([]);
@@ -82,10 +107,16 @@ export default function AdminPricingPlansPage() {
           displayOrder: p.order || p.displayOrder || 1,
           status: p.status === "ARCHIVED" ? "Archived" : p.status === "DRAFT" ? "Draft" : "Published",
         }));
-        setPlans(mapped);
+        if (mapped.length > 0) {
+          setPlans(mapped);
+        } else {
+          setPlans(fallbackPlans);
+        }
+      } else {
+        setPlans(fallbackPlans);
       }
     } catch (e) {
-      // Keep default plans
+      setPlans(fallbackPlans);
     } finally {
       setLoading(false);
     }

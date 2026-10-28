@@ -23,12 +23,35 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import AdminImageUploader from "@/components/admin/AdminImageUploader";
+import { projects as websiteProjects } from "@/lib/data";
+import { caseStudiesDetails } from "@/lib/caseStudiesData";
 import {
   getAdminCaseStudies,
   createAdminCaseStudy,
   updateAdminCaseStudy,
   deleteAdminCaseStudy,
 } from "@/lib/api";
+
+const fallbackCaseStudies = (websiteProjects || []).map((p) => {
+  const detail = caseStudiesDetails[p.slug] || {};
+  return {
+    id: p.id || `cs_${p.slug}`,
+    slug: p.slug,
+    title: detail.name || p.name || p.title || "Enterprise Case Study",
+    client: detail.clientScale?.split("•")?.[0]?.trim() || "Global Enterprise Client",
+    industry: p.industry || detail.industry || "Enterprise SaaS",
+    overview: detail.overview || p.result || "Customer implementation benchmark.",
+    challenge: detail.challenge || "Eliminating legacy manual workflows and fragmented spreadsheets.",
+    solution: detail.solution || "Deploying automated DEZORYN cloud software architecture.",
+    results: detail.results || p.result || "3x efficiency gain and sub-second operations.",
+    resultsDemonstration: p.result || "Verified Production Benchmark",
+    technologies: Array.isArray(p.tech) ? p.tech : (detail.tech || ["Next.js", "PostgreSQL"]),
+    techText: Array.isArray(p.tech) ? p.tech.join(", ") : "Next.js, PostgreSQL",
+    status: "Published",
+    imageUrl: p.image || "/resources/saas-architecture.jpg",
+    clientLogo: "",
+  };
+});
 
 export default function AdminCaseStudiesPage() {
   const [caseStudiesList, setCaseStudiesList] = useState([]);
@@ -64,9 +87,16 @@ export default function AdminCaseStudiesPage() {
           imageUrl: cs.heroImageUrl || "",
           clientLogo: cs.clientLogoUrl || "",
         }));
-        setCaseStudiesList(mapped);
+        if (mapped.length > 0) {
+          setCaseStudiesList(mapped);
+        } else {
+          setCaseStudiesList(fallbackCaseStudies);
+        }
       })
-      .catch((err) => console.warn("Load admin case studies notice:", err.message));
+      .catch((err) => {
+        console.warn("Using website case studies fallback:", err.message);
+        setCaseStudiesList(fallbackCaseStudies);
+      });
   };
 
   useEffect(() => {

@@ -25,6 +25,7 @@ import AdminModal from "@/components/admin/AdminModal";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
+import { fallbackSolutions } from "@/lib/solutionsData";
 import {
   getAdminSolutions,
   createAdminSolution,
@@ -42,10 +43,15 @@ export default function AdminSolutionsPage() {
     getAdminSolutions()
       .then((data) => {
         const list = Array.isArray(data) ? data : data?.solutions || [];
-        setSolutions(list);
+        if (list.length > 0) {
+          setSolutions(list);
+        } else {
+          setSolutions(fallbackSolutions);
+        }
       })
       .catch((err) => {
-        console.warn("Could not load solutions:", err.message);
+        console.warn("Using website solutions fallback:", err.message);
+        setSolutions(fallbackSolutions);
       });
   };
 

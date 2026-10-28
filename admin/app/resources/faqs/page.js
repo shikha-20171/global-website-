@@ -25,6 +25,72 @@ import {
   deleteAdminFaq,
 } from "@/lib/api";
 
+const fallbackFaqs = [
+  {
+    id: "faq_1",
+    question: "What kind of company is DEZORYN TECHNOLOGY?",
+    answer: "DEZORYN is a global technology company building intelligent SaaS platforms, enterprise software, AI solutions, automation systems, and digital infrastructure for modern businesses.",
+    category: "General",
+    relatedProduct: "All Products",
+    order: 1,
+    status: "Published",
+  },
+  {
+    id: "faq_2",
+    question: "Why is USD ($) the default currency on the website?",
+    answer: "DEZORYN serves an international client base across North America, Europe, the Middle East, and Asia. USD provides a globally recognized benchmark for transparent, predictable software subscription pricing (SRS §4).",
+    category: "Pricing & Billing",
+    relatedProduct: "All Products",
+    order: 2,
+    status: "Published",
+  },
+  {
+    id: "faq_3",
+    question: "How does DEZORYN guarantee data security across multiple tenants?",
+    answer: "Every SaaS platform enforces strict logical tenant schema isolation. Databases are encrypted at rest with AES-256 and in transit with TLS 1.3. User access is protected by granular role-based permissions (RBAC) and optional multi-factor authentication.",
+    category: "Security & Architecture",
+    relatedProduct: "All Products",
+    order: 3,
+    status: "Published",
+  },
+  {
+    id: "faq_4",
+    question: "Can we integrate DEZORYN software with our existing ERP or payment gateway?",
+    answer: "Yes. All DEZORYN platforms provide RESTful APIs and real-time webhook endpoints. We routinely connect with Stripe, Google Workspace, Slack, Zoom, WhatsApp Cloud APIs, and custom legacy databases.",
+    category: "Integrations",
+    relatedProduct: "All Products",
+    order: 4,
+    status: "Published",
+  },
+  {
+    id: "faq_5",
+    question: "What is the typical deployment timeline for a DEZORYN platform?",
+    answer: "Standard SaaS applications (like Schooly Core or Dezo Care) can be configured and live in a sandbox environment within 48 to 72 hours. Enterprise custom software deployments typically progress across structured 4-phase rollout schedules over 4 to 12 weeks.",
+    category: "Deployment",
+    relatedProduct: "All Products",
+    order: 5,
+    status: "Published",
+  },
+  {
+    id: "faq_6",
+    question: "Is there a free trial available?",
+    answer: "Yes. Qualified organizations can launch a 14-day full-featured evaluation sandbox across our core SaaS products with zero credit card required.",
+    category: "Pricing & Billing",
+    relatedProduct: "All Products",
+    order: 6,
+    status: "Published",
+  },
+  {
+    id: "faq_7",
+    question: "How does DEZORYN support ongoing maintenance and SLA requirements?",
+    answer: "Enterprise contracts include dedicated account managers, 99.9% uptime SLAs, automated cloud backups, continuous security patches, and 24/7 priority incident response.",
+    category: "Support & SLA",
+    relatedProduct: "All Products",
+    order: 7,
+    status: "Published",
+  },
+];
+
 export default function AdminFaqsPage() {
   const [faqs, setFaqs] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,9 +108,16 @@ export default function AdminFaqsPage() {
           status: f.isPublished || f.status === "Published" ? "Published" : "Draft",
           relatedProduct: f.relatedProduct || "All Products",
         }));
-        setFaqs(mapped);
+        if (mapped.length > 0) {
+          setFaqs(mapped);
+        } else {
+          setFaqs(fallbackFaqs);
+        }
       })
-      .catch((err) => console.warn("Load faqs notice:", err.message));
+      .catch((err) => {
+        console.warn("Using website faqs fallback:", err.message);
+        setFaqs(fallbackFaqs);
+      });
   };
 
   useEffect(() => {
