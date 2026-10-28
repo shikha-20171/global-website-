@@ -115,22 +115,37 @@ export default function AdminDashboardPage() {
 
         if (!mounted) return;
 
+        let localLeads = [];
+        let localDemos = [];
+        if (typeof window !== "undefined") {
+          try {
+            localLeads = JSON.parse(localStorage.getItem("dezoryn_local_leads") || "[]");
+            localDemos = JSON.parse(localStorage.getItem("dezoryn_local_demos") || "[]");
+          } catch (_) {}
+        }
+
         if (dashRes.status === "fulfilled" && dashRes.value) {
           setMetrics(dashRes.value);
         }
 
         if (leadsRes.status === "fulfilled") {
           const items = leadsRes.value?.items || (Array.isArray(leadsRes.value) ? leadsRes.value : []);
-          if (items.length > 0) {
-            setLeads(items.slice(0, 4));
+          const merged = [...localLeads, ...items];
+          if (merged.length > 0) {
+            setLeads(merged.slice(0, 4));
           }
+        } else if (localLeads.length > 0) {
+          setLeads([...localLeads, ...fallbackDashboardLeads].slice(0, 4));
         }
 
         if (demosRes.status === "fulfilled") {
           const items = Array.isArray(demosRes.value) ? demosRes.value : (demosRes.value?.data || []);
-          if (items.length > 0) {
-            setDemos(items.slice(0, 4));
+          const merged = [...localDemos, ...items];
+          if (merged.length > 0) {
+            setDemos(merged.slice(0, 4));
           }
+        } else if (localDemos.length > 0) {
+          setDemos([...localDemos, ...fallbackDashboardDemos].slice(0, 4));
         }
       } catch (err) {
         console.warn("Dashboard data load error:", err);

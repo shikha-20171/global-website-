@@ -59,7 +59,7 @@ async function request(url, options = {}) {
     throw err;
   }
 
-  const timeoutMs = options.timeout || (isServer ? 3500 : 25000);
+  const timeoutMs = options.timeout || (isServer ? 3500 : 50000);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 

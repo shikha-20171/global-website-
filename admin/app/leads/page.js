@@ -111,6 +111,13 @@ export default function AdminLeadsPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const refreshLeads = () => {
+    let localLeads = [];
+    if (typeof window !== "undefined") {
+      try {
+        localLeads = JSON.parse(localStorage.getItem("dezoryn_local_leads") || "[]");
+      } catch (_) {}
+    }
+
     getAdminLeads()
       .then((data) => {
         const list = Array.isArray(data) ? data : (data?.data || data?.items || []);
@@ -126,15 +133,19 @@ export default function AdminLeadsPage() {
           source: l.source || "GENERAL_CONTACT",
           submittedAt: l.submittedAt || l.createdAt || null,
         }));
-        if (mapped.length > 0) {
-          setLeads(mapped);
+        
+        // Merge any locally queued leads with database leads
+        const combined = [...localLeads.filter((loc) => !mapped.some((m) => m.email === loc.email && m.id === loc.id)), ...mapped];
+        if (combined.length > 0) {
+          setLeads(combined);
         } else {
           setLeads(defaultLeads);
         }
       })
       .catch((err) => {
         console.warn("Using default leads fallback:", err.message);
-        setLeads(defaultLeads);
+        const combined = [...localLeads, ...defaultLeads];
+        setLeads(combined);
       });
   };
 

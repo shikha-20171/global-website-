@@ -98,6 +98,13 @@ export default function AdminDemosPage() {
   const [cancelTarget, setCancelTarget] = useState(null);
 
   const loadDemos = async () => {
+    let localDemos = [];
+    if (typeof window !== "undefined") {
+      try {
+        localDemos = JSON.parse(localStorage.getItem("dezoryn_local_demos") || "[]");
+      } catch (_) {}
+    }
+
     try {
       setLoading(true);
       const res = await getAdminDemos();
@@ -118,14 +125,17 @@ export default function AdminDemosPage() {
         notes: d.notes || "",
         createdAt: d.createdAt || null,
       }));
-      if (mapped.length > 0) {
-        setDemos(mapped);
+
+      const combined = [...localDemos.filter((loc) => !mapped.some((m) => m.businessEmail === loc.businessEmail && m.id === loc.id)), ...mapped];
+      if (combined.length > 0) {
+        setDemos(combined);
       } else {
         setDemos(defaultDemos);
       }
     } catch (e) {
       console.warn("Using default demos fallback:", e.message);
-      setDemos(defaultDemos);
+      const combined = [...localDemos, ...defaultDemos];
+      setDemos(combined);
     } finally {
       setLoading(false);
     }
