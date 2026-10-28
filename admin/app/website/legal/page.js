@@ -27,126 +27,37 @@ import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import { getAdminLegalPolicies, saveAdminLegalPolicy } from "@/lib/api";
 
-const INITIAL_POLICIES = [
-  {
-    id: "legal_privacy",
-    slug: "privacy",
-    title: "Privacy Policy",
-    subtitle: "Data collection, processing disclosures, and international user rights.",
-    lastUpdated: "October 1, 2026",
-    version: "v2.4",
-    status: "Published",
-    frameworks: ["GDPR Compliant", "CCPA Ready", "Data Isolation"],
-    sections: [
-      { heading: "1. Scope & Overview", content: "This Privacy Policy describes how DEZORYN TECHNOLOGY collects, uses, and safeguards information when you visit our website, explore our SaaS marketplace, or interact with our enterprise applications." },
-      { heading: "2. Information We Collect", content: "We collect information voluntarily provided in inquiry forms, operational tenant data entered into active SaaS workspaces, and automated technical telemetry for security." },
-      { heading: "3. Multi-Tenant Data Isolation & Security", content: "DEZORYN enforces strict logical data isolation across all SaaS products. Tenant database schemas, file uploads, and session tokens are strictly partitioned." },
-      { heading: "4. Your Statutory Rights", content: "You may access, correct, delete, or request portable copies of personal data by contacting privacy@dezoryn.com." },
-    ],
-  },
-  {
-    id: "legal_terms",
-    slug: "terms",
-    title: "Terms & Conditions of Service",
-    subtitle: "Terms governing use of the DEZORYN website, SaaS marketplace, and software platforms.",
-    lastUpdated: "October 1, 2026",
-    version: "v3.1",
-    status: "Published",
-    frameworks: ["Commercial Cloud Agreement", "Master Service Agreement"],
-    sections: [
-      { heading: "1. Acceptance of Terms", content: "By accessing the DEZORYN website or associated software platforms, you agree to be bound by these Terms & Conditions." },
-      { heading: "2. SaaS Subscriptions & Account Access", content: "Access is granted on a subscription basis subject to timely fee payment and active plan limits." },
-      { heading: "3. Intellectual Property Rights", content: "All software code, UI designs, product marks, and documentation are the exclusive intellectual property of DEZORYN TECHNOLOGY." },
-      { heading: "4. Service Level & Maintenance", content: "We maintain a 99.95% availability target across our production cloud systems." },
-    ],
-  },
-  {
-    id: "legal_security",
-    slug: "security",
-    title: "Enterprise Security Architecture Policy",
-    subtitle: "Architectural controls, encryption benchmarks, and data protection practices.",
-    lastUpdated: "October 1, 2026",
-    version: "v2.0",
-    status: "Published",
-    frameworks: ["SOC 2 Type II", "AES-256 / TLS 1.3", "Zero-Trust RBAC"],
-    sections: [
-      { heading: "1. Security Philosophy", content: "Security is engineered around defense-in-depth, least privilege, and zero-trust verification." },
-      { heading: "2. Data Encryption Standards", content: "Data is encrypted in transit using TLS 1.3 and at rest using AES-256 encryption." },
-      { heading: "3. Logical Tenant Isolation", content: "PostgreSQL row-level security and schema partitioning guarantee complete tenant boundary protection." },
-    ],
-  },
-  {
-    id: "legal_refund",
-    slug: "refund",
-    title: "Commercial Refund & SLA Credit Policy",
-    subtitle: "Subscription billing refund procedures and uptime SLA breach credits.",
-    lastUpdated: "October 1, 2026",
-    version: "v1.8",
-    status: "Published",
-    frameworks: ["99.95% Availability SLA", "Prorated Billing"],
-    sections: [
-      { heading: "1. 14-Day Free Evaluation Period", content: "New organizational subscribers receive a 14-day fully featured evaluation without upfront charge." },
-      { heading: "2. SLA Performance Credits", content: "If availability drops below 99.9% in any calendar month, customers may claim service credits against subsequent renewals." },
-    ],
-  },
-  {
-    id: "legal_cookies",
-    slug: "cookies",
-    title: "Cookie Policy & Telemetry Notice",
-    subtitle: "Information on session cookies, security tokens, and performance metrics.",
-    lastUpdated: "October 1, 2026",
-    version: "v2.1",
-    status: "Published",
-    frameworks: ["ePrivacy Directive", "Zero Ad-Trackers"],
-    sections: [
-      { heading: "1. Essential Session Cookies", content: "We use strictly necessary cryptographic cookies for authentication and CSRF token verification." },
-      { heading: "2. No Third-Party Ad Trackers", content: "DEZORYN does not load cross-site marketing or advertising trackers into tenant consoles." },
-    ],
-  },
-  {
-    id: "legal_use",
-    slug: "acceptable-use",
-    title: "Acceptable Cloud Service Usage Policy",
-    subtitle: "Rules governing lawful use of DEZORYN cloud infrastructure and developer APIs.",
-    lastUpdated: "October 1, 2026",
-    version: "v1.5",
-    status: "Published",
-    frameworks: ["Fair Use Policy", "DDoS & Abuse Defense"],
-    sections: [
-      { heading: "1. Prohibited Actions", content: "Unauthorized penetration testing, denial of service attacks, scraping, and abusive API traffic are strictly prohibited." },
-      { heading: "2. API Rate Limits", content: "Tenants must adhere to published API tier quotas to safeguard multi-tenant platform performance." },
-    ],
-  },
-];
-
 export default function AdminLegalPoliciesPage() {
-  const [policies, setPolicies] = useState(INITIAL_POLICIES);
+  const [policies, setPolicies] = useState([]);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingPolicy, setEditingPolicy] = useState(null);
   const [activeTab, setActiveTab] = useState("general");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
 
-  useEffect(() => {
+  const fetchPolicies = () => {
     getAdminLegalPolicies()
       .then((res) => {
         const data = res?.data || res;
-        if (Array.isArray(data) && data.length > 0) {
-          const mapped = data.map((d) => ({
-            id: d.id,
-            slug: d.slug,
-            title: d.title,
-            subtitle: d.subtitle || "",
-            lastUpdated: d.lastReviewedDate || "October 2026",
-            version: d.version || "v1.0",
-            status: d.status === "PUBLISHED" ? "Published" : "Draft",
-            frameworks: Array.isArray(d.frameworks) ? d.frameworks : [],
-            sections: Array.isArray(d.clauses) ? d.clauses : [],
-          }));
-          setPolicies(mapped);
-        }
+        const items = Array.isArray(data) ? data : data?.policies || [];
+        const mapped = items.map((d) => ({
+          id: d.id,
+          slug: d.slug,
+          title: d.title,
+          subtitle: d.subtitle || "",
+          lastUpdated: d.lastReviewedDate || "October 2026",
+          version: d.version || "v1.0",
+          status: d.status === "PUBLISHED" ? "Published" : "Draft",
+          frameworks: Array.isArray(d.frameworks) ? d.frameworks : [],
+          sections: Array.isArray(d.clauses) ? d.clauses : [],
+        }));
+        setPolicies(mapped);
       })
       .catch((err) => console.warn("Load admin legal policies notice:", err.message));
+  };
+
+  useEffect(() => {
+    fetchPolicies();
   }, []);
 
   const handleOpenEdit = (p) => {

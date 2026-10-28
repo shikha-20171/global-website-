@@ -30,29 +30,29 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
   };
 
   return (
-    <header className="sticky top-0 z-30 h-18 bg-white/95 backdrop-blur-md border-b border-slate-200 px-5 sm:px-8 flex items-center justify-between gap-5 shadow-2xs">
+    <header className="sticky top-0 z-30 h-18 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3.5 sm:px-6 lg:px-8 flex items-center justify-between gap-3 sm:gap-4 lg:gap-5 shadow-2xs w-full max-w-full">
       {/* Left: Mobile Toggle & Page Context */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2.5 sm:gap-4 min-w-0 flex-1 sm:flex-initial">
         <button
           onClick={() => setMobileOpen(true)}
-          className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition"
+          className="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition shrink-0"
           aria-label="Open Navigation"
         >
           <Menu size={22} />
         </button>
 
-        <div>
-          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-blue-600">
+        <div className="min-w-0 flex-1">
+          <div className="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-blue-600 truncate">
             DEZORYN TECHNOLOGY
           </div>
-          <div className="text-lg font-bold text-slate-900 truncate max-w-xs sm:max-w-md">
+          <div className="text-sm sm:text-lg font-bold text-slate-900 truncate max-w-[190px] sm:max-w-xs md:max-w-md">
             {pageTitle || "Overview"}
           </div>
         </div>
       </div>
 
       {/* Center: Global Search Bar */}
-      <div className="flex-1 max-w-lg hidden md:block">
+      <div className="flex-1 max-w-lg hidden lg:block">
         <div className="relative">
           <Search
             size={17}
@@ -67,7 +67,7 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
       </div>
 
       {/* Right: Actions & Administrator Profile */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         {/* Live Site Quick Link */}
         <Link
           href="http://localhost:3000"
@@ -93,7 +93,7 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-84 rounded-2xl border border-slate-200 bg-white shadow-xl p-4 text-sm z-50">
+            <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm rounded-2xl border border-slate-200 bg-white shadow-xl p-4 text-sm z-50">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
                 <span className="font-bold text-slate-900">System Notifications</span>
                 <span className="text-xs font-mono font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full">
@@ -137,7 +137,7 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
             <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
               SA
             </div>
-            <div className="hidden sm:block text-left leading-tight">
+            <div className="hidden md:block text-left leading-tight">
               <div className="text-sm font-bold text-slate-900 truncate max-w-[120px]">
                 Super Admin
               </div>
@@ -149,7 +149,7 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
           </button>
 
           {showProfile && (
-            <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white shadow-xl p-3 text-sm z-50">
+            <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-64 max-w-xs rounded-2xl border border-slate-200 bg-white shadow-xl p-3 text-sm z-50">
               <div className="p-3 border-b border-slate-100">
                 <div className="font-bold text-slate-900 truncate">
                   Super Admin

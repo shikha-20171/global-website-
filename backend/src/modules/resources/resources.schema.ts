@@ -79,6 +79,22 @@ export const createPartnerSchema = z.object({
 
 export const updatePartnerSchema = createPartnerSchema.partial();
 
+// Insight Report / Whitepaper
+export const createInsightReportSchema = z.object({
+  slug: z.string().min(1, "Slug is required"),
+  title: z.string().min(1, "Title is required"),
+  sector: z.string().default("Cloud Operations"),
+  author: z.string().default("DEZORYN Research Group"),
+  pagesCount: z.number().int().default(24),
+  downloadCount: z.number().int().default(0),
+  pdfAssetUrl: z.string().optional().nullable(),
+  summary: z.string().min(1, "Summary is required"),
+  tags: z.array(z.string()).default([]),
+  status: z.nativeEnum(PublishStatus).default(PublishStatus.PUBLISHED),
+});
+
+export const updateInsightReportSchema = createInsightReportSchema.partial();
+
 export type BlogPostQueryInput = z.infer<typeof blogPostQuerySchema>;
 export type CreateBlogPostInput = z.infer<typeof createBlogPostSchema>;
 export type UpdateBlogPostInput = z.infer<typeof updateBlogPostSchema>;
@@ -88,3 +104,5 @@ export type CreateJobPostingInput = z.infer<typeof createJobPostingSchema>;
 export type UpdateJobPostingInput = z.infer<typeof updateJobPostingSchema>;
 export type CreatePartnerInput = z.infer<typeof createPartnerSchema>;
 export type UpdatePartnerInput = z.infer<typeof updatePartnerSchema>;
+export type CreateInsightReportInput = z.infer<typeof createInsightReportSchema>;
+export type UpdateInsightReportInput = z.infer<typeof updateInsightReportSchema>;

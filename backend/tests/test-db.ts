@@ -1,5 +1,5 @@
-import { prisma, connectDatabase, disconnectDatabase } from "./config/database.js";
-import { comparePassword } from "./shared/hash.js";
+import { prisma, connectDatabase, disconnectDatabase } from "../src/config/database.js";
+import { comparePassword } from "../src/shared/hash.js";
 import { LeadPriority, LeadStatus, LeadSource, NewsletterStatus } from "@prisma/client";
 
 async function runDatabaseVerification() {

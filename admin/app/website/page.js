@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   LayoutTemplate,
@@ -11,10 +12,27 @@ import {
   Building2,
 } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { getWebsitePages } from "@/lib/admin/data-service";
+import { getAdminPages, getAdminSections } from "@/lib/api";
 
 export default function AdminWebsiteHubPage() {
-  const pages = getWebsitePages();
+  const [pagesCount, setPagesCount] = useState(0);
+  const [sectionsCount, setSectionsCount] = useState(0);
+
+  useEffect(() => {
+    getAdminPages()
+      .then((data) => {
+        const items = Array.isArray(data) ? data : data?.pages || [];
+        setPagesCount(items.length);
+      })
+      .catch(() => {});
+
+    getAdminSections()
+      .then((data) => {
+        const items = Array.isArray(data) ? data : data?.sections || [];
+        setSectionsCount(items.length);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -56,7 +74,7 @@ export default function AdminWebsiteHubPage() {
           </div>
           <div className="pt-5 border-t border-slate-100 mt-5 flex items-center justify-between">
             <span className="text-[11px] text-slate-500 font-mono">
-              11 Modular Sections
+              {sectionsCount || 11} Modular Sections
             </span>
             <Link
               href="/admin/website/homepage"
@@ -82,7 +100,7 @@ export default function AdminWebsiteHubPage() {
           </div>
           <div className="pt-5 border-t border-slate-100 mt-5 flex items-center justify-between">
             <span className="text-[11px] text-slate-500 font-mono">
-              {pages.length} Pages Configured
+              {pagesCount} Pages Configured
             </span>
             <Link
               href="/admin/website/pages"

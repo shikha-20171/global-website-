@@ -386,7 +386,7 @@ export default function ModuleWorkspace({ product, activeIndex = 0, onSelectModu
   );
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#070b16] shadow-2xl backdrop-blur-xl overflow-hidden">
+    <div className="min-w-0 w-full rounded-2xl border border-white/10 bg-[#070b16] shadow-2xl backdrop-blur-xl overflow-hidden">
       {/* Top Workspace Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-white/[0.02] px-5 py-3.5">
         <div className="flex items-center gap-3">
@@ -410,28 +410,29 @@ export default function ModuleWorkspace({ product, activeIndex = 0, onSelectModu
           <div className="flex rounded-lg border border-white/10 bg-black/40 p-1 text-xs">
             <button
               onClick={() => setViewMode("data")}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium transition ${
+              className={`flex items-center gap-1.5 rounded-md px-2.5 sm:px-3 py-1.5 font-medium transition ${
                 viewMode === "data" ? "bg-electric text-white shadow-sm" : "text-cool hover:text-white"
               }`}
             >
               <Database size={13} />
-              Live Workspace
+              <span>Live Workspace</span>
             </button>
             <button
               onClick={() => setViewMode("ai")}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium transition ${
+              className={`flex items-center gap-1.5 rounded-md px-2.5 sm:px-3 py-1.5 font-medium transition ${
                 viewMode === "ai" ? "bg-electric text-white shadow-sm" : "text-cool hover:text-white"
               }`}
             >
               <Bot size={13} />
-              AI Copilot & Neural Flow
+              <span className="hidden xs:inline">AI Copilot &amp; Neural Flow</span>
+              <span className="xs:hidden">AI Copilot</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* KPI Metric Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-5 border-b border-white/10 bg-black/20">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 p-4 sm:p-5 border-b border-white/10 bg-black/20">
         {data.kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
@@ -463,7 +464,7 @@ export default function ModuleWorkspace({ product, activeIndex = 0, onSelectModu
       </div>
 
       {/* Main Interactive Stage */}
-      <div className="p-5">
+      <div className="p-4 sm:p-5">
         <AnimatePresence mode="wait">
           {viewMode === "data" ? (
             <motion.div
@@ -476,7 +477,7 @@ export default function ModuleWorkspace({ product, activeIndex = 0, onSelectModu
             >
               {/* Search & Action Bar */}
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="relative flex-1 min-w-[220px]">
+                <div className="relative flex-1 min-w-[200px]">
                   <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-cool" />
                   <input
                     type="text"
@@ -501,54 +502,57 @@ export default function ModuleWorkspace({ product, activeIndex = 0, onSelectModu
                 </div>
               </div>
 
-              {/* Data Rows Table */}
-              <div className="overflow-hidden rounded-xl border border-white/8 bg-black/30">
-                <div className="grid grid-cols-[100px_1fr_120px_110px] items-center border-b border-white/10 bg-white/[0.02] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-cool">
-                  <span>Record ID</span>
-                  <span>Activity / Subject</span>
-                  <span>Timestamp</span>
-                  <span className="text-right">Status</span>
-                </div>
-                <div className="divide-y divide-white/5">
-                  {filteredRecords.length > 0 ? (
-                    filteredRecords.map((r, i) => (
-                      <motion.div
-                        key={r.id}
-                        initial={{ opacity: 0, x: -6 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        className="grid grid-cols-[100px_1fr_120px_110px] items-center px-4 py-3 text-xs transition hover:bg-white/[0.03] group"
-                      >
-                        <span className="font-mono text-[11px] text-electric">{r.id}</span>
-                        <div>
-                          <div className="font-medium text-white group-hover:text-electric transition">{r.title}</div>
-                          <div className="text-[11px] text-cool">{r.sub}</div>
-                        </div>
-                        <span className="text-[11px] text-cool">{r.time}</span>
-                        <div className="text-right">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                              r.tag === "Success"
-                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                : r.tag === "Pending"
-                                ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                                : "bg-electric/15 text-electric border border-electric/30"
-                            }`}
-                          >
-                            <span className="h-1 w-1 rounded-full bg-current" />
-                            {r.status}
-                          </span>
-                        </div>
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="p-8 text-center text-xs text-cool">
-                      No records found matching &quot;{searchTerm}&quot;
-                    </div>
-                  )}
+              {/* Data Rows Table with safe horizontal scroll wrapper */}
+              <div className="overflow-x-auto [scrollbar-width:thin] rounded-xl border border-white/8 bg-black/30">
+                <div className="min-w-[480px]">
+                  <div className="grid grid-cols-[90px_1fr_110px_100px] items-center border-b border-white/10 bg-white/[0.02] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-cool">
+                    <span>Record ID</span>
+                    <span>Activity / Subject</span>
+                    <span>Timestamp</span>
+                    <span className="text-right">Status</span>
+                  </div>
+                  <div className="divide-y divide-white/5">
+                    {filteredRecords.length > 0 ? (
+                      filteredRecords.map((r, i) => (
+                        <motion.div
+                          key={r.id}
+                          initial={{ opacity: 0, x: -6 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.05 }}
+                          className="grid grid-cols-[90px_1fr_110px_100px] items-center px-4 py-3 text-xs transition hover:bg-white/[0.03] group"
+                        >
+                          <span className="font-mono text-[11px] text-electric">{r.id}</span>
+                          <div className="pr-2 min-w-0">
+                            <div className="font-medium text-white group-hover:text-electric transition truncate">{r.title}</div>
+                            <div className="text-[11px] text-cool truncate">{r.sub}</div>
+                          </div>
+                          <span className="text-[11px] text-cool">{r.time}</span>
+                          <div className="text-right">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                                r.tag === "Success"
+                                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                  : r.tag === "Pending"
+                                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                  : "bg-electric/15 text-electric border border-electric/30"
+                              }`}
+                            >
+                              <span className="h-1 w-1 rounded-full bg-current" />
+                              {r.status}
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="p-8 text-center text-xs text-cool">
+                        No records found matching &quot;{searchTerm}&quot;
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>
+
           ) : (
             <motion.div
               key={`ai-${currentModule}`}
@@ -642,15 +646,16 @@ export default function ModuleWorkspace({ product, activeIndex = 0, onSelectModu
         </AnimatePresence>
 
         {/* Live Activity Telemetry Bar */}
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/5 bg-black/40 px-4 py-2.5 text-xs text-cool">
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="font-medium text-white/90">Autonomous Background Daemon:</span>
-            <span>0 anomalies detected • Audit compliance verified</span>
+        <div className="mt-4 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 rounded-lg border border-white/5 bg-black/40 px-3 sm:px-4 py-2.5 text-xs text-cool min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
+            <span className="font-medium text-white/90 truncate">Autonomous Daemon:</span>
+            <span className="text-[11px] text-cool/90 truncate">0 anomalies • Compliance OK</span>
           </div>
-          <span className="text-[11px] text-cool/70">Edge region: ap-south-1 (Mumbai) • SSL TLS 1.3</span>
+          <span className="text-[10px] sm:text-[11px] text-cool/70 truncate">Region: ap-south-1 • TLS 1.3</span>
         </div>
       </div>
     </div>
   );
 }
+

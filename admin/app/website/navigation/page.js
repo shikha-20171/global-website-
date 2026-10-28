@@ -18,46 +18,87 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import NavLinkModal from "./components/NavLinkModal";
-import { getNavigationStructure } from "@/lib/admin/data-service";
 import {
   getAdminNavigation,
   createAdminNavigation,
   updateAdminNavigation,
+  deleteAdminNavigation,
 } from "@/lib/api";
 
 export default function AdminNavigationPage() {
-  const initialNav = getNavigationStructure();
-  const [headerLinks, setHeaderLinks] = useState(initialNav.header || []);
-  const [footerCols, setFooterCols] = useState(initialNav.footerColumns || []);
+  const [headerLinks, setHeaderLinks] = useState([]);
+  const [footerCols, setFooterCols] = useState([]);
   const [activeTab, setActiveTab] = useState("header");
   const [toast, setToast] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchNavigation = async () => {
+    try {
+      setLoading(true);
+      const data = await getAdminNavigation();
+      const items = Array.isArray(data) ? data : data?.items || data?.navigation || [];
+      
+      const headers = items
+        .filter((i) => i.menuLocation === "HEADER")
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+        .map((i) => ({
+          id: i.id,
+          label: i.label,
+          href: i.href,
+          badge: i.badge,
+          hasMega: i.hasMegaMenu,
+        }));
+      setHeaderLinks(headers);
+
+      // Group footer items into columns
+      const footerItems = items.filter((i) => i.menuLocation === "FOOTER");
+      const parentCols = footerItems
+        .filter((i) => !i.parentId)
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+      if (parentCols.length > 0) {
+        const cols = parentCols.map((parent) => {
+          const children = (parent.children && parent.children.length > 0)
+            ? parent.children
+            : footerItems.filter((f) => f.parentId === parent.id);
+          return {
+            id: parent.id,
+            title: parent.label,
+            links: children
+              .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+              .map((c) => ({
+                id: c.id,
+                label: c.label,
+                href: c.href,
+                originalHref: c.href,
+              })),
+          };
+        });
+        setFooterCols(cols);
+      } else {
+        // If no explicit parents, group by parent label if available
+        const colMap = {};
+        footerItems.forEach((item) => {
+          const colTitle = item.parent?.label || "General";
+          if (!colMap[colTitle]) colMap[colTitle] = { title: colTitle, links: [] };
+          colMap[colTitle].links.push({
+            id: item.id,
+            label: item.label,
+            href: item.href,
+            originalHref: item.href,
+          });
+        });
+        setFooterCols(Object.values(colMap));
+      }
+    } catch (err) {
+      console.warn("Failed to load navigation:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let mounted = true;
-    // [API IMPLEMENTATION] getAdminNavigation() -> GET /api/v1/admin/navigation
-    getAdminNavigation()
-      .then((data) => {
-        if (!mounted || !data) return;
-        const items = Array.isArray(data) ? data : data.items || data.navigation || [];
-        if (items.length > 0) {
-          const headers = items
-            .filter((i) => i.menuLocation === "HEADER")
-            .map((i) => ({
-              id: i.id,
-              label: i.label,
-              href: i.href,
-              badge: i.badge,
-              hasMega: i.hasMegaMenu,
-            }));
-          if (headers.length > 0) {
-            setHeaderLinks(headers);
-          }
-        }
-      })
-      .catch(() => {});
-    return () => {
-      mounted = false;
-    };
+    fetchNavigation();
   }, []);
 
   // Social Links state
@@ -119,12 +160,19 @@ export default function AdminNavigationPage() {
     });
   };
 
-  const handleDeleteHeaderLink = (id) => {
-    setHeaderLinks(headerLinks.filter((l) => l.id !== id));
+  const handleDeleteHeaderLink = async (id) => {
+    if (id && !id.startsWith("nav-")) {
+      try {
+        await deleteAdminNavigation(id);
+      } catch (err) {
+        console.warn("Delete navigation failed:", err);
+      }
+    }
+    setHeaderLinks((prev) => prev.filter((l) => l.id !== id));
     setToast({
       type: "info",
       message: "Link Removed",
-      description: "Header navigation link removed from local menu.",
+      description: "Header navigation link removed from menu.",
     });
   };
 
@@ -152,13 +200,28 @@ export default function AdminNavigationPage() {
           }).catch(() => {});
         } else if (item.label && item.href) {
           // [API IMPLEMENTATION] createAdminNavigation() -> POST /api/v1/admin/navigation
-          await createAdminNavigation({
+          const created = await createAdminNavigation({
             label: item.label,
             href: item.href,
             menuLocation: "HEADER",
             displayOrder: i + 1,
             badge: item.badge,
           }).catch(() => {});
+          if (created?.id) item.id = created.id;
+        }
+      }
+
+      // Sync footer link edits to API
+      for (const col of footerCols) {
+        for (let j = 0; j < (col.links || []).length; j++) {
+          const fl = col.links[j];
+          if (fl.id && !fl.id.startsWith("nav-")) {
+            await updateAdminNavigation(fl.id, {
+              label: fl.label,
+              href: fl.href,
+              displayOrder: j + 1,
+            }).catch(() => {});
+          }
         }
       }
     } catch (err) {

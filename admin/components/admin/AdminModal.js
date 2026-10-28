@@ -55,7 +55,7 @@ export default function AdminModal({
         </div>
 
         {footer && (
-          <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/90 rounded-b-2xl shrink-0 flex items-center justify-end gap-3">
+          <div className="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/90 rounded-b-2xl shrink-0 flex flex-wrap items-center justify-end gap-2.5 sm:gap-3">
             {footer}
           </div>
         )}

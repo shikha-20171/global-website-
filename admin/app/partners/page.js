@@ -20,7 +20,6 @@ import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import PartnerEditorModal from "./components/PartnerEditorModal";
-import { MOCK_PARTNERS_DATA } from "@/lib/admin/mock-data/careers-partners";
 import {
   getAdminPartners,
   createAdminPartner,
@@ -29,30 +28,27 @@ import {
 } from "@/lib/api";
 
 export default function AdminPartnersPage() {
-  const [partners, setPartners] = useState(MOCK_PARTNERS_DATA);
+  const [partners, setPartners] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
 
   const refreshPartners = () => {
-    // [API IMPLEMENTATION] getAdminPartners() -> GET /api/v1/admin/partners
     getAdminPartners()
       .then((data) => {
-        const list = data?.partners || (Array.isArray(data) ? data : null);
-        if (Array.isArray(list) && list.length > 0) {
-          const mapped = list.map((p) => ({
-            id: p.id,
-            name: p.name,
-            category: p.category,
-            website: p.websiteUrl || p.website || "https://",
-            tier: p.tier || "Technology Partner",
-            logoUrl: p.logoUrl || p.logo || "",
-            displayOrder: p.displayOrder || 1,
-            status: p.status === "PUBLISHED" || p.status === "Active" ? "Active" : "Draft",
-          }));
-          setPartners(mapped);
-        }
+        const list = data?.partners || (Array.isArray(data) ? data : []);
+        const mapped = list.map((p) => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          website: p.websiteUrl || p.website || "https://",
+          tier: p.tier || "Technology Partner",
+          logoUrl: p.logoUrl || p.logo || "",
+          displayOrder: p.displayOrder || 1,
+          status: p.status === "PUBLISHED" || p.status === "Active" ? "Active" : "Draft",
+        }));
+        setPartners(mapped);
       })
       .catch((err) => {
         console.warn("Could not load partners via API:", err.message);

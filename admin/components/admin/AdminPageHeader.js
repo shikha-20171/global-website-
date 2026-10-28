@@ -27,7 +27,7 @@ export default function AdminPageHeader({
         </div>
 
         {(customSlot || action) && (
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 sm:shrink-0 w-full sm:w-auto">
             {customSlot}
             {action && (
               <button

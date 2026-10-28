@@ -4,7 +4,7 @@ import { AuditResult } from "@prisma/client";
 
 async function consolidateSuperAdminRole() {
   console.log("========================================================================");
-  console.log("🔒 DEZORYN TECHNOLOGY — SAFE SUPER ADMIN ROLE CONSOLIDATION");
+  console.log(" DEZORYN TECHNOLOGY — SAFE SUPER ADMIN ROLE CONSOLIDATION");
   console.log("========================================================================");
 
   // 1. Verify super_admin role exists and has all permissions

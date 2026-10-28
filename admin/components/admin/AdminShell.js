@@ -86,7 +86,7 @@ export default function AdminShell({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex antialiased">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex antialiased w-full max-w-full overflow-x-hidden">
       {/* Shared Persistent Sidebar */}
       <AdminSidebar
         collapsed={collapsed}
@@ -96,14 +96,14 @@ export default function AdminShell({ children }) {
       />
 
       {/* Main Content Viewport */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 w-full max-w-full">
         <AdminHeader
           setMobileOpen={setMobileOpen}
           pageTitle={getPageTitle(pathname)}
           currentUser={currentUser}
         />
 
-        <main className="flex-1 p-5 sm:p-7 lg:p-9 max-w-[1400px] w-full mx-auto">
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-[1400px] w-full mx-auto">
           {children}
         </main>
       </div>

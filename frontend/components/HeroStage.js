@@ -29,7 +29,7 @@ export default function HeroStage() {
 
   return (
     <div
-      className="relative mx-auto aspect-square w-full max-w-[580px] lg:max-w-[640px] xl:max-w-[700px]"
+      className="relative mx-auto aspect-square w-full max-w-[380px] xs:max-w-[440px] sm:max-w-[500px] lg:max-w-[520px] xl:max-w-[660px]"
       onPointerMove={onMove}
       onPointerLeave={() => {
         mx.set(0);
@@ -37,7 +37,7 @@ export default function HeroStage() {
       }}
     >
       {/* Soft atmospheric blue glow under the globe matching card sapphire blue */}
-      <div className="pointer-events-none absolute -bottom-10 left-1/2 -translate-x-1/2 h-[280px] w-[560px] rounded-full bg-[#1d4ed8]/25 blur-[90px]" />
+      <div className="pointer-events-none absolute -bottom-10 left-1/2 -translate-x-1/2 h-[220px] sm:h-[280px] w-[340px] sm:w-[560px] rounded-full bg-[#1d4ed8]/25 blur-[90px]" />
 
       {/* 3D Rotating Globe with all 6 key points rotating inside */}
       <motion.div

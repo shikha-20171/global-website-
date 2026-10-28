@@ -32,3 +32,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .vscode/
+
+# Runtime Uploads
+uploads/*
+!uploads/.gitkeep
+*/uploads/*
+!*/uploads/.gitkeep
+
+# Test artifacts & screenshots
+test-results/
+

@@ -62,11 +62,11 @@ export default function AdminDashboardPage() {
     };
   }, []);
 
-  const totalProducts = metrics?.products?.total ?? 12;
-  const totalLeads = metrics?.crm?.totalInquiries ?? 11;
-  const pendingLeads = metrics?.crm?.newInquiries ?? 6;
-  const totalDemos = metrics?.crm?.pendingDemos ?? 5;
-  const totalSubscribers = metrics?.crm?.subscribers ?? 5;
+  const totalProducts = metrics?.products?.total ?? (loading ? "..." : 0);
+  const totalLeads = metrics?.crm?.totalInquiries ?? (loading ? "..." : 0);
+  const pendingLeads = metrics?.crm?.newInquiries ?? (loading ? "..." : 0);
+  const totalDemos = metrics?.crm?.pendingDemos ?? (loading ? "..." : 0);
+  const totalSubscribers = metrics?.crm?.subscribers ?? (loading ? "..." : 0);
 
   return (
     <div className="space-y-7 pb-10">

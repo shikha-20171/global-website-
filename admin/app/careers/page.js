@@ -28,61 +28,6 @@ import {
   deleteAdminCareer,
 } from "@/lib/api";
 
-const INITIAL_JOBS = [
-  {
-    id: "job_1",
-    title: "Senior Full-Stack Cloud Architect",
-    department: "Core Engineering",
-    type: "Full-Time",
-    location: "Bhopal, India (Work From Office)",
-    experience: "5+ Years",
-    status: "Published",
-    applicantsCount: 42,
-    postedDate: "Oct 18, 2026",
-    description: "Lead the development of multi-tenant cloud SaaS engines using Next.js 14, Node.js, and PostgreSQL.",
-    requirements: "• 5+ years building distributed cloud applications\n• Strong TypeScript, React, and PostgreSQL schema design\n• Experience with zero-trust RBAC and multi-tenancy",
-  },
-  {
-    id: "job_2",
-    title: "Enterprise Solutions Engineer",
-    department: "Solutions & Sales",
-    type: "Full-Time",
-    location: "Bhopal, India (Work From Office)",
-    experience: "3+ Years",
-    status: "Published",
-    applicantsCount: 29,
-    postedDate: "Oct 19, 2026",
-    description: "Conduct technical product walkthroughs, architecture discovery, and POCs for international enterprise clients.",
-    requirements: "• 3+ years in software solutions engineering\n• Ability to engage enterprise CTOs and technical buyers\n• Familiarity with SaaS APIs, integrations, and security",
-  },
-  {
-    id: "job_3",
-    title: "AI & Machine Learning Engineer",
-    department: "AI & Automation",
-    type: "Full-Time",
-    location: "Bhopal, India (Work From Office)",
-    experience: "3+ Years",
-    status: "Published",
-    applicantsCount: 38,
-    postedDate: "Oct 20, 2026",
-    description: "Design automated document triage models, vision proctoring algorithms, and autonomous workflow pipelines.",
-    requirements: "• Deep experience in Python, PyTorch, and NLP models\n• Production deployment of inference pipelines\n• Experience with Vector databases and agentic orchestration",
-  },
-  {
-    id: "job_4",
-    title: "Senior Enterprise Product Designer",
-    department: "Product & Design",
-    type: "Full-Time",
-    location: "Bhopal, India (Work From Office)",
-    experience: "4+ Years",
-    status: "Published",
-    applicantsCount: 19,
-    postedDate: "Oct 21, 2026",
-    description: "Craft high-density enterprise SaaS dashboards, design systems, and friction-free user workflows.",
-    requirements: "• Strong portfolio of complex B2B SaaS web applications\n• Mastery of Figma, auto-layout, and token design systems\n• Deep understanding of micro-interactions and information architecture",
-  },
-];
-
 const DEPARTMENTS = [
   "Core Engineering",
   "Solutions & Sales",
@@ -92,7 +37,7 @@ const DEPARTMENTS = [
 ];
 
 export default function AdminCareersPage() {
-  const [jobs, setJobs] = useState(INITIAL_JOBS);
+  const [jobs, setJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDept, setSelectedDept] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
@@ -113,26 +58,23 @@ export default function AdminCareersPage() {
   });
 
   const refreshCareers = () => {
-    // [API IMPLEMENTATION] getAdminCareers() -> GET /api/v1/admin/careers
     getAdminCareers()
       .then((data) => {
-        const list = data?.careers || (Array.isArray(data) ? data : null);
-        if (Array.isArray(list) && list.length > 0) {
-          const mapped = list.map((j) => ({
-            id: j.id,
-            title: j.title,
-            department: j.department,
-            type: j.employmentType === "FULL_TIME" ? "Full-Time" : (j.employmentType || "Full-Time"),
-            location: j.location || "Bhopal HQ / Remote",
-            experience: j.experienceLevel || "3+ Years",
-            status: j.status === "PUBLISHED" || j.status === "Published" ? "Published" : "Draft",
-            applicantsCount: j.applicantCount || 0,
-            postedDate: j.createdAt ? new Date(j.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recently",
-            description: j.description || "",
-            requirements: Array.isArray(j.requirements) ? j.requirements.join("\n") : (j.requirements || ""),
-          }));
-          setJobs(mapped);
-        }
+        const list = data?.careers || (Array.isArray(data) ? data : []);
+        const mapped = list.map((j) => ({
+          id: j.id,
+          title: j.title,
+          department: j.department,
+          type: j.employmentType === "FULL_TIME" ? "Full-Time" : (j.employmentType || "Full-Time"),
+          location: j.location || "Bhopal HQ / Remote",
+          experience: j.experienceLevel || "3+ Years",
+          status: j.status === "PUBLISHED" || j.status === "Published" ? "Published" : "Draft",
+          applicantsCount: j.applicantCount || 0,
+          postedDate: j.createdAt ? new Date(j.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recently",
+          description: j.description || "",
+          requirements: Array.isArray(j.requirements) ? j.requirements.join("\n") : (j.requirements || ""),
+        }));
+        setJobs(mapped);
       })
       .catch((err) => {
         console.warn("Could not load careers via API:", err.message);

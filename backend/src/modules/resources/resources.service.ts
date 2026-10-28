@@ -12,6 +12,8 @@ import {
   UpdateJobPostingInput,
   CreatePartnerInput,
   UpdatePartnerInput,
+  CreateInsightReportInput,
+  UpdateInsightReportInput,
 } from "./resources.schema.js";
 
 export class ResourcesService {
@@ -152,6 +154,66 @@ export class ResourcesService {
       where: { status: PublishStatus.PUBLISHED },
       orderBy: { createdAt: "desc" },
     });
+  }
+
+  async listAdminInsights() {
+    return prisma.insightReport.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  async createInsight(input: CreateInsightReportInput, actorName: string) {
+    const existing = await prisma.insightReport.findUnique({ where: { slug: input.slug } });
+    if (existing) throw new BadRequestError(`Insight report with slug "${input.slug}" already exists`);
+
+    const created = await prisma.insightReport.create({ data: input as any });
+
+    await logAuditEvent({
+      adminName: actorName,
+      action: "Created Insight Report",
+      module: "Resources Hub",
+      entityType: "InsightReport",
+      entityId: created.id,
+      details: `Created insight report "${created.title}"`,
+      result: AuditResult.SUCCESS,
+    });
+
+    return created;
+  }
+
+  async updateInsight(id: string, input: UpdateInsightReportInput, actorName: string) {
+    const updated = await prisma.insightReport.update({ where: { id }, data: input as any });
+
+    await logAuditEvent({
+      adminName: actorName,
+      action: "Updated Insight Report",
+      module: "Resources Hub",
+      entityType: "InsightReport",
+      entityId: id,
+      details: `Updated insight report "${updated.title}"`,
+      result: AuditResult.SUCCESS,
+    });
+
+    return updated;
+  }
+
+  async deleteInsight(id: string, actorName: string) {
+    const report = await prisma.insightReport.findUnique({ where: { id } });
+    if (!report) throw new NotFoundError("Insight report not found");
+
+    await prisma.insightReport.delete({ where: { id } });
+
+    await logAuditEvent({
+      adminName: actorName,
+      action: "Deleted Insight Report",
+      module: "Resources Hub",
+      entityType: "InsightReport",
+      entityId: id,
+      details: `Deleted insight report "${report.title}"`,
+      result: AuditResult.SUCCESS,
+    });
+
+    return { id, deleted: true };
   }
 
   // --- 3. Documentation Runbooks ---

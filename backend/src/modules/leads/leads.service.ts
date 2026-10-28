@@ -15,6 +15,11 @@ import {
   UpdateLeadStatusInput,
   UpdateDemoStatusInput,
 } from "./leads.schema.js";
+import {
+  sendLeadInquiryEmails,
+  sendDemoBookingEmails,
+  sendNewsletterWelcomeEmail,
+} from "../../shared/email.js";
 
 export class LeadsService {
   // --- 1. Public Contact / Sales Inquiries ---
@@ -68,6 +73,22 @@ export class LeadsService {
       },
     });
 
+    // Dispatch confirmation to user and notification to admin
+    sendLeadInquiryEmails({
+      name: input.name,
+      email,
+      company: input.company,
+      phone: input.phone || undefined,
+      country: input.country,
+      companySize: input.companySize || undefined,
+      solution: input.solution || undefined,
+      budget: input.budget || undefined,
+      requirement: input.req,
+      source: input.source || "contact",
+    }).catch((err) => {
+      console.warn("[LEAD EMAIL DISPATCH ERROR]:", err?.message || err);
+    });
+
     return { id: lead.id, status: lead.status };
   }
 
@@ -105,6 +126,21 @@ export class LeadsService {
       },
     });
 
+    // Dispatch confirmation to user and notification to sales admin
+    sendDemoBookingEmails({
+      contactName: input.contactName,
+      businessEmail: email,
+      company: input.company,
+      country: input.country,
+      productSlug: input.productSlug,
+      preferredDate: input.preferredDate,
+      preferredTime: input.preferredTime,
+      timeZone: input.timeZone || "UTC",
+      notes: input.notes || undefined,
+    }).catch((err) => {
+      console.warn("[DEMO EMAIL DISPATCH ERROR]:", err?.message || err);
+    });
+
     return { id: demo.id, status: demo.status };
   }
 
@@ -137,6 +173,11 @@ export class LeadsService {
         source,
         status: NewsletterStatus.SUBSCRIBED,
       },
+    });
+
+    // Dispatch welcome email to subscriber
+    sendNewsletterWelcomeEmail(cleanEmail).catch((err) => {
+      console.warn("[NEWSLETTER EMAIL DISPATCH ERROR]:", err?.message || err);
     });
 
     return {

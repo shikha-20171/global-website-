@@ -180,6 +180,59 @@ export async function resourcesRoutes(app: FastifyInstance) {
     resourcesController.deleteBlogPost.bind(resourcesController)
   );
 
+  // Insights / Whitepapers
+  app.get(
+    "/admin/insights",
+    {
+      preHandler: [authenticate, requireSuperAdmin],
+      schema: {
+        tags: ["Content & Resources"],
+        summary: "List all insight reports and whitepapers for administration",
+        security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+      },
+    },
+    resourcesController.listAdminInsights.bind(resourcesController)
+  );
+
+  app.post(
+    "/admin/insights",
+    {
+      preHandler: [authenticate, requireSuperAdmin],
+      schema: {
+        tags: ["Content & Resources"],
+        summary: "Create insight report",
+        security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+      },
+    },
+    resourcesController.createInsight.bind(resourcesController)
+  );
+
+  app.put(
+    "/admin/insights/:id",
+    {
+      preHandler: [authenticate, requireSuperAdmin],
+      schema: {
+        tags: ["Content & Resources"],
+        summary: "Update insight report",
+        security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+      },
+    },
+    resourcesController.updateInsight.bind(resourcesController)
+  );
+
+  app.delete(
+    "/admin/insights/:id",
+    {
+      preHandler: [authenticate, requireSuperAdmin],
+      schema: {
+        tags: ["Content & Resources"],
+        summary: "Delete insight report",
+        security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+      },
+    },
+    resourcesController.deleteInsight.bind(resourcesController)
+  );
+
   // FAQs
   app.get(
     "/admin/faqs",

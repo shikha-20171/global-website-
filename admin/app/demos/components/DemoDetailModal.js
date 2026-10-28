@@ -32,7 +32,7 @@ export default function DemoDetailModal({
       }
     >
       <div className="space-y-4 text-xs">
-        <div className="grid grid-cols-2 gap-3 p-3.5 rounded-lg border border-slate-200 bg-slate-50">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-lg border border-slate-200 bg-slate-50">
           <div>
             <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider block">
               Company
@@ -47,7 +47,7 @@ export default function DemoDetailModal({
             </span>
             <a
               href={`mailto:${demo.businessEmail}`}
-              className="text-blue-600 hover:underline font-mono font-medium mt-0.5 block"
+              className="text-blue-600 hover:underline font-mono font-medium mt-0.5 block break-all"
             >
               {demo.businessEmail}
             </a>

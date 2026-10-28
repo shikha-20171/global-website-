@@ -390,9 +390,8 @@ export default function CompareView() {
             </thead>
 
             {/* Matrix Body Groups */}
-            <tbody>
-              {rows.map((group, gIdx) => (
-                <tbody key={group.group}>
+            {rows.map((group, gIdx) => (
+              <tbody key={group.group}>
                   <tr className="bg-white/[0.02] border-t border-white/10">
                     <td
                       colSpan={list.length + 1}
@@ -421,21 +420,22 @@ export default function CompareView() {
               ))}
 
               {/* Bottom Action Row */}
-              <tr className="border-t border-white/10 bg-graphite/40">
-                <td className="p-6 text-xs text-cool">Action / Deployment</td>
-                {list.map((p) => (
-                  <td key={p.slug} className="p-6 border-l border-white/10">
-                    <Link
-                      href={`/start-trial?product=${p.slug}`}
-                      className="btn btn-primary w-full text-xs shadow-md shadow-electric/25"
-                    >
-                      Start Free Trial
-                    </Link>
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
+              <tbody className="border-t border-white/10 bg-graphite/40">
+                <tr>
+                  <td className="p-6 text-xs text-cool">Action / Deployment</td>
+                  {list.map((p) => (
+                    <td key={p.slug} className="p-6 border-l border-white/10">
+                      <Link
+                        href={`/start-trial?product=${p.slug}`}
+                        className="btn btn-primary w-full text-xs shadow-md shadow-electric/25"
+                      >
+                        Start Free Trial
+                      </Link>
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
         </div>
 
         {/* ─── BUYER'S FAQ ─── */}

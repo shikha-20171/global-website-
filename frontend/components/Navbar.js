@@ -251,7 +251,7 @@ export default function Navbar() {
           {/* ─── DESKTOP NAVIGATION BAR ─── */}
           <nav
             ref={navRef}
-            className="hidden items-center gap-1 lg:flex"
+            className="hidden items-center gap-1 xl:flex"
             aria-label="Main"
           >
             {nav.map((n) => {
@@ -339,7 +339,7 @@ export default function Navbar() {
                 setMenu(null);
                 setSearch(true);
               }}
-              className="hidden h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/5 hover:text-white lg:flex cursor-pointer transition"
+              className="hidden h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/5 hover:text-white xl:flex cursor-pointer transition"
               aria-label="Search (Ctrl K)"
             >
               <Search size={17} />
@@ -353,7 +353,7 @@ export default function Navbar() {
             </button>
             <button
               onClick={() => setMobile(!mobile)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-white hover:bg-white/10 active:scale-95 transition lg:hidden cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-white hover:bg-white/10 active:scale-95 transition xl:hidden cursor-pointer"
               aria-label={mobile ? "Close menu" : "Open menu"}
               aria-expanded={mobile}
             >
@@ -371,7 +371,8 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
-            className="fixed inset-0 z-40 flex flex-col bg-[#030712] pt-16 overflow-hidden lg:hidden"
+            className="fixed inset-0 z-40 flex flex-col bg-[#030712] pt-16 overflow-hidden xl:hidden"
+
             style={{ backgroundColor: "#030712" }}
             role="dialog"
             aria-modal="true"

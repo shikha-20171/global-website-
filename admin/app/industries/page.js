@@ -28,7 +28,6 @@ import AdminModal from "@/components/admin/AdminModal";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
-import { industries } from "@/lib/data";
 import {
   getAdminIndustries,
   createAdminIndustry,
@@ -37,25 +36,17 @@ import {
 } from "@/lib/api";
 
 export default function AdminIndustriesPage() {
-  const [industryList, setIndustryList] = useState(
-    industries.map((ind) => ({
-      ...ind,
-      status: "Published",
-      seoTitle: `${ind.name} SaaS & Enterprise Solutions | DEZORYN`,
-      metaDescription: ind.short || `Specialized enterprise software blueprints for ${ind.name}.`,
-    }))
-  );
+  const [industryList, setIndustryList] = useState([]);
 
   const refreshIndustries = () => {
-    // [API IMPLEMENTATION] getAdminIndustries() -> GET /api/v1/admin/industries
     getAdminIndustries()
       .then((data) => {
         const list = Array.isArray(data) ? data : data?.industries || [];
-        if (list.length > 0) {
-          setIndustryList(list);
-        }
+        setIndustryList(list);
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.warn("Could not load industries:", err.message);
+      });
   };
 
   useEffect(() => {

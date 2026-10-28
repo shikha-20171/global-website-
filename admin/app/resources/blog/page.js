@@ -24,7 +24,6 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import AdminImageUploader from "@/components/admin/AdminImageUploader";
-import { MOCK_BLOG_ARTICLES } from "@/lib/admin/mock-data/content";
 import {
   getAdminBlog,
   createAdminBlogPost,
@@ -33,22 +32,27 @@ import {
 } from "@/lib/api";
 
 export default function AdminBlogPage() {
-  const [articles, setArticles] = useState(MOCK_BLOG_ARTICLES);
+  const [articles, setArticles] = useState([]);
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [toast, setToast] = useState(null);
 
   const refreshArticles = () => {
-    // [API IMPLEMENTATION] getAdminBlog() -> GET /api/v1/admin/blog
     getAdminBlog()
       .then((data) => {
-        const list = Array.isArray(data) ? data : data?.posts || data?.articles || [];
-        if (list.length > 0) {
-          setArticles(list);
-        }
+        const list = Array.isArray(data) ? data : data?.posts || data?.articles || data?.items || [];
+        const mapped = list.map((a) => ({
+          ...a,
+          author: a.authorName || a.author || "DEZORYN Team",
+          readTime: a.readTimeMinutes ? `${a.readTimeMinutes} min` : (a.readTime || "5 min"),
+          status: a.status === "PUBLISHED" || a.status === "Published" ? "Published" : "Draft",
+          publishedDate: a.publishedAt ? new Date(a.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent",
+          featuredImage: a.coverImage || a.featuredImage || "",
+        }));
+        setArticles(mapped);
       })
-      .catch(() => {});
+      .catch((err) => console.warn("Load blog posts notice:", err.message));
   };
 
   useEffect(() => {

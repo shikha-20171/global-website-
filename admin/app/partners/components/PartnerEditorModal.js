@@ -20,7 +20,7 @@ export default function PartnerEditorModal({
       description="Upload partner logo, enter company details, category, and website."
       size="md"
       footer={
-        <div className="flex items-center justify-end gap-2 w-full">
+        <div className="flex flex-wrap items-center justify-end gap-2 w-full">
           <button
             type="button"
             onClick={onClose}

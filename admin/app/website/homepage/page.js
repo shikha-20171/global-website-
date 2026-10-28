@@ -25,12 +25,11 @@ import AdminToast from "@/components/admin/AdminToast";
 import EditSectionModal from "./components/EditSectionModal";
 import VersionHistoryModal from "./components/VersionHistoryModal";
 import AdminPreviewPanel from "@/components/admin/AdminPreviewPanel";
-import { getHomepageSections } from "@/lib/admin/data-service";
-import { products } from "@/lib/data";
-import { getAdminSections, updateAdminSection } from "@/lib/api";
+import { getAdminSections, updateAdminSection, getAdminProducts } from "@/lib/api";
 
 export default function AdminHomepageBuilderPage() {
-  const [sections, setSections] = useState(getHomepageSections());
+  const [sections, setSections] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [selectedSection, setSelectedSection] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isVersionModalOpen, setIsVersionModalOpen] = useState(false);
@@ -39,47 +38,56 @@ export default function AdminHomepageBuilderPage() {
 
   useEffect(() => {
     let mounted = true;
-    // [API IMPLEMENTATION] getAdminSections() -> GET /api/v1/admin/sections
-    getAdminSections("home")
-      .then((data) => {
-        const liveSecs = data?.sections || (Array.isArray(data) ? data : null);
-        if (mounted && Array.isArray(liveSecs) && liveSecs.length > 0) {
-          const homeSecs = liveSecs.filter(
-            (s) => !s.page || s.page.slug === "/" || s.pageId === "cmvahys5p002btpwinwh7gs1d"
-          );
-          const targetSecs = homeSecs.length > 0 ? homeSecs : liveSecs;
-          const mapped = targetSecs.map((s, idx) => ({
-            id: s.id,
-            sectionKey: s.sectionKey,
-            name: s.name || s.sectionKey || `Section ${idx + 1}`,
-            headline: s.headline || "",
-            subheadline: s.subheadline || "",
-            primaryCtaLabel: s.settings?.primaryCtaLabel || "Explore Products",
-            primaryCtaUrl: s.settings?.primaryCtaUrl || "/marketplace",
-            secondaryCtaLabel: s.settings?.secondaryCtaLabel || "Talk to an Expert",
-            secondaryCtaUrl: s.settings?.secondaryCtaUrl || "/contact",
-            imageUrl: s.settings?.imageUrl || s.imageUrl || "",
-            status: s.isEnabled ? "Published" : "Draft",
-            enabled: s.isEnabled ?? true,
-            order: s.displayOrder || idx + 1,
-            lastEdited: "Recently",
-          }));
-          setSections(mapped);
+
+    Promise.allSettled([
+      getAdminSections("home"),
+      getAdminProducts(),
+    ]).then(([secsRes, prodsRes]) => {
+      if (!mounted) return;
+
+      if (prodsRes.status === "fulfilled") {
+        const prods = Array.isArray(prodsRes.value) ? prodsRes.value : [];
+        setAllProducts(prods);
+        const featured = prods.filter((p) => p.isFeatured || p.featured).map((p) => p.slug);
+        if (featured.length > 0) {
+          setFeaturedSlugs(featured);
         }
-      })
-      .catch(() => {});
+      }
+
+      if (secsRes.status === "fulfilled") {
+        const data = secsRes.value;
+        const liveSecs = data?.sections || (Array.isArray(data) ? data : []);
+        const homeSecs = liveSecs.filter(
+          (s) => !s.page || s.page.slug === "/" || s.pageId === "cmvahys5p002btpwinwh7gs1d"
+        );
+        const targetSecs = homeSecs.length > 0 ? homeSecs : liveSecs;
+        const mapped = targetSecs.map((s, idx) => ({
+          id: s.id,
+          sectionKey: s.sectionKey,
+          name: s.name || s.sectionKey || `Section ${idx + 1}`,
+          headline: s.headline || "",
+          subheadline: s.subheadline || "",
+          primaryCtaLabel: s.settings?.primaryCtaLabel || "Explore Products",
+          primaryCtaUrl: s.settings?.primaryCtaUrl || "/marketplace",
+          secondaryCtaLabel: s.settings?.secondaryCtaLabel || "Talk to an Expert",
+          secondaryCtaUrl: s.settings?.secondaryCtaUrl || "/contact",
+          imageUrl: s.settings?.imageUrl || s.imageUrl || "",
+          status: s.isEnabled ? "Published" : "Draft",
+          enabled: s.isEnabled ?? true,
+          order: s.displayOrder || idx + 1,
+          lastEdited: "Recently",
+        }));
+        setSections(mapped);
+      }
+    });
+
     return () => {
       mounted = false;
     };
   }, []);
 
-  // Featured Products Rail Selection (Homepage 4 items)
-  const [featuredSlugs, setFeaturedSlugs] = useState([
-    "coaching-master",
-    "college-master",
-    "crm",
-    "dezo-care",
-  ]);
+  // Featured Products Rail Selection
+  const [featuredSlugs, setFeaturedSlugs] = useState([]);
 
   // Reorder section up
   const moveUp = async (index) => {
@@ -283,7 +291,7 @@ export default function AdminHomepageBuilderPage() {
           { label: "Homepage Builder" },
         ]}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setShowPreview(!showPreview)}
@@ -351,7 +359,7 @@ export default function AdminHomepageBuilderPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {products.slice(0, 12).map((prod) => {
+          {allProducts.slice(0, 12).map((prod) => {
             const isFeatured = featuredSlugs.includes(prod.slug);
             return (
               <div

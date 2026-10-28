@@ -1,6 +1,6 @@
-import { prisma } from "../config/database.js";
-import { authService } from "../modules/auth/auth.service.js";
-import { generateSecureToken, hashToken } from "../shared/hash.js";
+import { prisma } from "../src/config/database.js";
+import { authService } from "../src/modules/auth/auth.service.js";
+import { generateSecureToken, hashToken } from "../src/shared/hash.js";
 import { AdminStatus } from "@prisma/client";
 
 async function runAuthVerification() {
@@ -33,7 +33,7 @@ async function runAuthVerification() {
   }
 
   // 1. Create account directly via hashPassword
-  const { hashPassword } = await import("../shared/hash.js");
+  const { hashPassword } = await import("../src/shared/hash.js");
   const initialHash = await hashPassword(initialPassword);
 
   const user = await prisma.adminUser.create({

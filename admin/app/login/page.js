@@ -96,13 +96,13 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="w-full max-w-[460px] px-2 sm:px-0">
+    <div className="w-full max-w-[460px] px-3 sm:px-0 mx-auto">
       {/* Brand Header */}
       <div className="text-center mb-7">
         <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white font-extrabold text-xl mb-4 shadow-[0_0_35px_rgba(37,99,235,0.35)] ring-4 ring-blue-500/20 font-exo">
           DZ
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-exo">
+        <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white font-exo">
           DEZORYN CONTROL PLANE
         </h1>
         <p className="mt-1.5 text-xs sm:text-sm text-slate-400 font-medium">
@@ -111,14 +111,14 @@ export default function AdminLoginPage() {
       </div>
 
       {/* Main Login Card */}
-      <div className="rounded-2xl border border-slate-800/80 bg-slate-900/90 p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_40px_rgba(37,99,235,0.1)] backdrop-blur-2xl">
+      <div className="rounded-2xl border border-slate-800/80 bg-slate-900/90 p-5 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_40px_rgba(37,99,235,0.1)] backdrop-blur-2xl">
         {/* Static Password Quick-Access Banner */}
-        <div className="mb-4 p-3 rounded-xl border border-blue-500/20 bg-blue-950/30 text-blue-200 text-xs flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="mb-4 p-3 rounded-xl border border-blue-500/20 bg-blue-950/30 text-blue-200 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2 min-w-0">
             <KeyRound size={16} className="text-blue-400 shrink-0" />
-            <div>
+            <div className="min-w-0">
               <span className="font-semibold block text-white text-[12px]">Static Admin Password</span>
-              <span className="text-[11px] text-blue-300 font-mono">SuperSecretAdminPassword2026!</span>
+              <span className="text-[11px] text-blue-300 font-mono break-all">SuperSecretAdminPassword2026!</span>
             </div>
           </div>
           <button
@@ -129,7 +129,7 @@ export default function AdminLoginPage() {
               setPassword("SuperSecretAdminPassword2026!");
               if (error) setError(null);
             }}
-            className="text-[11px] font-medium bg-blue-600/40 hover:bg-blue-600/70 text-blue-200 border border-blue-500/40 px-2.5 py-1 rounded-lg transition cursor-pointer"
+            className="text-[11px] font-medium bg-blue-600/40 hover:bg-blue-600/70 text-blue-200 border border-blue-500/40 px-2.5 py-1 rounded-lg transition cursor-pointer shrink-0 self-end sm:self-auto"
           >
             Auto Fill
           </button>

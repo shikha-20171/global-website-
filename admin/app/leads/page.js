@@ -24,7 +24,6 @@ import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import LeadDetailModal from "./components/LeadDetailModal";
-import { MOCK_LEADS_DATA } from "@/lib/admin/mock-data/leads";
 import {
   getAdminLeads,
   updateAdminLeadStatus,
@@ -34,7 +33,7 @@ import {
 const PIPELINE_STATUSES = ["New", "Contacted", "Qualified", "Demo Scheduled", "Proposal", "Won", "Lost"];
 
 export default function AdminLeadsPage() {
-  const [leads, setLeads] = useState(MOCK_LEADS_DATA);
+  const [leads, setLeads] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [toast, setToast] = useState(null);
@@ -45,12 +44,22 @@ export default function AdminLeadsPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const refreshLeads = () => {
-    // [API IMPLEMENTATION] getAdminLeads() -> GET /api/v1/admin/leads
     getAdminLeads()
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setLeads(data);
-        }
+        const list = Array.isArray(data) ? data : (data?.data || data?.items || []);
+        const mapped = list.map((l) => ({
+          ...l,
+          status: l.status === "NEW" ? "New" : l.status === "CONTACTED" ? "Contacted" : l.status === "QUALIFIED" ? "Qualified" : l.status === "DEMO" ? "Demo Scheduled" : l.status === "PROPOSAL" ? "Proposal" : l.status === "WON" ? "Won" : l.status === "LOST" ? "Lost" : l.status,
+          date: l.submittedAt ? new Date(l.submittedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : (l.createdAt ? new Date(l.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : l.date || "Recent"),
+          product: l.interestedSolution || l.solution || l.product || "Enterprise Platform",
+          requirement: l.requirement || l.req || l.message || "",
+          budget: l.budgetRange || l.budget || "Standard SaaS",
+          companySize: l.companySize || "N/A",
+          phone: l.phone || "",
+          source: l.source || "GENERAL_CONTACT",
+          submittedAt: l.submittedAt || l.createdAt || null,
+        }));
+        setLeads(mapped);
       })
       .catch((err) => {
         console.warn("Could not load leads via API:", err.message);
@@ -80,9 +89,8 @@ export default function AdminLeadsPage() {
       setActiveLead((prev) => ({ ...prev, status: newStatus }));
     }
     const prismaStatus = newStatus.toUpperCase().replace(/\s+/g, "_");
-    if (id && !id.startsWith("LEAD-")) {
+    if (id) {
       try {
-        // [API IMPLEMENTATION] updateAdminLeadStatus() -> PATCH /api/v1/admin/leads/:id/status
         await updateAdminLeadStatus(id, prismaStatus);
       } catch (err) {
         console.warn("Could not update lead status on backend:", err.message);
@@ -99,9 +107,8 @@ export default function AdminLeadsPage() {
     if (!deleteTarget) return;
     const targetId = deleteTarget.id;
     setLeads((prev) => prev.filter((l) => l.id !== targetId));
-    if (targetId && !targetId.startsWith("LEAD-")) {
+    if (targetId) {
       try {
-        // [API IMPLEMENTATION] deleteAdminLead() -> DELETE /api/v1/admin/leads/:id
         await deleteAdminLead(targetId);
       } catch (err) {
         console.warn("Could not delete lead via API:", err.message);

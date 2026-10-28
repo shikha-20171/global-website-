@@ -10,6 +10,8 @@ import {
   updateJobPostingSchema,
   createPartnerSchema,
   updatePartnerSchema,
+  createInsightReportSchema,
+  updateInsightReportSchema,
 } from "./resources.schema.js";
 import { successResponse } from "../../shared/response.js";
 import { AuthenticatedRequest } from "../../shared/types.js";
@@ -72,6 +74,39 @@ export class ResourcesController {
   async listPublicInsights(_request: FastifyRequest, reply: FastifyReply) {
     const insights = await resourcesService.listPublicInsights();
     return reply.status(200).send(successResponse(insights));
+  }
+
+  async listAdminInsights(_request: FastifyRequest, reply: FastifyReply) {
+    const insights = await resourcesService.listAdminInsights();
+    return reply.status(200).send(successResponse(insights));
+  }
+
+  async createInsight(request: FastifyRequest, reply: FastifyReply) {
+    const authReq = request as AuthenticatedRequest;
+    const input = createInsightReportSchema.parse(request.body);
+    const actorName = authReq.adminUser?.name || "Super Admin";
+
+    const created = await resourcesService.createInsight(input, actorName);
+    return reply.status(201).send(successResponse(created, "Insight report created"));
+  }
+
+  async updateInsight(request: FastifyRequest, reply: FastifyReply) {
+    const authReq = request as AuthenticatedRequest;
+    const { id } = request.params as { id: string };
+    const input = updateInsightReportSchema.parse(request.body);
+    const actorName = authReq.adminUser?.name || "Super Admin";
+
+    const updated = await resourcesService.updateInsight(id, input, actorName);
+    return reply.status(200).send(successResponse(updated, "Insight report updated"));
+  }
+
+  async deleteInsight(request: FastifyRequest, reply: FastifyReply) {
+    const authReq = request as AuthenticatedRequest;
+    const { id } = request.params as { id: string };
+    const actorName = authReq.adminUser?.name || "Super Admin";
+
+    const result = await resourcesService.deleteInsight(id, actorName);
+    return reply.status(200).send(successResponse(result, "Insight report deleted"));
   }
 
   async listPublicRunbooks(_request: FastifyRequest, reply: FastifyReply) {

@@ -32,116 +32,21 @@ import {
   deleteAdminSolution,
 } from "@/lib/api";
 
-const INITIAL_SOLUTIONS = [
-  {
-    id: "enterprise-architecture",
-    slug: "enterprise-architecture",
-    name: "Enterprise Solutions",
-    tagline: "Scalable zero-trust architectures for complex organizational workflows.",
-    problemStatement: "Fragmented legacy tools cause data silos, high security risks, and slow response times.",
-    description: "Modular enterprise cloud architectures built for high concurrency, zero-trust RBAC and multi-region resilience.",
-    capabilities: ["Multi-Tenant DB Sharding", "Zero-Trust RBAC & IAM", "High Concurrency API Mesh", "Automated Disaster Recovery"],
-    relatedProducts: "Schooly ERP, DezoCare, EstateSync",
-    status: "Published",
-    seoTitle: "Enterprise Software Solutions | DEZORYN TECHNOLOGY",
-    metaDescription: "Scalable, secure enterprise architectures engineered for global organizations.",
-  },
-  {
-    id: "ai-solutions",
-    slug: "ai-solutions",
-    name: "AI Solutions",
-    tagline: "Intelligent automation and computer vision engines.",
-    problemStatement: "Manual data entry and verification processes create human error and operational bottlenecks.",
-    description: "Deep learning models, computer vision for proctoring, intelligent document processing and natural language workflows.",
-    capabilities: ["Document OCR & Auto-Extraction", "Biometric & Vision Verification", "Predictive Analytics Pipelines", "Context-Aware AI Assistants"],
-    relatedProducts: "Schooly Core, TalentEdge AI",
-    status: "Published",
-    seoTitle: "Enterprise AI & Intelligence | DEZORYN TECHNOLOGY",
-    metaDescription: "Practical enterprise AI models embedded into production software workflows.",
-  },
-  {
-    id: "business-automation",
-    slug: "business-automation",
-    name: "Automation",
-    tagline: "Automate repetitive data handling and event workflows.",
-    problemStatement: "Teams waste hundreds of hours manually coordinating data between disconnected tools.",
-    description: "Event-driven workflow engines that trigger alerts, invoices, compliance checks and cross-system webhooks automatically.",
-    capabilities: ["Real-Time Event Triggers", "Automated Billing & Invoicing", "Multi-Step Approval Workflows", "External Webhook Mesh"],
-    relatedProducts: "FinancePulse, Society Management",
-    status: "Published",
-    seoTitle: "Business Process Automation | DEZORYN TECHNOLOGY",
-    metaDescription: "Event-driven software automation eliminating manual enterprise friction.",
-  },
-  {
-    id: "custom-software",
-    slug: "custom-software",
-    name: "Custom Software",
-    tagline: "Bespoke SaaS platforms engineered for unique operational models.",
-    problemStatement: "Off-the-shelf software fails to match specialized regulatory or organizational workflows.",
-    description: "End-to-end custom platform development with modern web frameworks, resilient databases and clean APIs.",
-    capabilities: ["Domain-Driven System Design", "Custom Cloud Architecture", "Legacy System Migration", "Dedicated QA & Automated Testing"],
-    relatedProducts: "Bespoke Enterprise Builds",
-    status: "Published",
-    seoTitle: "Custom Software Engineering | DEZORYN TECHNOLOGY",
-    metaDescription: "Tailored software applications built for mission-critical business requirements.",
-  },
-  {
-    id: "digital-transformation",
-    slug: "digital-transformation",
-    name: "Digital Transformation",
-    tagline: "Modernize operational frameworks from manual paper to cloud-native.",
-    problemStatement: "Paper-based or legacy desktop software restricts remote operations and rapid scaling.",
-    description: "Holistic modernization programs replacing archaic spreadsheets and paperwork with cloud-accessible dashboards.",
-    capabilities: ["Paperless Digital Workflows", "Unified Real-Time Dashboards", "Staff Onboarding & Training", "Continuous Cloud Optimization"],
-    relatedProducts: "DezoCare, Schooly ERP",
-    status: "Published",
-    seoTitle: "Digital Transformation Consulting | DEZORYN TECHNOLOGY",
-    metaDescription: "Guiding traditional institutions into unified digital software ecosystems.",
-  },
-  {
-    id: "cloud-solutions",
-    slug: "cloud-solutions",
-    name: "Cloud Solutions",
-    tagline: "High availability, autoscaling and containerized deployments.",
-    problemStatement: "Unreliable server infrastructure leads to downtime during peak traffic spikes.",
-    description: "Kubernetes orchestration, serverless microservices, CDN caching and multi-cloud infrastructure.",
-    capabilities: ["Kubernetes Cluster Management", "Automated CI/CD Pipelines", "Multi-Region Cloud Deployment", "Infrastructure as Code (IaC)"],
-    relatedProducts: "Global Cloud VPCs",
-    status: "Published",
-    seoTitle: "Enterprise Cloud Solutions | DEZORYN TECHNOLOGY",
-    metaDescription: "Resilient cloud infrastructure designed for 99.95% high availability.",
-  },
-  {
-    id: "mobile-solutions",
-    slug: "mobile-solutions",
-    name: "Mobile Solutions",
-    tagline: "Native and cross-platform companion apps for on-the-go teams.",
-    problemStatement: "Field staff and mobile executives cannot access core system data while away from desks.",
-    description: "High-performance iOS and Android mobile apps connected to central databases with offline sync support.",
-    capabilities: ["Offline-First Data Sync", "Push Notification Architecture", "Biometric Security (FaceID/Fingerprint)", "Cross-Platform Code Sharing"],
-    relatedProducts: "Society Resident App, Clinic Companion",
-    status: "Published",
-    seoTitle: "Enterprise Mobile Solutions | DEZORYN TECHNOLOGY",
-    metaDescription: "Companion mobile applications extending core enterprise platforms.",
-  },
-];
-
 export default function AdminSolutionsPage() {
-  const [solutions, setSolutions] = useState(INITIAL_SOLUTIONS);
+  const [solutions, setSolutions] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [toast, setToast] = useState(null);
 
   const refreshSolutions = () => {
-    // [API IMPLEMENTATION] getAdminSolutions() -> GET /api/v1/admin/solutions
     getAdminSolutions()
       .then((data) => {
         const list = Array.isArray(data) ? data : data?.solutions || [];
-        if (list.length > 0) {
-          setSolutions(list);
-        }
+        setSolutions(list);
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.warn("Could not load solutions:", err.message);
+      });
   };
 
   useEffect(() => {
@@ -221,11 +126,25 @@ export default function AdminSolutionsPage() {
 
     const parsedCaps = editingSolution.capabilitiesText
       ? editingSolution.capabilitiesText.split("\n").filter(Boolean)
-      : editingSolution.capabilities;
+      : Array.isArray(editingSolution.capabilities)
+      ? editingSolution.capabilities
+      : [];
 
-    const updated = {
-      ...editingSolution,
+    const payload = {
+      slug: editingSolution.slug,
+      name: editingSolution.name,
+      tagline: editingSolution.tagline || editingSolution.name,
+      description: editingSolution.description || editingSolution.tagline || editingSolution.name,
+      problemStatement: editingSolution.problemStatement || "",
       capabilities: parsedCaps,
+      relatedProducts: Array.isArray(editingSolution.relatedProducts)
+        ? editingSolution.relatedProducts
+        : typeof editingSolution.relatedProducts === "string"
+        ? editingSolution.relatedProducts.split(",").map((s) => s.trim()).filter(Boolean)
+        : [],
+      status: String(editingSolution.status || "PUBLISHED").toUpperCase() === "DRAFT" ? "DRAFT" : "PUBLISHED",
+      seoTitle: editingSolution.seoTitle || editingSolution.name,
+      seoDescription: editingSolution.metaDescription || editingSolution.seoDescription || editingSolution.tagline || "",
     };
 
     const isNew = editingSolution.id?.startsWith("sol-") && !solutions.some((s) => s.id === editingSolution.id && !s.id.startsWith("sol-"));
@@ -233,35 +152,35 @@ export default function AdminSolutionsPage() {
     try {
       if (!isNew) {
         // [API IMPLEMENTATION] updateAdminSolution() -> PUT /api/v1/admin/solutions/:id
-        await updateAdminSolution(editingSolution.id, updated);
+        await updateAdminSolution(editingSolution.id, payload);
         setToast({
           type: "success",
           message: "Solution Updated",
-          description: `Changes saved for "${updated.name}".`,
+          description: `Changes saved for "${payload.name}".`,
         });
       } else {
         // [API IMPLEMENTATION] createAdminSolution() -> POST /api/v1/admin/solutions
-        await createAdminSolution(updated);
+        await createAdminSolution(payload);
         setToast({
           type: "success",
           message: "Solution Created",
-          description: `Added "${updated.name}" to solutions architecture catalog.`,
+          description: `Added "${payload.name}" to solutions architecture catalog.`,
         });
       }
       refreshSolutions();
       setIsEditorOpen(false);
     } catch (err) {
       console.warn("API solutions save notice:", err.message);
-      const exists = solutions.some((s) => s.id === updated.id);
+      const exists = solutions.some((s) => s.id === editingSolution.id);
       if (exists) {
-        setSolutions(solutions.map((s) => (s.id === updated.id ? updated : s)));
+        setSolutions(solutions.map((s) => (s.id === editingSolution.id ? { ...editingSolution, ...payload } : s)));
       } else {
-        setSolutions([...solutions, updated]);
+        setSolutions([...solutions, { ...editingSolution, ...payload }]);
       }
       setToast({
         type: "success",
         message: "Solution Saved",
-        description: `Saved "${updated.name}".`,
+        description: `Saved "${payload.name}".`,
       });
       setIsEditorOpen(false);
     }

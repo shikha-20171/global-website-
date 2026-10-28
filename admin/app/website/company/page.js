@@ -29,11 +29,11 @@ import LeaderModal from "./components/LeaderModal";
 import OfficeModal from "./components/OfficeModal";
 import { getAdminCompanyProfile, saveAdminCompanyProfile } from "@/lib/api";
 
-const INITIAL_PILLARS = [
+const DEFAULT_PILLARS = [
   {
     id: "mission",
     title: "Our Mission",
-    statement: "To make powerful technology accessible, scalable, and intelligent for businesses everywhere.",
+    statement: "",
     tag: "SRS §25",
     color: "from-blue-500/20 via-blue-500/10 to-transparent",
     accent: "text-blue-600 border-blue-200 bg-blue-50",
@@ -41,7 +41,7 @@ const INITIAL_PILLARS = [
   {
     id: "vision",
     title: "Our Vision",
-    statement: "To build a global ecosystem of software products that powers the next generation of businesses.",
+    statement: "",
     tag: "SRS §26",
     color: "from-indigo-500/20 via-indigo-500/10 to-transparent",
     accent: "text-indigo-600 border-indigo-200 bg-indigo-50",
@@ -49,58 +49,18 @@ const INITIAL_PILLARS = [
   {
     id: "values",
     title: "Our Core Values",
-    statement: "Architectural craftsmanship, zero unnecessary complexity, customer transparency, and a global technology mindset.",
+    statement: "",
     tag: "Values",
     color: "from-sky-500/20 via-sky-500/10 to-transparent",
     accent: "text-sky-600 border-sky-200 bg-sky-50",
   },
 ];
 
-const INITIAL_LEADERS = [
-  {
-    id: "lead_1",
-    name: "Alexander Wright",
-    role: "Chief Executive Officer & Co-Founder",
-    bio: "Enterprise cloud architect with 15+ years scaling multi-tenant software platforms and distributed databases.",
-    location: "Bhopal, India",
-    avatar: "/team/alexander-wright.jpg",
-  },
-  {
-    id: "lead_2",
-    name: "Shikha Gour",
-    role: "Chief Technology Officer & Head of Architecture",
-    bio: "Pioneering zero-trust RBAC systems, high-concurrency microservices, and AI-assisted enterprise workflows.",
-    location: "Bhopal, India",
-    avatar: "/team/shikha-gour.jpg",
-  },
-  {
-    id: "lead_3",
-    name: "David Kim",
-    role: "VP of Product & SaaS Ecosystem",
-    bio: "Overseeing product vision across 18 specialized SaaS verticals from campus ERPs to clinical hospital systems.",
-    location: "Bhopal, India",
-    avatar: "/team/david-kim.jpg",
-  },
-];
-
-const INITIAL_OFFICES = [
-  {
-    id: "off_1",
-    city: "Bhopal, India",
-    type: "Corporate Headquarters & Engineering Hub",
-    address: "Prajapati Complex, Kolar Road, Bhopal, Madhya Pradesh 462042, India",
-    phone: "+91 755 400-DEZO",
-    email: "support@dezoryn.com",
-    timezone: "IST (UTC+5:30)",
-    teamCount: "Engineering & Operations Hub",
-  },
-];
-
 export default function AdminCompanyPage() {
   const [activeTab, setActiveTab] = useState("pillars");
-  const [pillars, setPillars] = useState(INITIAL_PILLARS);
-  const [leaders, setLeaders] = useState(INITIAL_LEADERS);
-  const [offices, setOffices] = useState(INITIAL_OFFICES);
+  const [pillars, setPillars] = useState(DEFAULT_PILLARS);
+  const [leaders, setLeaders] = useState([]);
+  const [offices, setOffices] = useState([]);
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -124,18 +84,29 @@ export default function AdminCompanyPage() {
                 if (p.id === "mission" && data.mission) return { ...p, statement: data.mission };
                 if (p.id === "vision" && data.vision) return { ...p, statement: data.vision };
                 if (p.id === "values" && data.values) {
-                  const valStr = typeof data.values === "string" ? data.values : JSON.stringify(data.values);
+                  const valStr = typeof data.values === "string"
+                    ? data.values
+                    : Array.isArray(data.values)
+                    ? data.values.map(v => typeof v === "object" ? `${v.title}: ${v.desc}` : v).join("\n")
+                    : JSON.stringify(data.values);
                   return { ...p, statement: valStr };
                 }
                 return p;
               })
             );
           }
-          if (Array.isArray(data.leadershipRoster) && data.leadershipRoster.length > 0) {
-            setLeaders(data.leadershipRoster);
+          if (Array.isArray(data.leadershipRoster)) {
+            setLeaders(data.leadershipRoster.map((l, idx) => ({
+              ...l,
+              id: l.id || `lead_${idx + 1}`,
+              avatar: l.avatar || "/team/placeholder.jpg",
+            })));
           }
-          if (Array.isArray(data.officeLocations) && data.officeLocations.length > 0) {
-            setOffices(data.officeLocations);
+          if (Array.isArray(data.officeLocations)) {
+            setOffices(data.officeLocations.map((o, idx) => ({
+              ...o,
+              id: o.id || `off_${idx + 1}`,
+            })));
           }
         }
       })
@@ -236,7 +207,7 @@ export default function AdminCompanyPage() {
           { label: "Company Profile" },
         ]}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <a
               href="http://localhost:3000/company"
               target="_blank"

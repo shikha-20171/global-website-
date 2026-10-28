@@ -133,27 +133,27 @@ export default function ProductDetail({ product: p }) {
           <div className="mt-6 grid items-start gap-12 lg:grid-cols-[1fr_1.25fr]">
             {/* Left Content Column */}
             <div className="flex flex-col justify-center">
-              <h1 className="h-display text-4xl sm:text-6xl lg:text-7xl leading-[1.08]">
+              <h1 className="h-display text-2xl xs:text-3xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.08] break-words">
                 {p.name}
               </h1>
-              <p className="mt-4 text-xl sm:text-2xl font-medium text-white/90 leading-snug">
+              <p className="mt-3 text-base xs:text-lg sm:text-2xl font-medium text-white/90 leading-snug break-words">
                 {p.tagline}
               </p>
-              <p className="lead mt-5 max-w-xl text-cool/90 leading-relaxed">
+              <p className="lead mt-4 max-w-xl text-cool/90 leading-relaxed text-sm sm:text-base">
                 {p.description}
               </p>
 
               {/* Price Callout */}
               <div className="mt-6 flex flex-wrap items-baseline gap-2">
-                <span className="text-sm font-medium uppercase tracking-wider text-cool">Starting from</span>
-                <span className="text-3xl font-bold tracking-tight text-white">
+                <span className="text-xs sm:text-sm font-medium uppercase tracking-wider text-cool">Starting from</span>
+                <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
                   {formatPrice(startingPrice(p))}
                 </span>
-                <span className="text-sm text-cool">/month billed {cycle}</span>
+                <span className="text-xs sm:text-sm text-cool">/month billed {cycle}</span>
               </div>
 
               {/* CTAs */}
-              <div className="mt-8 flex flex-wrap items-center gap-3">
+              <div className="mt-6 sm:mt-8 flex flex-wrap items-center gap-2.5 sm:gap-3">
                 <Button href={`/demo?product=${p.slug}&type=trial`} arrow className="shadow-lg shadow-electric/25">
                   Start Free Trial
                 </Button>
@@ -166,11 +166,11 @@ export default function ProductDetail({ product: p }) {
               </div>
 
               {/* Trust Indicators */}
-              <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3 border-t border-white/10 pt-6 text-xs text-cool">
+              <div className="mt-6 sm:mt-8 grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 border-t border-white/10 pt-5 text-xs text-cool">
                 {trustMetrics.map((t, idx) => (
                   <div key={idx}>
                     <div className="font-semibold text-white">{t.title}</div>
-                    <div>{t.desc}</div>
+                    <div className="text-[11px] text-cool/80">{t.desc}</div>
                   </div>
                 ))}
               </div>
@@ -181,7 +181,7 @@ export default function ProductDetail({ product: p }) {
               initial={{ opacity: 0, y: 30, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="relative"
+              className="relative w-full max-w-full overflow-hidden"
             >
               {/* Dynamic Ambient Glow matching product hue */}
               <div
@@ -190,27 +190,27 @@ export default function ProductDetail({ product: p }) {
               />
 
               {/* Mac-style Window Frame Mockup */}
-              <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-[#090d19] shadow-2xl backdrop-blur-2xl group">
+              <div className="relative overflow-hidden rounded-2xl border border-white/15 bg-[#090d19] shadow-2xl backdrop-blur-2xl group w-full">
                 {/* Window Chrome Header Bar */}
-                <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-[#ff5f56]/90 inline-block shadow-sm" />
-                    <span className="h-3 w-3 rounded-full bg-[#ffbd2e]/90 inline-block shadow-sm" />
-                    <span className="h-3 w-3 rounded-full bg-[#27c93f]/90 inline-block shadow-sm" />
+                <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-3 sm:px-4 py-2.5 sm:py-3 gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-[#ff5f56]/90 inline-block shadow-sm" />
+                    <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-[#ffbd2e]/90 inline-block shadow-sm" />
+                    <span className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-[#27c93f]/90 inline-block shadow-sm" />
                   </div>
 
                   {/* Browser URL Badge */}
-                  <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/50 px-4 py-1 text-xs text-cool/90">
-                    <Lock size={11} className="text-emerald-400" />
-                    <span className="font-mono text-[11px] tracking-tight text-white/80">
-                      https://app.dezoryn.com/{p.slug}
+                  <div className="hidden xs:flex items-center gap-1.5 sm:gap-2 rounded-full border border-white/10 bg-black/50 px-2.5 sm:px-4 py-1 text-xs text-cool/90 max-w-[170px] sm:max-w-xs md:max-w-none min-w-0">
+                    <Lock size={10} className="text-emerald-400 shrink-0" />
+                    <span className="font-mono text-[10px] sm:text-[11px] tracking-tight text-white/80 truncate">
+                      app.dezoryn.com/{p.slug}
                     </span>
                   </div>
 
                   {/* Expand / Fullscreen View Button */}
                   <button
                     onClick={() => setIsFullscreen(true)}
-                    className="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-cool hover:border-electric/50 hover:text-white transition"
+                    className="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs font-medium text-cool hover:border-electric/50 hover:text-white transition shrink-0"
                     title="Open Fullscreen View"
                   >
                     <Maximize2 size={12} />
@@ -230,13 +230,13 @@ export default function ProductDetail({ product: p }) {
                       className="h-full w-full object-cover object-top transition duration-700 ease-out group-hover:scale-[1.02]"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center p-8 text-center bg-gradient-to-br from-[#0c1222] to-[#050811]">
+                    <div className="flex h-full w-full items-center justify-center p-6 text-center bg-gradient-to-br from-[#0c1222] to-[#050811]">
                       <div>
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-electric/20 text-electric">
-                          <Cpu size={32} />
+                        <div className="mx-auto flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl bg-electric/20 text-electric">
+                          <Cpu size={28} />
                         </div>
-                        <h3 className="mt-4 text-xl font-bold text-white">{p.name} Production Workspace</h3>
-                        <p className="mt-2 text-sm text-cool">High-throughput enterprise application suite</p>
+                        <h3 className="mt-3 text-lg sm:text-xl font-bold text-white">{p.name} Production Workspace</h3>
+                        <p className="mt-1 text-xs sm:text-sm text-cool">High-throughput enterprise application suite</p>
                       </div>
                     </div>
                   )}
@@ -244,12 +244,12 @@ export default function ProductDetail({ product: p }) {
                   {/* Gradient vignettes */}
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/90 via-transparent to-transparent" />
 
-                  {/* Floating Glassmorphism Telemetry Cards */}
+                  {/* Floating Glassmorphism Telemetry Cards - hidden on mobile phones to prevent overlap */}
                   <motion.div
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="absolute bottom-4 left-4 rounded-xl border border-white/15 bg-black/70 px-3.5 py-2 backdrop-blur-xl shadow-xl flex items-center gap-2.5"
+                    className="hidden sm:flex absolute bottom-4 left-4 rounded-xl border border-white/15 bg-black/70 px-3.5 py-2 backdrop-blur-xl shadow-xl items-center gap-2.5"
                   >
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-electric/20 text-electric">
                       <Zap size={14} />
@@ -264,7 +264,7 @@ export default function ProductDetail({ product: p }) {
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.6 }}
-                    className="absolute top-4 right-4 rounded-xl border border-white/15 bg-black/70 px-3.5 py-2 backdrop-blur-xl shadow-xl flex items-center gap-2.5"
+                    className="hidden sm:flex absolute top-4 right-4 rounded-xl border border-white/15 bg-black/70 px-3.5 py-2 backdrop-blur-xl shadow-xl items-center gap-2.5"
                   >
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
                       <ShieldCheck size={14} />
@@ -277,7 +277,7 @@ export default function ProductDetail({ product: p }) {
 
                   {/* Overlay click prompt */}
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 bg-black/20">
-                    <span className="flex items-center gap-2 rounded-full border border-white/20 bg-black/80 px-4 py-2 text-xs font-semibold text-white shadow-2xl backdrop-blur-md">
+                    <span className="flex items-center gap-2 rounded-full border border-white/20 bg-black/80 px-3.5 py-1.5 text-xs font-semibold text-white shadow-2xl backdrop-blur-md">
                       <Maximize2 size={13} />
                       Click to Expand High-Res Showcase
                     </span>
@@ -285,21 +285,22 @@ export default function ProductDetail({ product: p }) {
                 </div>
 
                 {/* Bottom Mockup Status Strip */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-white/[0.02] px-4 py-2.5 text-xs text-cool">
+                <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2 border-t border-white/10 bg-white/[0.02] px-3 sm:px-4 py-2 text-[11px] text-cool">
                   <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Real-Time Production Cluster: 100% Operational</span>
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                    <span className="truncate">Cluster: 100% Operational</span>
                   </div>
-                  <div className="flex items-center gap-3 text-[11px]">
+                  <div className="flex items-center gap-2 text-[10px] sm:text-[11px] text-cool/80 flex-wrap">
                     <span>Multi-Tenant DB</span>
                     <span>•</span>
-                    <span>REST / GraphQL APIs</span>
+                    <span>REST / GraphQL</span>
                     <span>•</span>
-                    <span>Webhook Automation</span>
+                    <span>Webhooks</span>
                   </div>
                 </div>
               </div>
             </motion.div>
+
           </div>
         </div>
       </section>
@@ -485,7 +486,7 @@ export default function ProductDetail({ product: p }) {
             </div>
 
             {/* Right Interactive AI Workspace Stage */}
-            <div>
+            <div className="min-w-0 w-full">
               <ModuleWorkspace product={p} activeIndex={mod} onSelectModule={setMod} />
             </div>
           </div>

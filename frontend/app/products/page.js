@@ -76,7 +76,7 @@ export default async function ProductsPage() {
               <span>SAAS PRODUCT ECOSYSTEM</span>
             </div>
 
-            <h1 className="h-display text-4xl sm:text-6xl font-extrabold text-white">
+            <h1 className="h-display text-2xl xs:text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white break-words">
               Software Built to Solve{" "}
               <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-cyan-300">
                 Real Business

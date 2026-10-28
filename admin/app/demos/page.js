@@ -18,13 +18,12 @@ import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import DemoDetailModal from "./components/DemoDetailModal";
-import { MOCK_DEMOS_DATA } from "@/lib/admin/mock-data/demos";
 import { getAdminDemos, updateAdminDemoStatus, deleteAdminDemo } from "@/lib/api";
 
 const DEMO_STATUSES = ["New Request", "Confirmed", "Completed", "Cancelled"];
 
 export default function AdminDemosPage() {
-  const [demos, setDemos] = useState(MOCK_DEMOS_DATA);
+  const [demos, setDemos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -38,28 +37,27 @@ export default function AdminDemosPage() {
   const loadDemos = async () => {
     try {
       setLoading(true);
-      // [API IMPLEMENTATION] getAdminDemos() -> GET /api/v1/admin/demos
       const res = await getAdminDemos();
-      const list = res?.demos || (Array.isArray(res) ? res : null);
-      if (Array.isArray(list) && list.length > 0) {
-        const mapped = list.map((d) => ({
-          id: d.id,
-          contactName: d.fullName || d.contactName || "Prospective Client",
-          company: d.company || "Enterprise Corp",
-          businessEmail: d.workEmail || d.businessEmail || d.email,
-          product: d.productInterest || d.product || "Core Enterprise",
-          country: d.country || "Global",
-          preferredDate: d.preferredDate || "Scheduled",
-          preferredTime: d.preferredTime || "10:00 AM",
-          timeZone: d.timezone || d.timeZone || "UTC",
-          assignedOwner: d.assignedOwner?.name || "Super Admin",
-          status: d.status === "PENDING" ? "New Request" : d.status === "CONFIRMED" ? "Confirmed" : d.status === "COMPLETED" ? "Completed" : d.status === "CANCELLED" ? "Cancelled" : (d.status === "Pending Link" ? "New Request" : d.status || "New Request"),
-          notes: d.notes || "",
-        }));
-        setDemos(mapped);
-      }
+      const list = res?.demos || (Array.isArray(res) ? res : (res?.data || []));
+      const mapped = list.map((d) => ({
+        id: d.id,
+        contactName: d.fullName || d.contactName || "Prospective Client",
+        company: d.company || "Enterprise Corp",
+        businessEmail: d.workEmail || d.businessEmail || d.email,
+        product: d.productSlug ? d.productSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : (d.productInterest || d.product || "Core Enterprise"),
+        productSlug: d.productSlug || d.product || "core",
+        country: d.country || "Global",
+        preferredDate: d.preferredDate || "Scheduled",
+        preferredTime: d.preferredTime || "10:00 AM",
+        timeZone: d.timezone || d.timeZone || "UTC",
+        assignedOwner: d.assignedOwner?.name || "Super Admin",
+        status: d.status === "PENDING" ? "New Request" : d.status === "CONFIRMED" ? "Confirmed" : d.status === "COMPLETED" ? "Completed" : d.status === "CANCELLED" ? "Cancelled" : (d.status === "Pending Link" ? "New Request" : d.status || "New Request"),
+        notes: d.notes || "",
+        createdAt: d.createdAt || null,
+      }));
+      setDemos(mapped);
     } catch (e) {
-      // Keep fallback
+      console.warn("Could not load demos:", e.message);
     } finally {
       setLoading(false);
     }

@@ -574,6 +574,29 @@ export async function deleteAdminPartner(id) {
   return del(`/api/v1/admin/partners/${id}`);
 }
 
+// Insights & Whitepapers
+
+// Retrieves insight reports and whitepapers.
+export async function getAdminInsights(params = {}) {
+  return get("/api/v1/admin/insights", params);
+}
+
+// Creates a new insight report / whitepaper.
+export async function createAdminInsight(insight) {
+  return post("/api/v1/admin/insights", insight);
+}
+
+// Updates an existing insight report.
+export async function updateAdminInsight(id, insight) {
+  return put(`/api/v1/admin/insights/${id}`, insight);
+}
+
+// Deletes an insight report.
+export async function deleteAdminInsight(id) {
+  return del(`/api/v1/admin/insights/${id}`);
+}
+
+
 // Media Library
 
 // Retrieves all uploaded media assets from storage.

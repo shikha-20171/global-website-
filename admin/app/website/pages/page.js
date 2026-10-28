@@ -22,7 +22,6 @@ import AdminPagination from "@/components/admin/AdminPagination";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import PageEditorModal from "./components/PageEditorModal";
-import { getWebsitePages } from "@/lib/admin/data-service";
 import {
   getAdminPages,
   createAdminPage,
@@ -31,7 +30,7 @@ import {
 } from "@/lib/api";
 
 export default function AdminWebsitePagesPage() {
-  const [pagesList, setPagesList] = useState(getWebsitePages());
+  const [pagesList, setPagesList] = useState([]);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -43,9 +42,8 @@ export default function AdminWebsitePagesPage() {
     // [API IMPLEMENTATION] getAdminPages() -> GET /api/v1/admin/pages
     getAdminPages()
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setPagesList(data);
-        }
+        const pages = Array.isArray(data) ? data : data?.pages || data?.items || [];
+        setPagesList(pages);
       })
       .catch((err) => {
         console.warn("Could not load pages via API:", err.message);

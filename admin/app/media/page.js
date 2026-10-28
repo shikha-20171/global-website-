@@ -26,7 +26,6 @@ import AdminModal from "@/components/admin/AdminModal";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import AdminImageUploader from "@/components/admin/AdminImageUploader";
-import { MOCK_MEDIA_ASSETS } from "@/lib/admin/mock-data/media";
 import {
   getAdminMedia,
   uploadAdminMedia,
@@ -36,7 +35,7 @@ import {
 const ASSET_TYPES = ["All", "Product Art", "Resource Banner", "3D Texture", "Logo & Brand"];
 
 export default function AdminMediaPage() {
-  const [assets, setAssets] = useState(MOCK_MEDIA_ASSETS);
+  const [assets, setAssets] = useState([]);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [selectedAsset, setSelectedAsset] = useState(null);
@@ -44,12 +43,19 @@ export default function AdminMediaPage() {
   const [toast, setToast] = useState(null);
 
   const refreshMedia = () => {
-    // [API IMPLEMENTATION] getAdminMedia() -> GET /api/v1/admin/media
     getAdminMedia()
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setAssets(data);
-        }
+        const list = Array.isArray(data) ? data : data?.data || [];
+        const mapped = list.map((a) => ({
+          ...a,
+          type: a.assetType ? a.assetType.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase()) : (a.type || "Product Art"),
+          url: a.publicUrl || a.url || a.filePath || "/placeholder.png",
+          dimensions: a.dimensions || "1200 x 800",
+          size: a.fileSizeBytes ? `${Math.round(a.fileSizeBytes / 1024)} KB` : (a.size || "150 KB"),
+          usedIn: a.associatedEntity || a.usedIn || "Website / Media",
+          name: a.fileName || a.name || a.title || "Asset",
+        }));
+        setAssets(mapped);
       })
       .catch((err) => {
         console.warn("Could not load media via API:", err.message);

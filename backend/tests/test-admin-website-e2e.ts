@@ -1,4 +1,4 @@
-import { prisma } from "./config/database.js";
+import { prisma } from "../src/config/database.js";
 
 const API_BASE = "http://localhost:5001";
 const ADMIN_EMAIL = process.env.ADMIN_BOOTSTRAP_EMAIL || process.env.BOOTSTRAP_ADMIN_EMAIL || "admin@dezoryn.com";

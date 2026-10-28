@@ -51,13 +51,13 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="w-full max-w-[460px] px-2 sm:px-0">
+    <div className="w-full max-w-[460px] px-3 sm:px-0 mx-auto">
       {/* Brand Header */}
       <div className="text-center mb-7">
         <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white font-extrabold text-xl mb-4 shadow-[0_0_35px_rgba(37,99,235,0.35)] ring-4 ring-blue-500/20 font-exo">
           DZ
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-exo">
+        <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white font-exo">
           RESET ACCESS
         </h1>
         <p className="mt-1.5 text-xs sm:text-sm text-slate-400 font-medium">
@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
       </div>
 
       {/* Main Card */}
-      <div className="rounded-2xl border border-slate-800/80 bg-slate-900/90 p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_40px_rgba(37,99,235,0.1)] backdrop-blur-2xl">
+      <div className="rounded-2xl border border-slate-800/80 bg-slate-900/90 p-5 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_40px_rgba(37,99,235,0.1)] backdrop-blur-2xl">
         {submitted ? (
           <div className="text-center py-4 space-y-4 animate-in fade-in duration-300">
             <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto shadow-[0_0_25px_rgba(16,185,129,0.2)]">

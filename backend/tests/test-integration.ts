@@ -1,8 +1,8 @@
-import { prisma, connectDatabase, disconnectDatabase } from "./config/database.js";
+import { prisma, connectDatabase, disconnectDatabase } from "../src/config/database.js";
 
 async function runIntegrationAudit() {
   console.log("========================================================================");
-  console.log("🔍 RUNNING FULL END-TO-END INTEGRATION AUDIT ACROSS SYSTEM");
+  console.log("RUNNING FULL END-TO-END INTEGRATION AUDIT ACROSS SYSTEM");
   console.log("========================================================================");
 
   await connectDatabase();
@@ -262,7 +262,7 @@ async function runIntegrationAudit() {
   assert(true, "Test Records Cleaned Up", "Database returned to clean state");
 
   console.log("========================================================================");
-  console.log(`📊 INTEGRATION AUDIT SUMMARY: ${passed} / ${total} tests passed (100% SUCCESS)`);
+  console.log(` INTEGRATION AUDIT SUMMARY: ${passed} / ${total} tests passed (100% SUCCESS)`);
   console.log("========================================================================");
 
   await disconnectDatabase();

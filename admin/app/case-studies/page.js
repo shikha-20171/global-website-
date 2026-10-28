@@ -23,7 +23,6 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import AdminImageUploader from "@/components/admin/AdminImageUploader";
-import { caseStudiesDetails } from "@/lib/caseStudiesData";
 import {
   getAdminCaseStudies,
   createAdminCaseStudy,
@@ -32,15 +31,7 @@ import {
 } from "@/lib/api";
 
 export default function AdminCaseStudiesPage() {
-  const [caseStudiesList, setCaseStudiesList] = useState(
-    Object.values(caseStudiesDetails).map((cs) => ({
-      ...cs,
-      status: "Published",
-      seoTitle: `${cs.title} | DEZORYN Case Study`,
-      metaDescription: cs.overview || `Operational outcomes and architecture implementation for ${cs.client}.`,
-      techText: Array.isArray(cs.technologies) ? cs.technologies.join(", ") : "Next.js, PostgreSQL, Docker",
-    }))
-  );
+  const [caseStudiesList, setCaseStudiesList] = useState([]);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -52,32 +43,34 @@ export default function AdminCaseStudiesPage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [deleteTarget, setDeleteTarget] = useState(null);
 
-  useEffect(() => {
+  const refreshCaseStudies = () => {
     getAdminCaseStudies()
       .then((res) => {
-        const list = res?.data || res;
-        if (Array.isArray(list) && list.length > 0) {
-          const mapped = list.map((cs) => ({
-            id: cs.id,
-            slug: cs.slug,
-            title: cs.title,
-            client: cs.client,
-            industry: cs.industry,
-            overview: cs.overview,
-            challenge: cs.challenge,
-            solution: cs.solution,
-            results: cs.results,
-            resultsDemonstration: cs.metricHighlight || cs.results || "Performance Benchmark",
-            technologies: cs.techStack || [],
-            techText: Array.isArray(cs.techStack) ? cs.techStack.join(", ") : "Next.js, PostgreSQL",
-            status: cs.status === "PUBLISHED" ? "Published" : "Draft",
-            imageUrl: cs.heroImageUrl || "",
-            clientLogo: cs.clientLogoUrl || "",
-          }));
-          setCaseStudiesList(mapped);
-        }
+        const list = res?.data || (Array.isArray(res) ? res : []);
+        const mapped = list.map((cs) => ({
+          id: cs.id,
+          slug: cs.slug,
+          title: cs.title,
+          client: cs.client,
+          industry: cs.industry,
+          overview: cs.overview,
+          challenge: cs.challenge,
+          solution: cs.solution,
+          results: cs.results,
+          resultsDemonstration: cs.metricHighlight || cs.results || "Performance Benchmark",
+          technologies: cs.techStack || [],
+          techText: Array.isArray(cs.techStack) ? cs.techStack.join(", ") : "Next.js, PostgreSQL",
+          status: cs.status === "PUBLISHED" ? "Published" : "Draft",
+          imageUrl: cs.heroImageUrl || "",
+          clientLogo: cs.clientLogoUrl || "",
+        }));
+        setCaseStudiesList(mapped);
       })
       .catch((err) => console.warn("Load admin case studies notice:", err.message));
+  };
+
+  useEffect(() => {
+    refreshCaseStudies();
   }, []);
 
   const filtered = caseStudiesList.filter((cs) => {

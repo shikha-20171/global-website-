@@ -107,7 +107,7 @@ export default function PricingCard({
           rotateY,
           transformStyle: "preserve-3d",
         }}
-        className={`group relative flex h-full flex-col rounded-2xl p-6 transition-all duration-300 ${
+        className={`group relative flex h-full flex-col rounded-2xl p-4 xs:p-5 sm:p-6 transition-all duration-300 ${
           isActive
             ? "border-2 border-[#3b82f6] bg-[#07112b]/95 shadow-[0_20px_50px_rgba(37,99,235,0.45),0_0_35px_rgba(59,130,246,0.35)] ring-1 ring-[#60a5fa]"
             : isAnyHovered

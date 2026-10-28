@@ -22,7 +22,7 @@ export default function AdminFilterBar({
     <div className="space-y-3 mb-5">
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         {/* Search */}
-        <div className="relative flex-1 min-w-[240px]">
+        <div className="relative flex-1 min-w-0 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input
             type="text"
@@ -43,7 +43,7 @@ export default function AdminFilterBar({
         </div>
 
         {/* Filter Dropdowns & Sort */}
-        <div className="flex items-center gap-2.5 overflow-x-auto [scrollbar-width:thin] pb-1 sm:pb-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 pb-1 sm:pb-0">
           {filters.map((filter) => (
             <div key={filter.key} className="flex-shrink-0">
               <select

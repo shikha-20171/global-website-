@@ -69,7 +69,7 @@ function ArchitectureCard({ item, index, isCenter, onSelect }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={onSelect}
-      className="relative w-full max-w-[315px] sm:max-w-[370px] lg:max-w-[390px] mx-auto flex flex-col cursor-pointer select-none transition-shadow duration-500"
+      className="relative w-full max-w-[285px] xs:max-w-[315px] sm:max-w-[345px] lg:max-w-[365px] xl:max-w-[385px] mx-auto flex flex-col cursor-pointer select-none transition-shadow duration-500"
     >
       <motion.div
         animate={{
@@ -254,13 +254,33 @@ export default function DepthCarousel({ items }) {
   }, [items.length]);
 
   // Determine responsive 3D orbital spacing
-  const isDesktop = windowWidth >= 1024;
-  const isTablet = windowWidth >= 640 && windowWidth < 1024;
-  const xOffset = isDesktop ? 370 : isTablet ? 240 : 75;
+  let xOffset = 70;
+  let targetRotateYRight = -6;
+  let targetRotateYLeft = 6;
+  let isDesktop = false;
+
+  if (windowWidth >= 1280) {
+    isDesktop = true;
+    xOffset = 360;
+    targetRotateYRight = -16;
+    targetRotateYLeft = 16;
+  } else if (windowWidth >= 1024) {
+    xOffset = 250;
+    targetRotateYRight = -12;
+    targetRotateYLeft = 12;
+  } else if (windowWidth >= 640) {
+    xOffset = 180;
+    targetRotateYRight = -8;
+    targetRotateYLeft = 8;
+  } else {
+    xOffset = 65;
+    targetRotateYRight = -5;
+    targetRotateYLeft = 5;
+  }
 
   return (
     <div
-      className="relative w-full max-w-7xl mx-auto flex flex-col items-center select-none overflow-hidden sm:overflow-visible px-2 sm:px-0"
+      className="relative w-full max-w-7xl mx-auto flex flex-col items-center select-none overflow-hidden px-2 sm:px-4"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -316,23 +336,23 @@ export default function DepthCarousel({ items }) {
           if (isRight) {
             targetX = xOffset;
             targetZ = -80;
-            targetRotateY = isDesktop ? -16 : -8;
-            targetScale = isDesktop ? 0.88 : 0.8;
-            targetOpacity = isDesktop ? 0.78 : 0.45;
+            targetRotateY = targetRotateYRight;
+            targetScale = isDesktop ? 0.88 : 0.82;
+            targetOpacity = isDesktop ? 0.78 : 0.55;
             targetZIndex = 15;
           } else if (isLeft) {
             targetX = -xOffset;
             targetZ = -80;
-            targetRotateY = isDesktop ? 16 : 8;
-            targetScale = isDesktop ? 0.88 : 0.8;
-            targetOpacity = isDesktop ? 0.78 : 0.45;
+            targetRotateY = targetRotateYLeft;
+            targetScale = isDesktop ? 0.88 : 0.82;
+            targetOpacity = isDesktop ? 0.78 : 0.55;
             targetZIndex = 15;
           }
 
           return (
             <motion.div
               key={item.id}
-              className="absolute w-full max-w-[315px] sm:max-w-[370px] lg:max-w-[390px] will-change-transform"
+              className="absolute w-full max-w-[285px] xs:max-w-[315px] sm:max-w-[345px] lg:max-w-[365px] xl:max-w-[385px] will-change-transform"
               initial={false}
               animate={{
                 x: targetX,
@@ -342,6 +362,7 @@ export default function DepthCarousel({ items }) {
                 opacity: targetOpacity,
                 zIndex: targetZIndex,
               }}
+
               transition={{
                 type: "spring",
                 stiffness: 170,

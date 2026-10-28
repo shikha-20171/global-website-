@@ -18,7 +18,7 @@ const bootstrapSchema = z.object({
 
 async function bootstrapSuperAdmin() {
   console.log("========================================================================");
-  console.log("🚀 DEZORYN TECHNOLOGY — IDEMPOTENT SUPER ADMIN BOOTSTRAP SCRIPT");
+  console.log(" DEZORYN TECHNOLOGY — IDEMPOTENT SUPER ADMIN BOOTSTRAP SCRIPT");
   console.log("========================================================================");
 
   const rawEmail = process.env.BOOTSTRAP_ADMIN_EMAIL || process.env.ADMIN_BOOTSTRAP_EMAIL || process.argv[2];
@@ -26,7 +26,7 @@ async function bootstrapSuperAdmin() {
   const rawName = process.env.BOOTSTRAP_ADMIN_NAME || process.env.ADMIN_BOOTSTRAP_NAME || process.argv[4] || "Super Administrator";
 
   if (!rawEmail || !rawPassword) {
-    console.error("❌ Error: Missing bootstrap credentials.");
+    console.error(" Error: Missing bootstrap credentials.");
     console.error("Usage via environment variables:");
     console.error("  BOOTSTRAP_ADMIN_EMAIL='admin@dezoryn.com' BOOTSTRAP_ADMIN_PASSWORD='YourStrongPassword123!' BOOTSTRAP_ADMIN_NAME='Shikha Gour' npx tsx scripts/bootstrap-super-admin.ts");
     console.error("Or via arguments:");

@@ -1,35 +1,72 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Newspaper,
   HelpCircle,
+  Lightbulb,
   ArrowRight,
   ExternalLink,
-  Sparkles,
 } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-
-const RESOURCE_MODULES = [
-  {
-    title: "Blog & Articles",
-    desc: "Create and edit corporate news, technical write-ups, product updates, and SEO articles published on /blog.",
-    href: "/admin/resources/blog",
-    icon: Newspaper,
-    badge: "Articles",
-    count: "8 Published",
-  },
-  {
-    title: "FAQs Knowledge Base",
-    desc: "Manage frequently asked questions and detailed answers displayed across website products and /faq.",
-    href: "/admin/resources/faqs",
-    icon: HelpCircle,
-    badge: "FAQs",
-    count: "3 Active FAQs",
-  },
-];
+import { getAdminDashboardMetrics, getAdminInsights } from "@/lib/api";
 
 export default function AdminResourcesHubPage() {
+  const [counts, setCounts] = useState({
+    blog: 0,
+    faqs: 0,
+    insights: 0,
+  });
+
+  useEffect(() => {
+    Promise.allSettled([
+      getAdminDashboardMetrics(),
+      getAdminInsights(),
+    ]).then(([dashRes, insRes]) => {
+      let blog = 0;
+      let faqs = 0;
+      let insights = 0;
+
+      if (dashRes.status === "fulfilled" && dashRes.value) {
+        blog = dashRes.value.resources?.blogPosts || 0;
+        faqs = dashRes.value.resources?.faqs || 0;
+      }
+      if (insRes.status === "fulfilled") {
+        const insList = insRes.value?.data || (Array.isArray(insRes.value) ? insRes.value : []);
+        insights = insList.length;
+      }
+      setCounts({ blog, faqs, insights });
+    });
+  }, []);
+
+  const resourceModules = [
+    {
+      title: "Blog & Articles",
+      desc: "Create and edit corporate news, technical write-ups, product updates, and SEO articles published on /blog.",
+      href: "/admin/resources/blog",
+      icon: Newspaper,
+      badge: "Articles",
+      count: `${counts.blog} Published Articles`,
+    },
+    {
+      title: "FAQs Knowledge Base",
+      desc: "Manage frequently asked questions and detailed answers displayed across website products and /faq.",
+      href: "/admin/resources/faqs",
+      icon: HelpCircle,
+      badge: "FAQs",
+      count: `${counts.faqs} Active FAQs`,
+    },
+    {
+      title: "Executive Insights & Whitepapers",
+      desc: "Publish and update technical research whitepapers, architecture reports, and industry benchmarks on /resources.",
+      href: "/admin/resources/insights",
+      icon: Lightbulb,
+      badge: "Research",
+      count: `${counts.insights} Published Whitepapers`,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <AdminPageHeader
@@ -52,8 +89,8 @@ export default function AdminResourcesHubPage() {
         }
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-4xl">
-        {RESOURCE_MODULES.map((mod) => {
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl">
+        {resourceModules.map((mod) => {
           const Icon = mod.icon;
           return (
             <Link

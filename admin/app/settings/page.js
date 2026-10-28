@@ -45,16 +45,27 @@ export default function AdminSettingsPage() {
     // [API IMPLEMENTATION] getAdminSiteSettings() -> GET /api/v1/admin/settings
     getAdminSiteSettings()
       .then((data) => {
-        if (data && typeof data === "object") {
+        const payload = data?.data || data;
+        const dict = {};
+        if (Array.isArray(payload)) {
+          payload.forEach((s) => {
+            if (s && s.key) dict[s.key] = s.value;
+          });
+        } else if (payload && typeof payload === "object") {
+          Object.assign(dict, payload);
+        }
+
+        if (Object.keys(dict).length > 0) {
           setSettings((prev) => ({
             ...prev,
-            siteName: data.site_name || prev.siteName,
-            tagline: data.site_tagline || prev.tagline,
-            email: data.support_email || prev.email,
-            salesEmail: data.sales_email || prev.salesEmail,
-            phone: data.support_phone || prev.phone,
-            address: data.office_address || prev.address,
-            primaryCurrency: data.primary_currency || prev.primaryCurrency,
+            siteName: dict.site_name || prev.siteName,
+            tagline: dict.site_tagline || prev.tagline,
+            email: dict.contact_email || dict.support_email || prev.email,
+            salesEmail: dict.sales_email || prev.salesEmail,
+            phone: dict.phone_primary || dict.support_phone || prev.phone,
+            address: dict.office_address || prev.address,
+            primaryCurrency: dict.primary_currency || prev.primaryCurrency,
+            supportHours: dict.support_hours || prev.supportHours,
           }));
         }
       })
@@ -73,11 +84,13 @@ export default function AdminSettingsPage() {
       await saveAdminSiteSettings({
         site_name: settings.siteName,
         site_tagline: settings.tagline,
+        contact_email: settings.email,
         support_email: settings.email,
         sales_email: settings.salesEmail,
-        support_phone: settings.phone,
+        phone_primary: settings.phone,
         office_address: settings.address,
         primary_currency: settings.primaryCurrency,
+        support_hours: settings.supportHours,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);

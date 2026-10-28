@@ -1,19 +1,88 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+import {
+  products,
+  getProduct,
+  industries,
+  getIndustry,
+  projects,
+  posts,
+  getPost,
+  CATEGORIES,
+  enterpriseSections,
+} from "./data";
 
-// Safe native HTTP request helper compatible with Next.js Server & Client components
+/**
+ * Computes safe API base URL depending on execution environment:
+ * - When in browser (client-side), relative path "" routes through Next.js rewrite proxy.
+ * - When running on server (SSR/Node), uses BACKEND_INTERNAL_URL or NEXT_PUBLIC_API_URL.
+ * - If running on Vercel without an external URL configured, safely returns "" to prevent
+ *   attempting localhost connections that do not exist in serverless environments.
+ */
+function getApiBaseUrl() {
+  const envUrl = (
+    process.env.BACKEND_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    ""
+  ).trim();
+
+  if (envUrl) {
+    return envUrl.replace(/\/+$/, "");
+  }
+
+  // Running on server (SSR/Node)
+  if (typeof window === "undefined") {
+    if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+      return "";
+    }
+    return "http://127.0.0.1:5001";
+  }
+
+  // Running in browser
+  return "";
+}
+
+/**
+ * Safe native HTTP request helper compatible with Next.js Server & Client components.
+ * Features:
+ * - 3.5s timeout on server so SSR never hangs if a sleeping Render container is waking up.
+ * - 25s timeout on client so form submissions survive container spin-up.
+ * - Automatic client-side retry against direct NEXT_PUBLIC_API_URL if rewrite proxy fails.
+ */
 async function request(url, options = {}) {
-  const fullUrl = url.startsWith("http") ? url : `${API_BASE}${url}`;
+  const base = getApiBaseUrl();
+  const fullUrl = url.startsWith("http") ? url : `${base}${url}`;
+  const isServer = typeof window === "undefined";
+
+  // If on serverless host without a valid backend URL, skip remote fetch immediately
+  if (isServer && !base && !url.startsWith("http")) {
+    const err = new Error("Backend URL not configured on serverless runtime");
+    err.code = "NO_BACKEND_URL";
+    throw err;
+  }
+
+  const timeoutMs = options.timeout || (isServer ? 3500 : 25000);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const res = await fetch(fullUrl, {
+    const isGet = !options.method || options.method === "GET";
+    const fetchOptions = {
       ...options,
+      signal: options.signal || controller.signal,
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
         ...options.headers,
       },
-      cache: "no-store",
-    });
+    };
+
+    if (isServer && isGet && !fetchOptions.next && !fetchOptions.cache) {
+      fetchOptions.next = { revalidate: 60 };
+    } else if (!fetchOptions.cache) {
+      fetchOptions.cache = "default";
+    }
+
+    const res = await fetch(fullUrl, fetchOptions);
+    clearTimeout(timer);
 
     if (!res.ok) {
       let errorMsg = `HTTP ${res.status}`;
@@ -29,6 +98,21 @@ async function request(url, options = {}) {
     const json = await res.json();
     return json?.data !== undefined ? json.data : json;
   } catch (err) {
+    clearTimeout(timer);
+
+    // On client: if proxy failed and NEXT_PUBLIC_API_URL is configured, retry directly once
+    if (
+      !isServer &&
+      process.env.NEXT_PUBLIC_API_URL &&
+      !url.startsWith("http") &&
+      !options._isRetry
+    ) {
+      const directBase = process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
+      if (directBase && directBase !== base) {
+        return request(`${directBase}${url}`, { ...options, _isRetry: true });
+      }
+    }
+
     throw err;
   }
 }
@@ -186,114 +270,206 @@ export async function subscribeNewsletter(email, source = "website_footer") {
   return post("/api/v1/newsletter/subscribe", { email, source });
 }
 
-// Fetch all live products
+// Fetch all live products with instant static fallback
 export async function getLiveProducts(params = {}) {
-  const res = await get("/api/v1/products", params);
-  const list = res?.data || res?.products || (Array.isArray(res) ? res : null);
-  if (Array.isArray(list)) {
-    return list.map(normalizeProduct);
-  }
-  return [];
+  try {
+    const res = await get("/api/v1/products", params);
+    const list = res?.data || res?.products || (Array.isArray(res) ? res : null);
+    if (Array.isArray(list) && list.length > 0) {
+      return list.map(normalizeProduct);
+    }
+  } catch (_) {}
+  return products.map(normalizeProduct);
 }
 
-// Fetch product specifications by slug
+// Fetch product specifications by slug with instant static fallback
 export async function getLiveProductBySlug(slug) {
-  const res = await get(`/api/v1/products/${slug}`);
-  const prod = res?.data || res?.product || res;
-  return normalizeProduct(prod);
+  try {
+    const res = await get(`/api/v1/products/${slug}`);
+    const prod = res?.data || res?.product || res;
+    if (prod && (prod.slug || prod.name)) {
+      return normalizeProduct(prod);
+    }
+  } catch (_) {}
+  const fallback = getProduct(slug);
+  return fallback ? normalizeProduct(fallback) : null;
 }
 
 // Fetch product categories with counts
 export async function getLiveProductCategories() {
-  return get("/api/v1/products/categories");
+  try {
+    const res = await get("/api/v1/products/categories");
+    if (Array.isArray(res) && res.length > 0) return res;
+  } catch (_) {}
+  return CATEGORIES.map((c) => ({
+    name: c,
+    slug: c.toLowerCase().replace(/\s+/g, "-"),
+    count: products.filter((p) => p.category === c).length,
+  }));
 }
 
 // Fetch feature comparison matrix across products
 export async function getLiveComparisonMatrix() {
-  return get("/api/v1/products/compare");
-}
-
-// Fetch enterprise solution blueprints
-export async function getLiveSolutions() {
-  return get("/api/v1/solutions");
-}
-
-// Fetch solution blueprint by slug
-export async function getLiveSolutionBySlug(slug) {
-  return get(`/api/v1/solutions/${slug}`);
-}
-
-// Fetch all supported industry verticals
-export async function getLiveIndustries() {
-  return get("/api/v1/industries");
-}
-
-// Fetch industry vertical specifications by slug
-export async function getLiveIndustryBySlug(slug) {
-  return get(`/api/v1/industries/${slug}`);
-}
-
-// Fetch customer implementation projects
-export async function getLiveProjects() {
-  const res = await get("/api/v1/projects");
-  const list = Array.isArray(res) ? res : res?.data || [];
-  return Array.isArray(list) ? list.map(normalizeProject) : [];
-}
-
-// Fetch project implementation details by slug
-export async function getLiveProjectBySlug(slug) {
-  const res = await get(`/api/v1/projects/${slug}`);
-  const item = res?.data || res;
-  return item ? normalizeProject(item) : null;
-}
-
-// Fetch published customer case studies
-export async function getLiveCaseStudies() {
-  return get("/api/v1/case-studies");
-}
-
-// Fetch in-depth case study report by slug
-export async function getLiveCaseStudyBySlug(slug) {
-  return get(`/api/v1/case-studies/${slug}`);
-}
-
-// Fetch published blog posts and articles
-export async function getLiveBlogPosts(params = {}) {
-  const res = await get("/api/v1/content/blog", params);
-  const list = res?.items || res?.posts || (Array.isArray(res) ? res : null);
-  if (Array.isArray(list)) {
-    return list.map(normalizeBlogPost);
+  try {
+    return await get("/api/v1/products/compare");
+  } catch (_) {
+    return null;
   }
-  return [];
 }
 
-// Fetch single blog post content by slug
+// Fetch enterprise solution blueprints with static fallback
+export async function getLiveSolutions() {
+  try {
+    const res = await get("/api/v1/solutions");
+    if (Array.isArray(res) && res.length > 0) return res;
+    if (Array.isArray(res?.data) && res.data.length > 0) return res.data;
+  } catch (_) {}
+  return enterpriseSections.map((s) => ({
+    ...s,
+    slug: s.slug || s.title?.toLowerCase().replace(/\s+/g, "-"),
+    description: s.desc || s.description || "",
+  }));
+}
+
+// Fetch solution blueprint by slug with static fallback
+export async function getLiveSolutionBySlug(slug) {
+  try {
+    const res = await get(`/api/v1/solutions/${slug}`);
+    const item = res?.data || res;
+    if (item && (item.slug || item.title)) return item;
+  } catch (_) {}
+  const found = enterpriseSections.find(
+    (s) => s.slug === slug || s.title?.toLowerCase().replace(/\s+/g, "-") === slug
+  );
+  return found || null;
+}
+
+// Fetch all supported industry verticals with static fallback
+export async function getLiveIndustries() {
+  try {
+    const res = await get("/api/v1/industries");
+    if (Array.isArray(res) && res.length > 0) return res;
+    if (Array.isArray(res?.data) && res.data.length > 0) return res.data;
+  } catch (_) {}
+  return industries;
+}
+
+// Fetch industry vertical specifications by slug with static fallback
+export async function getLiveIndustryBySlug(slug) {
+  try {
+    const res = await get(`/api/v1/industries/${slug}`);
+    const item = res?.data || res;
+    if (item && (item.slug || item.name)) return item;
+  } catch (_) {}
+  return getIndustry(slug) || null;
+}
+
+// Fetch customer implementation projects with static fallback
+export async function getLiveProjects() {
+  try {
+    const res = await get("/api/v1/projects");
+    const list = Array.isArray(res) ? res : res?.data || [];
+    if (Array.isArray(list) && list.length > 0) {
+      return list.map(normalizeProject);
+    }
+  } catch (_) {}
+  return projects.map(normalizeProject);
+}
+
+// Fetch project implementation details by slug with static fallback
+export async function getLiveProjectBySlug(slug) {
+  try {
+    const res = await get(`/api/v1/projects/${slug}`);
+    const item = res?.data || res;
+    if (item && (item.slug || item.name)) return normalizeProject(item);
+  } catch (_) {}
+  const found = projects.find((p) => p.slug === slug);
+  return found ? normalizeProject(found) : null;
+}
+
+// Fetch published customer case studies with static fallback
+export async function getLiveCaseStudies() {
+  try {
+    const res = await get("/api/v1/case-studies");
+    const list = res?.caseStudies || (Array.isArray(res) ? res : res?.data || null);
+    if (Array.isArray(list) && list.length > 0) return list;
+  } catch (_) {}
+  return projects.map(normalizeProject);
+}
+
+// Fetch in-depth case study report by slug with static fallback
+export async function getLiveCaseStudyBySlug(slug) {
+  try {
+    const res = await get(`/api/v1/case-studies/${slug}`);
+    const item = res?.data || res;
+    if (item && (item.slug || item.title || item.name)) return item;
+  } catch (_) {}
+  const found = projects.find((p) => p.slug === slug);
+  return found ? normalizeProject(found) : null;
+}
+
+// Fetch published blog posts and articles with static fallback
+export async function getLiveBlogPosts(params = {}) {
+  try {
+    const res = await get("/api/v1/content/blog", params);
+    const list = res?.items || res?.posts || (Array.isArray(res) ? res : null);
+    if (Array.isArray(list) && list.length > 0) {
+      return list.map(normalizeBlogPost);
+    }
+  } catch (_) {}
+  return posts.map(normalizeBlogPost);
+}
+
+// Fetch single blog post content by slug with static fallback
 export async function getLiveBlogPostBySlug(slug) {
-  const res = await get(`/api/v1/content/blog/${slug}`);
-  return normalizeBlogPost(res);
+  try {
+    const res = await get(`/api/v1/content/blog/${slug}`);
+    if (res && (res.slug || res.title)) {
+      return normalizeBlogPost(res);
+    }
+  } catch (_) {}
+  const fallback = getPost(slug);
+  return fallback ? normalizeBlogPost(fallback) : null;
 }
 
 // Fetch frequently asked questions by category
 export async function getLiveFaqs(params = {}) {
-  return get("/api/v1/content/faqs", params);
+  try {
+    return await get("/api/v1/content/faqs", params);
+  } catch (_) {
+    return { faqs: [] };
+  }
 }
 
 // Fetch active job openings
 export async function getLiveCareers() {
-  return get("/api/v1/content/careers");
+  try {
+    const res = await get("/api/v1/content/careers");
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.data)) return res.data;
+  } catch (_) {}
+  return [];
 }
 
 // Fetch partner program tracks
 export async function getLivePartners() {
-  return get("/api/v1/content/partners");
+  try {
+    return await get("/api/v1/content/partners");
+  } catch (_) {
+    return [];
+  }
 }
 
 // Fetch research whitepapers and benchmark reports
 export async function getLiveWhitepapers() {
   try {
     return await get("/api/v1/content/insights");
-  } catch {
-    return get("/api/v1/content/whitepapers");
+  } catch (_) {
+    try {
+      return await get("/api/v1/content/whitepapers");
+    } catch {
+      return [];
+    }
   }
 }
 
@@ -301,8 +477,12 @@ export async function getLiveWhitepapers() {
 export async function getLiveRunbooks() {
   try {
     return await get("/api/v1/content/docs");
-  } catch {
-    return get("/api/v1/content/runbooks");
+  } catch (_) {
+    try {
+      return await get("/api/v1/content/runbooks");
+    } catch {
+      return [];
+    }
   }
 }
 
@@ -310,52 +490,95 @@ export async function getLiveRunbooks() {
 export async function getLiveApiResources() {
   try {
     return await get("/api/v1/content/api-reference");
-  } catch {
-    return get("/api/v1/content/api-resources");
+  } catch (_) {
+    try {
+      return await get("/api/v1/content/api-resources");
+    } catch {
+      return [];
+    }
   }
 }
 
 // Fetch platform pricing plans and billing cycles
 export async function getLivePricingPlans() {
-  return get("/api/v1/pricing");
+  try {
+    return await get("/api/v1/pricing");
+  } catch (_) {
+    return null;
+  }
 }
 
 // Fetch corporate company profile
 export async function getLiveCompanyProfile() {
-  return get("/api/v1/company");
+  try {
+    const res = await get("/api/v1/company");
+    if (res && typeof res === "object") return res;
+  } catch (_) {}
+  return {
+    name: "DEZORYN TECHNOLOGY PRIVATE LIMITED",
+    tagline: "Software Products, Enterprise Platforms & Digital Solutions",
+    headquarters: "Bengaluru, Karnataka, India",
+    email: "contact@dezoryn.com",
+    phone: "+91 80 4123 4567",
+  };
 }
 
 // Fetch public website settings
 export async function getLiveSiteSettings() {
-  return get("/api/v1/settings/public");
+  try {
+    return await get("/api/v1/settings/public");
+  } catch (_) {
+    return null;
+  }
 }
 
 // Fetch all published legal policies
 export async function getLiveLegalPolicies() {
-  const res = await get("/api/v1/legal");
-  const list = Array.isArray(res) ? res : res?.data || [];
-  return Array.isArray(list) ? list.map(normalizeLegalPolicy) : [];
+  try {
+    const res = await get("/api/v1/legal");
+    const list = Array.isArray(res) ? res : res?.data || [];
+    if (Array.isArray(list) && list.length > 0) {
+      return list.map(normalizeLegalPolicy);
+    }
+  } catch (_) {}
+  return [];
 }
 
 // Fetch legal policy clauses by slug
 export async function getLiveLegalPolicy(slug) {
-  const res = await get(`/api/v1/legal/${slug}`);
-  return normalizeLegalPolicy(res);
+  try {
+    const res = await get(`/api/v1/legal/${slug}`);
+    if (res) return normalizeLegalPolicy(res);
+  } catch (_) {}
+  return null;
 }
 
 // Fetch navigation menus and link trees
 export async function getLiveNavigation() {
-  return get("/api/v1/navigation");
+  try {
+    return await get("/api/v1/navigation");
+  } catch (_) {
+    return null;
+  }
 }
 
 // Fetch all published CMS pages
 export async function getLivePages() {
-  return get("/api/v1/pages");
+  try {
+    const res = await get("/api/v1/pages");
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.data)) return res.data;
+  } catch (_) {}
+  return [];
 }
 
 // Fetch published CMS page by slug
 export async function getLivePage(slug) {
-  return get(`/api/v1/pages/${slug}`);
+  try {
+    const res = await get(`/api/v1/pages/${slug}`);
+    if (res && (res.slug || res.title || res.sections)) return res;
+  } catch (_) {}
+  return null;
 }
 
 // Submit enterprise sales inquiry
@@ -370,12 +593,16 @@ export async function unsubscribeNewsletter(email) {
 
 // Fetch public media library assets
 export async function getLiveMediaAssets() {
-  return get("/api/v1/media");
+  try {
+    return await get("/api/v1/media");
+  } catch (_) {
+    return [];
+  }
 }
 
 // Search published SaaS products
 export async function searchLiveProducts(query) {
-  return get("/api/v1/products", { search: query });
+  return getLiveProducts({ search: query });
 }
 
 // Check backend service health and database probe
@@ -384,4 +611,3 @@ export async function checkBackendHealth() {
 }
 
 export default apiClient;
-

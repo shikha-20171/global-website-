@@ -18,7 +18,6 @@ import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminModal from "@/components/admin/AdminModal";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
-import { MOCK_FAQS_DATA } from "@/lib/admin/mock-data/content";
 import {
   getAdminFaqs,
   createAdminFaq,
@@ -27,22 +26,25 @@ import {
 } from "@/lib/api";
 
 export default function AdminFaqsPage() {
-  const [faqs, setFaqs] = useState(MOCK_FAQS_DATA);
+  const [faqs, setFaqs] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFaq, setEditingFaq] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState(null);
 
   const refreshFaqs = () => {
-    // [API IMPLEMENTATION] getAdminFaqs() -> GET /api/v1/admin/faqs
     getAdminFaqs()
       .then((data) => {
         const list = Array.isArray(data) ? data : data?.faqs || [];
-        if (list.length > 0) {
-          setFaqs(list);
-        }
+        const mapped = list.map((f, idx) => ({
+          ...f,
+          order: f.displayOrder ?? idx + 1,
+          status: f.isPublished || f.status === "Published" ? "Published" : "Draft",
+          relatedProduct: f.relatedProduct || "All Products",
+        }));
+        setFaqs(mapped);
       })
-      .catch(() => {});
+      .catch((err) => console.warn("Load faqs notice:", err.message));
   };
 
   useEffect(() => {

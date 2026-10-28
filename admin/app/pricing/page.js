@@ -24,86 +24,17 @@ import AdminModal from "@/components/admin/AdminModal";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
-import { products } from "@/lib/data";
-import { getAdminPricing, createAdminPricing, updateAdminPricing, deleteAdminPricing } from "@/lib/api";
-
-const DEFAULT_PLANS = [
-  {
-    id: "plan-starter",
-    name: "Starter",
-    product: "All Products (Universal)",
-    productSlug: "universal",
-    monthlyPriceUsd: 29,
-    annualPriceUsd: 279,
-    annualDiscount: 20,
-    description: "Essential modules for emerging businesses and single branch operations.",
-    features: ["Up to 10 Team Members", "Standard REST API Access", "Email Support (24h SLA)", "Automated Weekly Backups", "Core Modules Included"],
-    userLimit: "10 Users",
-    usageLimit: "10,000 API calls / mo",
-    highlighted: false,
-    trialEligible: true,
-    isEnterprise: false,
-    displayOrder: 1,
-    status: "Published",
-  },
-  {
-    id: "plan-growth",
-    name: "Growth",
-    product: "Schooly ERP",
-    productSlug: "schooly",
-    monthlyPriceUsd: 49,
-    annualPriceUsd: 470,
-    annualDiscount: 20,
-    description: "Designed for scaling mid-market institutions needing multi-role access control.",
-    features: ["Up to 50 Team Members", "Advanced RBAC Permissions", "Priority 24/7 SLA Support", "Daily Automated Backups", "Custom Domain & Branding", "Webhook Event Integrations"],
-    userLimit: "50 Users",
-    usageLimit: "50,000 API calls / mo",
-    highlighted: true,
-    trialEligible: true,
-    isEnterprise: false,
-    displayOrder: 2,
-    status: "Published",
-  },
-  {
-    id: "plan-business",
-    name: "Business",
-    product: "DezoCare Hospital",
-    productSlug: "dezocare",
-    monthlyPriceUsd: 89,
-    annualPriceUsd: 850,
-    annualDiscount: 20,
-    description: "High-volume transactional operations with audit trails and compliance.",
-    features: ["Up to 250 Team Members", "Full Audit Logs & Compliance", "Dedicated Slack Channel Support", "Hourly Real-Time Backups", "Multi-Branch Federation", "Automated Billing & Reporting"],
-    userLimit: "250 Users",
-    usageLimit: "250,000 API calls / mo",
-    highlighted: false,
-    trialEligible: true,
-    isEnterprise: false,
-    displayOrder: 3,
-    status: "Published",
-  },
-  {
-    id: "plan-enterprise",
-    name: "Enterprise Architecture",
-    product: "All Products (Custom VPC)",
-    productSlug: "universal",
-    monthlyPriceUsd: 199,
-    annualPriceUsd: 1900,
-    annualDiscount: 20,
-    description: "Dedicated single-tenant infrastructure with custom SLAs and air-gapped deployment.",
-    features: ["Unlimited Users & Branches", "Custom VPC / On-Prem Deployment", "Dedicated Technical Account Manager", "99.95% High Availability SLA", "Zero-Trust SSO / SAML Integration", "Custom Code Extensions"],
-    userLimit: "Unlimited",
-    usageLimit: "Unlimited / Dedicated DB",
-    highlighted: false,
-    trialEligible: false,
-    isEnterprise: true,
-    displayOrder: 4,
-    status: "Published",
-  },
-];
+import {
+  getAdminPricing,
+  createAdminPricing,
+  updateAdminPricing,
+  deleteAdminPricing,
+  getAdminProducts,
+} from "@/lib/api";
 
 export default function AdminPricingPlansPage() {
-  const [plans, setPlans] = useState(DEFAULT_PLANS);
+  const [plans, setPlans] = useState([]);
+  const [availableProducts, setAvailableProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [billingCycle, setBillingCycle] = useState("monthly"); // 'monthly' | 'annual'
   const [currency, setCurrency] = useState("USD");
@@ -120,10 +51,19 @@ export default function AdminPricingPlansPage() {
   const loadPricing = async () => {
     try {
       setLoading(true);
-      // [API IMPLEMENTATION] getAdminPricing() -> GET /api/v1/admin/pricing
-      const res = await getAdminPricing();
-      const list = res?.plans || (Array.isArray(res) ? res : null);
-      if (Array.isArray(list) && list.length > 0) {
+      const [pricingRes, productsRes] = await Promise.allSettled([
+        getAdminPricing(),
+        getAdminProducts(),
+      ]);
+
+      if (productsRes.status === "fulfilled") {
+        const prods = Array.isArray(productsRes.value) ? productsRes.value : [];
+        setAvailableProducts(prods);
+      }
+
+      if (pricingRes.status === "fulfilled") {
+        const res = pricingRes.value;
+        const list = res?.plans || (Array.isArray(res) ? res : []);
         const mapped = list.map((p) => ({
           id: p.id,
           name: p.name,
@@ -439,7 +379,7 @@ export default function AdminPricingPlansPage() {
           { label: "Pricing Plans" },
         ]}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setIsPreviewOpen(true)}
@@ -462,7 +402,7 @@ export default function AdminPricingPlansPage() {
 
       {/* Global Billing Frequency & Currency Toolbar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm font-bold text-slate-800">
             Billing Frequency Preview:
           </span>
@@ -599,7 +539,7 @@ export default function AdminPricingPlansPage() {
                     const prodName =
                       selSlug === "universal"
                         ? "All Products (Universal)"
-                        : products.find((p) => p.slug === selSlug)?.name || selSlug;
+                        : availableProducts.find((p) => p.slug === selSlug)?.name || selSlug;
                     setEditingPlan({
                       ...editingPlan,
                       productSlug: selSlug,
@@ -609,7 +549,7 @@ export default function AdminPricingPlansPage() {
                   className="w-full text-xs rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 font-medium focus:border-blue-600 focus:outline-none"
                 >
                   <option value="universal">All Products (Universal)</option>
-                  {products.map((p) => (
+                  {availableProducts.map((p) => (
                     <option key={p.slug} value={p.slug}>
                       {p.name}
                     </option>

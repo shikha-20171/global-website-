@@ -25,7 +25,6 @@ import AdminModal from "@/components/admin/AdminModal";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminImageUploader from "@/components/admin/AdminImageUploader";
-import { products, CATEGORIES, formatPrice, DEFAULT_CURRENCY } from "@/lib/data";
 import {
   getAdminProducts,
   createAdminProduct,
@@ -33,8 +32,21 @@ import {
   deleteAdminProduct,
 } from "@/lib/api";
 
+const DEFAULT_CATEGORIES = [
+  "Education",
+  "Healthcare",
+  "Real Estate",
+  "FinTech",
+  "HR & Workforce",
+  "AI & Automation",
+  "Enterprise ERP",
+  "Legal & Compliance",
+  "Hospitality",
+  "General",
+];
+
 export default function AdminProductsPage() {
-  const [productList, setProductList] = useState(products);
+  const [productList, setProductList] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -44,13 +56,19 @@ export default function AdminProductsPage() {
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const categories = useMemo(() => {
+    const fromProducts = productList
+      .map((p) => (typeof p.category === "object" ? p.category?.name : p.category))
+      .filter(Boolean);
+    return Array.from(new Set([...DEFAULT_CATEGORIES, ...fromProducts]));
+  }, [productList]);
+
   const refreshProducts = () => {
-    // [API IMPLEMENTATION] getAdminProducts() -> GET /api/v1/admin/products
+    setLoading(true);
     getAdminProducts()
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setProductList(data);
-        }
+        const list = Array.isArray(data) ? data : (data?.data || []);
+        setProductList(list);
       })
       .catch((err) => {
         console.warn("Could not load products via API:", err.message);
@@ -109,7 +127,7 @@ export default function AdminProductsPage() {
       id: `prod-${Date.now()}`,
       name: "",
       slug: "",
-      category: CATEGORIES[0] || "Education",
+      category: categories[0] || "Education",
       tagline: "",
       description: "",
       unlisted: false,
@@ -398,7 +416,7 @@ export default function AdminProductsPage() {
             label: "Category",
             value: category,
             onChange: (c) => { setCategory(c); setPage(1); },
-            options: CATEGORIES.map((c) => ({ label: c, value: c })),
+            options: categories.map((c) => ({ label: c, value: c })),
           },
           {
             key: "status",
@@ -550,7 +568,7 @@ export default function AdminProductsPage() {
                       }
                       className="w-full text-sm rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition"
                     >
-                      {CATEGORIES.map((c) => (
+                      {categories.map((c) => (
                         <option key={c} value={c}>
                           {c}
                         </option>

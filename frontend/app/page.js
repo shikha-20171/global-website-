@@ -145,14 +145,14 @@ export default async function Home() {
         <div className="pointer-events-none absolute -top-40 right-0 h-[500px] w-[600px] rounded-full bg-electric/15 blur-[90px]" />
         <div className="pointer-events-none absolute -left-40 top-40 h-[360px] w-[360px] rounded-full bg-violet/15 blur-[90px]" />
 
-        <div className="container-x relative grid items-center gap-8 pb-16 lg:py-8 lg:grid-cols-[1fr_1.1fr] xl:grid-cols-[1fr_1.15fr]">
+        <div className="container-x relative grid items-center gap-8 pb-16 lg:py-8 lg:grid-cols-[1fr_1.05fr] xl:grid-cols-[1fr_1.15fr]">
           <div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-line bg-white/[0.03] px-3.5 py-1 text-xs text-cool">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-electric" />
               <span>SOFTWARE PRODUCTS &amp; ENTERPRISE PLATFORMS</span>
             </div>
 
-            <h1 className="h-display text-[2.25rem] xs:text-[2.5rem] sm:text-6xl xl:text-7xl">
+            <h1 className="h-display text-3xl xs:text-4xl sm:text-5xl lg:text-[2.75rem] xl:text-7xl leading-[1.08] break-words">
               <AnimatedHeroTitle text={heroHeadline} />
             </h1>
 

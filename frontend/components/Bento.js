@@ -200,20 +200,23 @@ export default function Bento() {
   useEffect(() => {
     const handleResize = () => {
       const w = window.innerWidth;
-      if (w < 480) {
-        setRadius(195);
+      if (w < 360) {
+        setRadius(160);
+      } else if (w < 480) {
+        setRadius(185);
       } else if (w < 768) {
-        setRadius(245);
+        setRadius(230);
       } else if (w < 1100) {
-        setRadius(305);
+        setRadius(280);
       } else {
-        setRadius(345);
+        setRadius(340);
       }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
 
   // Intersection Observer to preserve CPU/GPU when out of viewport
   useEffect(() => {
@@ -703,7 +706,7 @@ export default function Bento() {
 /* ─── ORBIT 3D CARD COMPONENT ─── */
 function OrbitCard({ service, isCenterFront = false, onOpen }) {
   return (
-    <div className="w-[275px] sm:w-[315px] md:w-[330px] select-none group">
+    <div className="w-[245px] xs:w-[275px] sm:w-[315px] md:w-[330px] select-none group">
       <div
         className={`relative flex flex-col justify-between rounded-2xl border bg-[#070c1e]/95 p-4 sm:p-5 shadow-[0_12px_32px_rgba(0,0,0,0.8)] transition-all duration-300 ${
           isCenterFront
