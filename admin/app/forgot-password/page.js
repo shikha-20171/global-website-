@@ -36,7 +36,6 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     try {
-      // [API IMPLEMENTATION] adminForgotPassword() -> POST /api/v1/admin/auth/forgot-password
       await adminForgotPassword(sanitizedEmail);
       setSubmitted(true);
     } catch (err) {

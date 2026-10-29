@@ -31,7 +31,6 @@ export default function MarketplaceView() {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
-    // [API IMPLEMENTATION] getLiveProducts() -> GET /api/v1/products
     getLiveProducts()
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {

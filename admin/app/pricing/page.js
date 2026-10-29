@@ -208,7 +208,6 @@ export default function AdminPricingPlansPage() {
     if (exists) {
       setPlans(plans.map((p) => (p.id === updatedPlan.id ? updatedPlan : p)));
       try {
-        // [API IMPLEMENTATION] updateAdminPricing() -> PUT /api/v1/admin/pricing/:id
         await updateAdminPricing(updatedPlan.id, {
           name: updatedPlan.name,
           slug: generatedSlug,
@@ -235,7 +234,6 @@ export default function AdminPricingPlansPage() {
     } else {
       setPlans([...plans, updatedPlan]);
       try {
-        // [API IMPLEMENTATION] createAdminPricing() -> POST /api/v1/admin/pricing
         await createAdminPricing({
           name: updatedPlan.name,
           slug: generatedSlug,
@@ -269,7 +267,6 @@ export default function AdminPricingPlansPage() {
     const prev = [...plans];
     setPlans(plans.filter((p) => p.id !== deleteTarget.id));
     try {
-      // [API IMPLEMENTATION] deleteAdminPricing() -> DELETE /api/v1/admin/pricing/:id
       await deleteAdminPricing(deleteTarget.id);
       setToast({
         type: "warning",

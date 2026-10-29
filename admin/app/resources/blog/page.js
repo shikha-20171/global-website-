@@ -171,7 +171,6 @@ export default function AdminBlogPage() {
 
     try {
       if (!isNew) {
-        // [API IMPLEMENTATION] updateAdminBlogPost() -> PUT /api/v1/admin/blog/:id
         await updateAdminBlogPost(editingArticle.id, payload);
         setToast({
           type: "success",
@@ -179,7 +178,6 @@ export default function AdminBlogPage() {
           description: `Changes saved for "${editingArticle.title}".`,
         });
       } else {
-        // [API IMPLEMENTATION] createAdminBlogPost() -> POST /api/v1/admin/blog
         await createAdminBlogPost(payload);
         setToast({
           type: "success",
@@ -210,7 +208,6 @@ export default function AdminBlogPage() {
     if (!deleteTarget) return;
     try {
       if (deleteTarget.id && !deleteTarget.id.startsWith("art_")) {
-        // [API IMPLEMENTATION] deleteAdminBlogPost() -> DELETE /api/v1/admin/blog/:id
         await deleteAdminBlogPost(deleteTarget.id);
       }
       refreshArticles();

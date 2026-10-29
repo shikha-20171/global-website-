@@ -95,7 +95,6 @@ export default function PortfolioView() {
 
   useEffect(() => {
     let mounted = true;
-    // [API IMPLEMENTATION] getLiveProjects() -> GET /api/v1/projects
     getLiveProjects()
       .then((data) => {
         if (!mounted || !Array.isArray(data) || data.length === 0) return;

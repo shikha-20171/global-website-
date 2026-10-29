@@ -38,7 +38,7 @@ const fallbackFaqs = [
   {
     id: "faq_2",
     question: "Why is USD ($) the default currency on the website?",
-    answer: "DEZORYN serves an international client base across North America, Europe, the Middle East, and Asia. USD provides a globally recognized benchmark for transparent, predictable software subscription pricing (SRS §4).",
+    answer: "DEZORYN serves an international client base across North America, Europe, the Middle East, and Asia. USD provides a globally recognized benchmark for transparent, predictable software subscription pricing.",
     category: "Pricing & Billing",
     relatedProduct: "All Products",
     order: 2,
@@ -168,7 +168,6 @@ export default function AdminFaqsPage() {
 
     try {
       if (!isNew) {
-        // [API IMPLEMENTATION] updateAdminFaq() -> PUT /api/v1/admin/faqs/:id
         await updateAdminFaq(editingFaq.id, payload);
         setToast({
           type: "success",
@@ -176,7 +175,6 @@ export default function AdminFaqsPage() {
           description: "Question and answer updated.",
         });
       } else {
-        // [API IMPLEMENTATION] createAdminFaq() -> POST /api/v1/admin/faqs
         await createAdminFaq(payload);
         setToast({
           type: "success",
@@ -206,7 +204,6 @@ export default function AdminFaqsPage() {
     if (!deleteTarget) return;
     try {
       if (deleteTarget.id && !deleteTarget.id.startsWith("faq_")) {
-        // [API IMPLEMENTATION] deleteAdminFaq() -> DELETE /api/v1/admin/faqs/:id
         await deleteAdminFaq(deleteTarget.id);
       }
       refreshFaqs();

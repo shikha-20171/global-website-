@@ -81,7 +81,6 @@ export default function AdminLoginPage() {
     setError(null);
 
     try {
-      // [API IMPLEMENTATION] adminLogin() -> POST /api/v1/admin/auth/login
       await adminLogin(sanitizedEmail, trimmedPassword);
       router.push("/");
     } catch (err) {

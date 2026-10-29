@@ -23,7 +23,6 @@ export default function AdminShell({ children }) {
   useEffect(() => {
     if (isAuthPage) return;
     let mounted = true;
-    // [API IMPLEMENTATION] getAdminCurrentUser() -> GET /api/v1/admin/auth/me
     getAdminCurrentUser()
       .then((user) => {
         if (mounted) {

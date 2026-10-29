@@ -24,11 +24,9 @@
     "test:comprehensive": "tsx tests/comprehensive.test.ts",
     "test:auth": "tsx tests/auth-flow.test.ts",
     "test:e2e": "tsx tests/test-admin-website-e2e.ts",
-    "test:apis": "tsx scripts/test-all-85-apis.ts",
     "test:email": "tsx scripts/test-email.ts",
     "bootstrap:admin": "tsx scripts/bootstrap-super-admin.ts",
-    "admin:create": "tsx scripts/create-admin.ts",
-    "consolidate:roles": "tsx scripts/consolidate-super-admin.ts"
+    "admin:create": "tsx scripts/create-admin.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

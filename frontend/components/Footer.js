@@ -22,7 +22,6 @@ function NewsletterForm() {
     setLoading(true);
     setError(null);
     try {
-      // [API IMPLEMENTATION] subscribeNewsletter() -> POST /api/v1/newsletter/subscribe
       await subscribeNewsletter(email, "website_footer");
       setSubscribed(true);
       setEmail("");

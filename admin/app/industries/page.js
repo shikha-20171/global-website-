@@ -152,7 +152,6 @@ export default function AdminIndustriesPage() {
 
     try {
       if (!isNew && editingIndustry.id) {
-        // [API IMPLEMENTATION] updateAdminIndustry() -> PUT /api/v1/admin/industries/:id
         await updateAdminIndustry(editingIndustry.id, updated);
         setToast({
           type: "success",
@@ -160,7 +159,6 @@ export default function AdminIndustriesPage() {
           description: `Changes saved for "${updated.name}".`,
         });
       } else {
-        // [API IMPLEMENTATION] createAdminIndustry() -> POST /api/v1/admin/industries
         await createAdminIndustry(updated);
         setToast({
           type: "success",
@@ -193,7 +191,6 @@ export default function AdminIndustriesPage() {
     if (!deleteTarget) return;
     try {
       if (deleteTarget.id) {
-        // [API IMPLEMENTATION] deleteAdminIndustry() -> DELETE /api/v1/admin/industries/:id
         await deleteAdminIndustry(deleteTarget.id);
       }
       refreshIndustries();

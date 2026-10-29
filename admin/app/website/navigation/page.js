@@ -253,7 +253,6 @@ export default function AdminNavigationPage() {
       for (let i = 0; i < headerLinks.length; i++) {
         const item = headerLinks[i];
         if (item.id && !item.id.startsWith("nav-")) {
-          // [API IMPLEMENTATION] updateAdminNavigation() -> PUT /api/v1/admin/navigation/:id
           await updateAdminNavigation(item.id, {
             label: item.label,
             href: item.href,
@@ -261,7 +260,6 @@ export default function AdminNavigationPage() {
             badge: item.badge,
           }).catch(() => {});
         } else if (item.label && item.href) {
-          // [API IMPLEMENTATION] createAdminNavigation() -> POST /api/v1/admin/navigation
           const created = await createAdminNavigation({
             label: item.label,
             href: item.href,

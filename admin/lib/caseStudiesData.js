@@ -1,5 +1,5 @@
 /**
- * DEZORYN TECHNOLOGY — Enterprise Case Studies & Architecture (SRS §22 & §23)
+ * DEZORYN TECHNOLOGY — Enterprise Case Studies & Architecture
  * Clear, professional, and easy-to-understand real-world software blueprints.
  * Zero confusing jargon, zero placeholder copy, 100% clear and practical English.
  */

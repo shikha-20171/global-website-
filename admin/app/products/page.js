@@ -216,7 +216,6 @@ export default function AdminProductsPage() {
         (p) => p.slug === editingProduct.slug || p.id === editingProduct.id
       );
       if (exists && exists.id && !exists.id.startsWith("prod-")) {
-        // [API IMPLEMENTATION] updateAdminProduct() -> PUT /api/v1/admin/products/:id
         await updateAdminProduct(exists.id, editingProduct);
         setToast({
           type: "success",
@@ -224,7 +223,6 @@ export default function AdminProductsPage() {
           description: `Changes saved to PostgreSQL database for "${editingProduct.name}".`,
         });
       } else {
-        // [API IMPLEMENTATION] createAdminProduct() -> POST /api/v1/admin/products
         await createAdminProduct(editingProduct);
         setToast({
           type: "success",
@@ -287,7 +285,6 @@ export default function AdminProductsPage() {
     if (!deleteModal) return;
     try {
       if (deleteModal.id && !deleteModal.id.startsWith("prod-")) {
-        // [API IMPLEMENTATION] deleteAdminProduct() -> DELETE /api/v1/admin/products/:id
         await deleteAdminProduct(deleteModal.id);
       }
     } catch (err) {

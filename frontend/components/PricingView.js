@@ -25,7 +25,6 @@ export default function PricingView({ productSlug }) {
 
   useEffect(() => {
     let mounted = true;
-    // [API IMPLEMENTATION] getLiveProducts() & getLivePricingPlans() -> GET /api/v1/products & GET /api/v1/pricing
     Promise.allSettled([getLiveProducts(), getLivePricingPlans()]).then(
       ([prodResult, planResult]) => {
         if (!mounted) return;

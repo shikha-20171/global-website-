@@ -218,7 +218,7 @@ export default async function IndustryDetailPage({ params }) {
                   <Icon name={ind.icon} size={24} />
                 </span>
                 <span className="text-xs font-mono text-electric uppercase tracking-wider rounded-full border border-electric/30 bg-electric/10 px-3 py-1">
-                  {ind.name} Domain Architecture (SRS §19)
+                  {ind.name} Domain Architecture
                 </span>
               </div>
 
@@ -485,7 +485,7 @@ export default async function IndustryDetailPage({ params }) {
         </section>
       )}
 
-      {/* ─── FEATURES SECTION (SRS §19) ─── */}
+      {/* ─── FEATURES SECTION ─── */}
       {ind.features && ind.features.length > 0 && (
         <section className="section bg-midnight/30 border-b border-line">
           <div className="container-x">
@@ -518,7 +518,7 @@ export default async function IndustryDetailPage({ params }) {
         </section>
       )}
 
-      {/* ─── MEASURABLE BENEFITS (SRS §19) ─── */}
+      {/* ─── MEASURABLE BENEFITS ─── */}
       {ind.benefits && ind.benefits.length > 0 && (
         <section className="section bg-midnight/30 border-b border-line">
           <div className="container-x">
@@ -606,7 +606,7 @@ export default async function IndustryDetailPage({ params }) {
         </section>
       )}
 
-      {/* ─── DOMAIN-SPECIFIC FAQ (SRS §19) ─── */}
+      {/* ─── DOMAIN-SPECIFIC FAQ ─── */}
       <section className="section border-b border-line">
         <div className="container-x max-w-4xl">
           <div className="text-center mb-8">

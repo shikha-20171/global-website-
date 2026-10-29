@@ -25,7 +25,7 @@ import AdminModal from "@/components/admin/AdminModal";
 import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
-import { fallbackSolutions } from "@/lib/solutionsData";
+import { fallbackSolutions } from "@/lib/data";
 import {
   getAdminSolutions,
   createAdminSolution,
@@ -157,7 +157,6 @@ export default function AdminSolutionsPage() {
 
     try {
       if (!isNew) {
-        // [API IMPLEMENTATION] updateAdminSolution() -> PUT /api/v1/admin/solutions/:id
         await updateAdminSolution(editingSolution.id, payload);
         setToast({
           type: "success",
@@ -165,7 +164,6 @@ export default function AdminSolutionsPage() {
           description: `Changes saved for "${payload.name}".`,
         });
       } else {
-        // [API IMPLEMENTATION] createAdminSolution() -> POST /api/v1/admin/solutions
         await createAdminSolution(payload);
         setToast({
           type: "success",
@@ -196,7 +194,6 @@ export default function AdminSolutionsPage() {
     if (!deleteTarget) return;
     try {
       if (deleteTarget.id && !deleteTarget.id.startsWith("sol-")) {
-        // [API IMPLEMENTATION] deleteAdminSolution() -> DELETE /api/v1/admin/solutions/:id
         await deleteAdminSolution(deleteTarget.id);
       }
       refreshSolutions();

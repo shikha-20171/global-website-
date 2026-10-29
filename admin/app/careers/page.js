@@ -175,7 +175,6 @@ export default function AdminCareersPage() {
       setJobs(jobs.map((j) => (j.id === jobData.id ? jobData : j)));
       if (jobData.id && !jobData.id.startsWith("job_")) {
         try {
-          // [API IMPLEMENTATION] updateAdminCareer() -> PUT /api/v1/admin/careers/:id
           await updateAdminCareer(jobData.id, {
             title: jobData.title,
             department: jobData.department,
@@ -192,7 +191,6 @@ export default function AdminCareersPage() {
     } else {
       setJobs([jobData, ...jobs]);
       try {
-        // [API IMPLEMENTATION] createAdminCareer() -> POST /api/v1/admin/careers
         await createAdminCareer({
           title: jobData.title,
           department: jobData.department,
@@ -217,7 +215,6 @@ export default function AdminCareersPage() {
     setJobs(jobs.filter((j) => j.id !== targetId));
     if (targetId && !targetId.startsWith("job_")) {
       try {
-        // [API IMPLEMENTATION] deleteAdminCareer() -> DELETE /api/v1/admin/careers/:id
         await deleteAdminCareer(targetId);
       } catch (err) {
         console.warn("Could not delete career on backend:", err.message);

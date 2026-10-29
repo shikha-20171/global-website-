@@ -121,7 +121,7 @@ export default async function MarketplaceCategoryPage({ params }) {
           <div className="max-w-3xl mt-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-electric/30 bg-electric/10 px-3.5 py-1 text-xs font-mono text-electric mb-3">
               <span className="h-1.5 w-1.5 rounded-full bg-electric animate-pulse" />
-              <span>MARKETPLACE CATEGORY (SRS §16)</span>
+              <span>MARKETPLACE CATEGORY</span>
             </div>
 
             <h1 className="h-display text-4xl sm:text-6xl text-white">

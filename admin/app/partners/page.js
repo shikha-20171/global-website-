@@ -147,7 +147,6 @@ export default function AdminPartnersPage() {
       );
       if (editingPartner.id && !editingPartner.id.startsWith("ptn_")) {
         try {
-          // [API IMPLEMENTATION] updateAdminPartner() -> PUT /api/v1/admin/partners/:id
           await updateAdminPartner(editingPartner.id, {
             name: editingPartner.name,
             category: editingPartner.category,
@@ -167,7 +166,6 @@ export default function AdminPartnersPage() {
     } else {
       setPartners([...partners, editingPartner]);
       try {
-        // [API IMPLEMENTATION] createAdminPartner() -> POST /api/v1/admin/partners
         await createAdminPartner({
           name: editingPartner.name,
           category: editingPartner.category,
@@ -194,7 +192,6 @@ export default function AdminPartnersPage() {
     setPartners(partners.filter((p) => p.id !== targetId));
     if (targetId && !targetId.startsWith("ptn_")) {
       try {
-        // [API IMPLEMENTATION] deleteAdminPartner() -> DELETE /api/v1/admin/partners/:id
         await deleteAdminPartner(targetId);
       } catch (err) {
         console.warn("Could not delete partner on backend:", err.message);

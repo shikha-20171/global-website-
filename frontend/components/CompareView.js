@@ -63,7 +63,6 @@ export default function CompareView() {
 
   useEffect(() => {
     let mounted = true;
-    // [API IMPLEMENTATION] getLiveProducts() -> GET /api/v1/products
     getLiveProducts()
       .then((data) => {
         if (mounted && Array.isArray(data) && data.length > 0) {
@@ -74,7 +73,6 @@ export default function CompareView() {
         console.warn("Compare live catalog notice:", err.message);
       });
 
-    // [API IMPLEMENTATION] getLiveComparisonMatrix() -> GET /api/v1/products/compare
     getLiveComparisonMatrix()
       .then((matrix) => {
         if (mounted && matrix) {

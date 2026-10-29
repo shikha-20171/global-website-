@@ -44,7 +44,7 @@ const corePillars = [
     icon: Target,
     title: "Our Mission",
     desc: "To make powerful technology accessible, scalable, and intelligent for businesses everywhere.",
-    tag: "SRS §25",
+    tag: "Mission",
     color: "from-blue-500/20 via-blue-500/10 to-transparent",
     accent: "text-blue-400 border-blue-500/30 bg-blue-500/10",
   },
@@ -52,7 +52,7 @@ const corePillars = [
     icon: Eye,
     title: "Our Vision",
     desc: "To build a global ecosystem of software products that powers the next generation of businesses.",
-    tag: "SRS §26",
+    tag: "Vision",
     color: "from-violet-500/20 via-violet-500/10 to-transparent",
     accent: "text-violet-400 border-violet-500/30 bg-violet-500/10",
   },
@@ -120,7 +120,7 @@ export default async function CompanyPage() {
       icon: Target,
       title: "Our Mission",
       desc: profile?.mission || corePillars[0].desc,
-      tag: "SRS §25",
+      tag: "Mission",
       color: "from-blue-500/20 via-blue-500/10 to-transparent",
       accent: "text-blue-400 border-blue-500/30 bg-blue-500/10",
     },
@@ -128,7 +128,7 @@ export default async function CompanyPage() {
       icon: Eye,
       title: "Our Vision",
       desc: profile?.vision || corePillars[1].desc,
-      tag: "SRS §26",
+      tag: "Vision",
       color: "from-violet-500/20 via-violet-500/10 to-transparent",
       accent: "text-violet-400 border-violet-500/30 bg-violet-500/10",
     },
@@ -328,7 +328,7 @@ export default async function CompanyPage() {
         </div>
       </section>
 
-      {/* ─── MISSION, VISION & VALUES (SRS §25 & §26) ─── */}
+      {/* ─── MISSION, VISION & VALUES ─── */}
       <section className="section border-t border-line relative overflow-hidden">
         <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[700px] rounded-full bg-electric/10 blur-[140px]" />
 

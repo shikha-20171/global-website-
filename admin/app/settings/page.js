@@ -42,7 +42,6 @@ export default function AdminSettingsPage() {
   });
 
   useEffect(() => {
-    // [API IMPLEMENTATION] getAdminSiteSettings() -> GET /api/v1/admin/settings
     getAdminSiteSettings()
       .then((data) => {
         const payload = data?.data || data;
@@ -80,7 +79,6 @@ export default function AdminSettingsPage() {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      // [API IMPLEMENTATION] saveAdminSiteSettings() -> PUT /api/v1/admin/settings
       await saveAdminSiteSettings({
         site_name: settings.siteName,
         site_tagline: settings.tagline,

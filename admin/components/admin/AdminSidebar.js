@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ADMIN_NAV_GROUPS } from "@/lib/admin/navigation";
+import { ADMIN_NAV_GROUPS } from "@/lib/navigation";
 import { ChevronLeft, ChevronRight, X, ExternalLink, ShieldCheck } from "lucide-react";
 
 export default function AdminSidebar({

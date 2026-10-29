@@ -107,7 +107,7 @@ export default async function MissionPage() {
               <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-electric/15 blur-3xl" />
               <div>
                 <span className="text-xs font-mono text-electric uppercase tracking-wider">
-                  Our Mission (SRS §25)
+                  Our Mission
                 </span>
                 <h2 className="text-2xl sm:text-4xl font-extrabold text-white mt-3">
                   Accessible, Scalable &amp; Intelligent.
@@ -130,7 +130,7 @@ export default async function MissionPage() {
               <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-violet/15 blur-3xl" />
               <div>
                 <span className="text-xs font-mono text-violet-400 uppercase tracking-wider">
-                  Our Vision (SRS §26)
+                  Our Vision
                 </span>
                 <h2 className="text-2xl sm:text-4xl font-extrabold text-white mt-3">
                   The Global Software Ecosystem.

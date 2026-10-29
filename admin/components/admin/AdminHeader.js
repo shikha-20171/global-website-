@@ -22,7 +22,6 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
 
   const handleLogout = async () => {
     try {
-      // [API IMPLEMENTATION] adminLogout() -> POST /api/v1/admin/auth/logout
       await adminLogout();
     } finally {
       router.push("/login");

@@ -44,7 +44,7 @@ export default function MarketplacePage() {
             <div className="inline-flex items-center gap-2 rounded-full border border-electric/30 bg-electric/10 px-3.5 py-1 text-xs font-mono text-electric mb-3 shadow-sm shadow-electric/10">
               <span className="h-1.5 w-1.5 rounded-full bg-electric animate-pulse" />
               <ShoppingBag size={13} className="text-electric" />
-              <span>COMMERCIAL SAAS MARKETPLACE (SRS §15)</span>
+              <span>COMMERCIAL SAAS MARKETPLACE</span>
             </div>
 
             <h1 className="h-display text-4xl sm:text-6xl text-white">

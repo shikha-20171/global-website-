@@ -1,13 +1,10 @@
 /**
  * DEZORYN TECHNOLOGY — central content + pricing data.
- *
- * IMPORTANT (SRS §64): everything marked `placeholder: true` or listed in
- * PLACEHOLDER_NOTES is development content. Replace with real DEZORYN data
- * (later through a CMS). Prices are never hard-coded in components —
+ * Prices are never hard-coded in components —
  * always call formatPrice()/getPlanPrice().
  */
 
-/* ───────────── Currency architecture (SRS §4, §17) ───────────── */
+/* ───────────── Currency architecture ───────────── */
 export const DEFAULT_CURRENCY = "USD";
 export const CURRENCIES = {
   USD: { symbol: "$", rate: 1, locale: "en-US" },
@@ -26,7 +23,7 @@ export function getPlanPrice(plan, cycle = "monthly") {
   return cycle === "annual" ? plan.annual_price_usd : plan.monthly_price_usd;
 }
 
-/* Default plan ladder (placeholder prices from SRS §15). Products can override. */
+/* Default plan ladder. Products can override. */
 const mk = (starter, growth, business) => [
   { id: "starter", name: "Starter", for: "For small businesses", monthly_price_usd: starter,
     features: ["Up to 100 users", "Core modules", "Email support", "Regular updates"] },
@@ -2400,7 +2397,6 @@ export const PROJECT_FILTERS = ["All", "SaaS", "Web", "Mobile", "AI", "Enterpris
 
 /* ───────────── Homepage content ───────────── */
 export const stats = [
-  // REPLACE with real company data (SRS §8). No fake statistics in production.
   { value: 10, suffix: "+", label: "Digital Products" },
   { value: 200, suffix: "+", label: "Projects Delivered" },
   { value: 500, suffix: "+", label: "Businesses Served" },
@@ -2823,4 +2819,152 @@ export const nav = [
   { label: "Portfolio", href: "/portfolio" },
   { label: "Resources", href: "/resources" },
   { label: "Company", href: "/company" },
+];
+
+export const fallbackSolutions = [
+  {
+    id: "sol_enterprise",
+    slug: "enterprise",
+    name: "Enterprise Solutions",
+    tagline: "Mission-Critical Systems. Built for Complexity. Designed for Scale.",
+    description: "DEZORYN Enterprise Solutions delivers resilient, high-concurrency cloud software architectures engineered specifically for multi-tenant corporations, multinational educational networks, healthcare conglomerates, and high-volume financial institutions.",
+    icon: "Layers",
+    status: "Published",
+    capabilities: [
+      { title: "Multi-Tenant Architecture", desc: "Complete data isolation, tenant-specific schemas, and centralized governance across regional operating entities." },
+      { title: "Granular Role-Based Access (RBAC)", desc: "Fine-grained permissions, audit logging, and single sign-on (SSO) with Okta, Azure AD, and Google Workspace." },
+      { title: "High-Throughput APIs", desc: "RESTful, GraphQL, and webhook interfaces engineered for sub-50ms latency under peak enterprise workloads." },
+      { title: "Regulatory Compliance", desc: "Engineered in accordance with SOC 2, HIPAA, GDPR, and ISO 27001 security standards." },
+    ],
+    relatedProducts: ["schooly-core", "dezo-care", "hrms-enterprise"],
+  },
+  {
+    id: "sol_ai",
+    slug: "ai",
+    name: "AI Solutions",
+    tagline: "Intelligence Built Into Your Business.",
+    description: "Enterprise artificial intelligence models and predictive workflows embedded directly into operational software to automate decisions and surface critical insights.",
+    icon: "Sparkles",
+    status: "Published",
+    capabilities: [
+      { title: "Operational AI Assistants", desc: "Context-aware conversational agents that query your internal knowledge base and execute ERP tasks." },
+      { title: "Predictive Business Intelligence", desc: "Time-series forecasting for student performance, inventory demand, hospital bed occupancy, and revenue." },
+      { title: "Document & Contract Intelligence", desc: "Automated clause classification, entity extraction, and compliance checking for legal and financial forms." },
+      { title: "Workflow Decision Automation", desc: "AI models that classify incoming tickets, triage leads, and route complex exceptions automatically." },
+    ],
+    relatedProducts: ["legal-docs", "crm-pipeline"],
+  },
+  {
+    id: "sol_automation",
+    slug: "automation",
+    name: "Automation Workflows",
+    tagline: "Eliminate Friction. Accelerate Velocity.",
+    description: "Event-driven asynchronous automation engines that eliminate manual administrative drag, connect distributed systems, and guarantee workflow compliance.",
+    icon: "Workflow",
+    status: "Published",
+    capabilities: [
+      { title: "Event-Driven Triggers", desc: "Automate cross-departmental operations based on status changes, payment completions, or document uploads." },
+      { title: "Document & Invoice Processing", desc: "Intelligent OCR and structured data extraction to process POs, receipts, and identity documents without manual data entry." },
+      { title: "Approval Hierarchies", desc: "Configurable multi-level approval matrices for expense authorizations, leave approvals, and purchase orders." },
+      { title: "Third-Party Sync & Webhooks", desc: "Bi-directional real-time data sync with ERPs, CRMs, communication channels, and payment gateways." },
+    ],
+    relatedProducts: ["super-whatsapp", "legal-docs", "society-management"],
+  },
+  {
+    id: "sol_custom_software",
+    slug: "custom-software",
+    name: "Custom Software Engineering",
+    tagline: "Precision Engineering for Unique Workflows.",
+    description: "When commercial off-the-shelf software doesn't fit your exact business logic, DEZORYN engineers bespoke cloud architectures tailored to your exact competitive advantage.",
+    icon: "Code2",
+    status: "Published",
+    capabilities: [
+      { title: "Bespoke ERP & Operations Suites", desc: "Tailored business logic mapped precisely to your organizational chart, billing formulas, and departmental protocols." },
+      { title: "Granular Role-Based Access (RBAC)", desc: "Zero-trust permission hierarchies ensuring employees, managers, and auditors only access authorized data slices." },
+      { title: "API-First Architecture", desc: "Clean, documented RESTful and GraphQL endpoints engineered for future system integrations and third-party interoperability." },
+      { title: "Enterprise Audit Trails", desc: "Immutable logs tracking all data creation, modification, and export events for institutional regulatory compliance." },
+    ],
+    relatedProducts: ["school-master", "coaching-master", "college-master"],
+  },
+  {
+    id: "sol_digital_transformation",
+    slug: "digital-transformation",
+    name: "Digital Transformation",
+    tagline: "Modernize Legacy Systems Without Disruption.",
+    description: "Strategic cloud migration and systems modernization that migrates on-premises spreadsheets and legacy monoliths into scalable multi-tenant cloud ecosystems.",
+    icon: "RefreshCw",
+    status: "Published",
+    capabilities: [
+      { title: "Legacy System Audits", desc: "In-depth codebase and database forensics to identify bottlenecks, security vulnerabilities, and migration vectors." },
+      { title: "Zero-Downtime Data Migration", desc: "Parallel-run synchronization strategies ensuring continuous business operations during database cutovers." },
+      { title: "Staff Retraining & Change Management", desc: "Role-specific video runbooks, interactive staging sandboxes, and dedicated live cutover support." },
+      { title: "Continuous Delivery Pipelines", desc: "Automated CI/CD pipelines with comprehensive automated testing and instant rollback capabilities." },
+    ],
+    relatedProducts: ["schooly-core", "dezo-care", "real-estate"],
+  },
+  {
+    id: "sol_cloud",
+    slug: "cloud",
+    name: "Cloud Infrastructure",
+    tagline: "High Availability. Zero-Trust Security.",
+    description: "Resilient containerized cloud architectures engineered across distributed regions with automatic failover, database clustering, and sub-100ms latency.",
+    icon: "Cloud",
+    status: "Published",
+    capabilities: [
+      { title: "Multi-Tenant Cloud Isolation", desc: "Logical or physical tenant separation with dedicated database schemas, connection pooling, and tenant encryption keys." },
+      { title: "High Availability & Failover", desc: "Multi-availability zone replication with automated health checks, geo-routing, and 99.99% uptime SLA engineering." },
+      { title: "Automated Backup & Disaster Recovery", desc: "Point-in-time recovery, automated daily database snapshots, and rapid replication protocols to safeguard enterprise data." },
+      { title: "Performance Monitoring & Telemetry", desc: "Continuous distributed tracing, latency profiling, and edge telemetry to maintain sub-100ms response benchmarks." },
+    ],
+    relatedProducts: ["super-whatsapp", "crm-pipeline"],
+  },
+  {
+    id: "sol_mobile",
+    slug: "mobile",
+    name: "Mobile & Omnichannel",
+    tagline: "Connected Workforces Everywhere.",
+    description: "Native and cross-platform mobile applications that bring enterprise ERP workflows, field reports, and customer portals directly into users' pockets.",
+    icon: "Smartphone",
+    status: "Published",
+    capabilities: [
+      { title: "Cross-Platform & Native Apps", desc: "Fluid iOS and Android applications built with React Native and native modules for maximum frame rates and low battery draw." },
+      { title: "Offline-First Sync Engine", desc: "Local encrypted caching with automatic conflict resolution when field agents reconnect to cellular or Wi-Fi networks." },
+      { title: "Push Notifications & Alerts", desc: "Instant transactional alerts, shift updates, and verification codes integrated with APNs and Firebase Cloud Messaging." },
+      { title: "Biometric Device Authentication", desc: "Native FaceID and fingerprint authentication backed by hardware secure enclaves." },
+    ],
+    relatedProducts: ["society-management", "schooly-core", "hrms-enterprise"],
+  },
+];
+
+export const fallbackWebsitePages = [
+  { id: "page_home", slug: "/", title: "Homepage — Technology That Moves Businesses Forward", pageType: "Core", template: "Homepage Builder", status: "Published" },
+  { id: "page_products", slug: "/products", title: "Enterprise Products & SaaS Catalog", pageType: "Core", template: "Catalog Grid", status: "Published" },
+  { id: "page_marketplace", slug: "/marketplace", title: "DEZORYN SaaS Marketplace", pageType: "Core", template: "Marketplace Index", status: "Published" },
+  { id: "page_pricing", slug: "/pricing", title: "Transparent Tiered Pricing", pageType: "Core", template: "Pricing Matrix", status: "Published" },
+  { id: "page_compare", slug: "/compare", title: "Compare SaaS Products Side-by-Side", pageType: "Core", template: "Product Comparison", status: "Published" },
+  { id: "page_industries", slug: "/industries", title: "Industry Verticals & Blueprints", pageType: "Core", template: "Verticals Grid", status: "Published" },
+  { id: "page_solutions", slug: "/solutions", title: "Enterprise Architecture & AI Automation", pageType: "Core", template: "Solutions Index", status: "Published" },
+  { id: "page_company", slug: "/company", title: "About DEZORYN TECHNOLOGY", pageType: "Core", template: "Company Story", status: "Published" },
+  { id: "page_mission", slug: "/mission", title: "Mission, Vision & Global Culture", pageType: "Core", template: "Standard Article", status: "Published" },
+  { id: "page_careers", slug: "/careers", title: "Careers at DEZORYN TECHNOLOGY", pageType: "Core", template: "Job Board", status: "Published" },
+  { id: "page_partners", slug: "/partners", title: "Global Technology & Channel Partners", pageType: "Core", template: "Partners Directory", status: "Published" },
+  { id: "page_contact", slug: "/contact", title: "General Inquiries & Office Coordinates", pageType: "Core", template: "Contact Form", status: "Published" },
+  { id: "page_contact_sales", slug: "/contact-sales", title: "Global Enterprise Inquiries & Solutions Architect Hotline", pageType: "Core", template: "Sales Ingestion Desk", status: "Published" },
+  { id: "page_demo", slug: "/demo", title: "Interactive Guided Walkthrough & Product Sandbox Booking", pageType: "Core", template: "Interactive Demo Flow", status: "Published" },
+  { id: "page_start_trial", slug: "/start-trial", title: "Start Free 14-Day Enterprise Trial", pageType: "Core", template: "Trial Provisioning", status: "Published" },
+  { id: "page_portfolio", slug: "/portfolio", title: "Production Portfolio & Deployments", pageType: "Core", template: "Portfolio Showcase", status: "Published" },
+  { id: "page_case_studies", slug: "/case-studies", title: "Customer Success & ROI Case Studies", pageType: "Core", template: "Case Studies List", status: "Published" },
+  { id: "page_resources", slug: "/resources", title: "Resource Hub & Knowledge Vault", pageType: "Core", template: "Resources Hub", status: "Published" },
+  { id: "page_blog", slug: "/blog", title: "DEZORYN Technology Journal & Insights", pageType: "Core", template: "Blog Index", status: "Published" },
+  { id: "page_faq", slug: "/faq", title: "Frequently Asked Questions", pageType: "Core", template: "FAQ Accordion", status: "Published" },
+  { id: "page_privacy", slug: "/legal/privacy", title: "Global Privacy Policy (GDPR / CCPA)", pageType: "Legal", template: "Legal Markdown", status: "Published" },
+  { id: "page_terms", slug: "/legal/terms", title: "Terms & Conditions of Cloud Service", pageType: "Legal", template: "Legal Markdown", status: "Published" },
+  { id: "page_cookies", slug: "/legal/cookies", title: "Cookie Policy & Telemetry Notice", pageType: "Legal", template: "Legal Markdown", status: "Published" },
+  { id: "page_security", slug: "/legal/security", title: "Enterprise Security Architecture Policy", pageType: "Legal", template: "Legal Markdown", status: "Published" },
+  { id: "page_refund", slug: "/legal/refund", title: "Commercial Refund & SLA Policy", pageType: "Legal", template: "Legal Markdown", status: "Published" },
+  { id: "page_acceptable_use", slug: "/legal/acceptable-use", title: "Acceptable Cloud Service Usage Policy", pageType: "Legal", template: "Legal Markdown", status: "Published" },
+  { id: "page_docs", slug: "/resources/docs", title: "System Documentation & Engineering Runbooks", pageType: "Resources", template: "Documentation Vault", status: "Published" },
+  { id: "page_api", slug: "/resources/api", title: "Public Developer API Reference & OpenAPI Schema", pageType: "Resources", template: "API Documentation", status: "Published" },
+  { id: "page_insights", slug: "/resources/insights", title: "Executive Whitepapers & Benchmark Reports", pageType: "Resources", template: "Research Vault", status: "Published" },
+  { id: "page_login", slug: "/login", title: "Client Customer Portal Authentication", pageType: "Utility", template: "Auth Portal", status: "Published" },
 ];

@@ -22,7 +22,7 @@ import AdminPagination from "@/components/admin/AdminPagination";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import PageEditorModal from "./components/PageEditorModal";
-import { fallbackWebsitePages } from "@/lib/websitePagesData";
+import { fallbackWebsitePages } from "@/lib/data";
 import {
   getAdminPages,
   createAdminPage,
@@ -40,7 +40,6 @@ export default function AdminWebsitePagesPage() {
   const pageSize = 50;
 
   const refreshPages = () => {
-    // [API IMPLEMENTATION] getAdminPages() -> GET /api/v1/admin/pages
     getAdminPages()
       .then((data) => {
         const pages = Array.isArray(data) ? data : data?.pages || data?.items || [];
@@ -141,7 +140,6 @@ export default function AdminWebsitePagesPage() {
     };
 
     try {
-      // [API IMPLEMENTATION] createAdminPage() -> POST /api/v1/admin/pages
       await createAdminPage(payload);
       refreshPages();
     } catch {
@@ -189,7 +187,6 @@ export default function AdminWebsitePagesPage() {
 
     try {
       if (!isNew) {
-        // [API IMPLEMENTATION] updateAdminPage() -> PUT /api/v1/admin/pages/:id
         await updateAdminPage(editingPage.id, payload);
         setToast({
           type: "success",
@@ -197,7 +194,6 @@ export default function AdminWebsitePagesPage() {
           description: `Changes saved for "${editingPage.title}".`,
         });
       } else {
-        // [API IMPLEMENTATION] createAdminPage() -> POST /api/v1/admin/pages
         await createAdminPage(payload);
         setToast({
           type: "success",
@@ -236,7 +232,6 @@ export default function AdminWebsitePagesPage() {
     if (!archiveTarget) return;
     try {
       if (archiveTarget.id && !archiveTarget.id.startsWith("page-")) {
-        // [API IMPLEMENTATION] deleteAdminPage() -> DELETE /api/v1/admin/pages/:id
         await deleteAdminPage(archiveTarget.id);
       }
       refreshPages();

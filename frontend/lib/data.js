@@ -1,13 +1,10 @@
 /**
  * DEZORYN TECHNOLOGY — central content + pricing data.
- *
- * IMPORTANT (SRS §64): everything marked `placeholder: true` or listed in
- * PLACEHOLDER_NOTES is development content. Replace with real DEZORYN data
- * (later through a CMS). Prices are never hard-coded in components —
+ * Prices are never hard-coded in components —
  * always call formatPrice()/getPlanPrice().
  */
 
-/* ───────────── Currency architecture (SRS §4, §17) ───────────── */
+/* ───────────── Currency architecture ───────────── */
 export const DEFAULT_CURRENCY = "USD";
 export const CURRENCIES = {
   USD: { symbol: "$", rate: 1, locale: "en-US" },
@@ -2424,7 +2421,6 @@ export const PROJECT_FILTERS = ["All", "SaaS", "Web", "Mobile", "AI", "Enterpris
 
 /* ───────────── Homepage content ───────────── */
 export const stats = [
-  // REPLACE with real company data (SRS §8). No fake statistics in production.
   { value: 10, suffix: "+", label: "Digital Products" },
   { value: 200, suffix: "+", label: "Projects Delivered" },
   { value: 500, suffix: "+", label: "Businesses Served" },

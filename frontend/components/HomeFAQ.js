@@ -39,7 +39,6 @@ export default function HomeFAQ() {
 
   useEffect(() => {
     let active = true;
-    // [API IMPLEMENTATION] getLiveFaqs() -> GET /api/v1/content/faqs
     getLiveFaqs()
       .then((res) => {
         if (!active) return;

@@ -173,7 +173,6 @@ export default function AdminDemosPage() {
     const prismaStatus = newStatus === "New Request" ? "PENDING" : newStatus.toUpperCase().replace(/\s+/g, "_");
     if (id && !id.startsWith("DEMO-")) {
       try {
-        // [API IMPLEMENTATION] updateAdminDemoStatus() -> PATCH /api/v1/admin/demos/:id/status
         await updateAdminDemoStatus(id, prismaStatus);
       } catch (err) {
         console.warn("Could not update demo status on backend:", err.message);
@@ -194,7 +193,6 @@ export default function AdminDemosPage() {
     );
     if (targetId && !targetId.startsWith("DEMO-")) {
       try {
-        // [API IMPLEMENTATION] updateAdminDemoStatus() -> PATCH /api/v1/admin/demos/:id/status
         await updateAdminDemoStatus(targetId, "CANCELLED");
       } catch (err) {
         console.warn("Could not update demo on backend:", err.message);

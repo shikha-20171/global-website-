@@ -50,7 +50,6 @@ function ResetPasswordForm() {
     setError(null);
 
     try {
-      // [API IMPLEMENTATION] adminResetPassword() -> POST /api/v1/admin/auth/reset-password
       await adminResetPassword(token, newPassword);
       setSuccess(true);
     } catch (err) {

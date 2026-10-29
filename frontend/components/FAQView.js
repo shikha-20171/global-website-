@@ -9,7 +9,7 @@ export const allFaqs = [
   ],
   [
     "Why is USD ($) the default currency on the website?",
-    "DEZORYN serves an international client base across North America, Europe, the Middle East, and Asia. USD provides a globally recognized benchmark for transparent, predictable software subscription pricing (SRS §4).",
+    "DEZORYN serves an international client base across North America, Europe, the Middle East, and Asia. USD provides a globally recognized benchmark for transparent, predictable software subscription pricing.",
   ],
   [
     "How does DEZORYN guarantee data security across multiple tenants?",
@@ -52,7 +52,7 @@ export default function FAQView({ items }) {
           <div className="max-w-3xl mt-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-electric/30 bg-electric/10 px-3.5 py-1 text-xs font-mono text-electric mb-3">
               <span className="h-1.5 w-1.5 rounded-full bg-electric animate-pulse" />
-              <span>KNOWLEDGE BASE &amp; INQUIRIES (SRS §43)</span>
+              <span>KNOWLEDGE BASE &amp; INQUIRIES</span>
             </div>
 
             <h1 className="h-display text-4xl sm:text-6xl text-white">
