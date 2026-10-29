@@ -96,7 +96,6 @@ export default function AdminDemosPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [toast, setToast] = useState(null);
-  const [backendUrl, setBackendUrl] = useState("");
 
   // Modals
   const [activeDemo, setActiveDemo] = useState(null);
@@ -148,7 +147,6 @@ export default function AdminDemosPage() {
   };
 
   useEffect(() => {
-    setBackendUrl(getAdminApiBase());
     loadDemos();
   }, []);
 
@@ -309,38 +307,6 @@ export default function AdminDemosPage() {
           { label: "Demo Bookings" },
         ]}
       />
-
-      {/* Backend API Connection Status Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3.5 rounded-xl border border-blue-200 bg-blue-50/70 text-xs text-slate-800">
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="font-bold text-slate-900">Backend API URL:</span>
-          <code className="bg-white px-2 py-0.5 rounded border border-blue-200 font-mono text-blue-800 font-bold">
-            {backendUrl || "http://localhost:5001"}
-          </code>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            const current = backendUrl || "";
-            const input = prompt("Enter your Render Backend URL (e.g. https://your-backend.onrender.com):", current);
-            if (input !== null && input.trim()) {
-              const clean = input.trim().replace(/\/+$/, "");
-              localStorage.setItem("dezoryn_backend_url", clean);
-              setBackendUrl(clean);
-              loadDemos();
-              setToast({
-                type: "success",
-                message: "Backend URL Connected",
-                description: `Admin Panel is now connecting directly to: ${clean}`,
-              });
-            }
-          }}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition shrink-0 self-start sm:self-auto cursor-pointer shadow-xs"
-        >
-          <span>Connect Render Backend URL</span>
-        </button>
-      </div>
 
       <AdminFilterBar
         search={search}

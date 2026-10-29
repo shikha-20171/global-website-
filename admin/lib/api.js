@@ -13,13 +13,40 @@ export function getAdminApiBase() {
       if (custom) return custom.replace(/\/+$/, "");
     } catch (_) {}
   }
-  return (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001").replace(/\/+$/, "");
+
+  const envUrl = (
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    process.env.NEXT_PUBLIC_RENDER_URL ||
+    process.env.BACKEND_URL ||
+    process.env.RENDER_URL ||
+    process.env.API_URL ||
+    process.env.BACKEND_INTERNAL_URL ||
+    ""
+  ).trim();
+
+  if (envUrl) {
+    return envUrl.replace(/\/+$/, "");
+  }
+
+  // When running on browser in production (e.g. Vercel deployment), return relative "" so it proxies through Next.js /api route handler
+  if (typeof window !== "undefined") {
+    if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      return "";
+    }
+  }
+
+  if (typeof window === "undefined" && (process.env.VERCEL || process.env.NODE_ENV === "production")) {
+    return "";
+  }
+
+  return "http://localhost:5001";
 }
 
 // Centralized Axios instance for DEZORYN TECHNOLOGY Admin Console
 export const adminApiClient = axios.create({
-  baseURL: getAdminApiBase(),
-  timeout: 25000,
+  baseURL: getAdminApiBase() || undefined,
+  timeout: 55000,
   withCredentials: true, // Send and receive HttpOnly session cookies
   headers: {
     "Content-Type": "application/json",
@@ -33,6 +60,8 @@ adminApiClient.interceptors.request.use((config) => {
     const activeBase = getAdminApiBase();
     if (activeBase && !config.url?.startsWith("http")) {
       config.baseURL = activeBase;
+    } else if (!activeBase && !config.url?.startsWith("http")) {
+      config.baseURL = "";
     }
     const token = sessionStorage.getItem("dezoryn_admin_token");
     if (token && !config.headers.Authorization) {

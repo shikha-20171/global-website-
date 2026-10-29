@@ -324,8 +324,8 @@ export default function DemoFlow() {
                   {trial ? "Trial request received" : "Demo booked &amp; reserved"}
                 </h2>
                 <p className="mx-auto mt-2 max-w-sm text-cool text-sm leading-relaxed">
-                  <span className="text-white font-medium">{prod?.name}</span> · {v.day} at {v.slot}. A calendar invitation has been assigned and queued for dispatch to{" "}
-                  <span className="text-blue-400 font-mono">{v.email}</span>.
+                  <span className="text-white font-medium">{prod?.name}</span> · {v.day} at {v.slot}. A calendar invitation has been scheduled. Our enterprise team will connect with you shortly. For immediate assistance, reach us at{" "}
+                  <span className="text-blue-400 font-mono">contact@dezoryn.com</span>.
                 </p>
               </div>
             )}

@@ -127,7 +127,7 @@ export default function ContactForm() {
           </div>
           <h2 className="mt-5 text-2xl font-bold text-white">Inquiry Received &amp; Logged</h2>
           <p className="mt-2 text-cool text-sm max-w-md">
-            Thanks, <span className="text-white font-medium">{v.name}</span>. Your requirements have been registered into the DEZORYN client dispatch desk. Our solutions architects will review your project and respond to <span className="text-blue-400 font-mono">{v.email}</span> shortly.
+            Thanks, <span className="text-white font-medium">{v.name}</span>. Your requirements have been registered into the DEZORYN client dispatch desk. Our solutions architects will review your project and connect with you shortly. You can also reach our desk directly at <span className="text-blue-400 font-mono">contact@dezoryn.com</span>.
           </p>
           <button
             type="button"

@@ -32,8 +32,14 @@ function getApiBaseUrl() {
   }
 
   const envUrl = (
-    process.env.BACKEND_INTERNAL_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    process.env.NEXT_PUBLIC_RENDER_URL ||
+    process.env.BACKEND_URL ||
+    process.env.RENDER_URL ||
+    process.env.RENDER_BACKEND_URL ||
+    process.env.API_URL ||
+    process.env.BACKEND_INTERNAL_URL ||
     ""
   ).trim();
 
@@ -113,17 +119,23 @@ async function request(url, options = {}) {
   } catch (err) {
     clearTimeout(timer);
 
-    // On client: if proxy failed and NEXT_PUBLIC_API_URL is configured, retry directly once
+    // On client: if proxy failed and direct backend URL is configured, retry directly once
+    const directBase = (
+      process.env.NEXT_PUBLIC_API_URL ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      process.env.NEXT_PUBLIC_RENDER_URL ||
+      (typeof window !== "undefined" ? localStorage.getItem("dezoryn_backend_url") : null) ||
+      ""
+    ).replace(/\/+$/, "");
+
     if (
       !isServer &&
-      process.env.NEXT_PUBLIC_API_URL &&
+      directBase &&
       !url.startsWith("http") &&
-      !options._isRetry
+      !options._isRetry &&
+      directBase !== base
     ) {
-      const directBase = process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
-      if (directBase && directBase !== base) {
-        return request(`${directBase}${url}`, { ...options, _isRetry: true });
-      }
+      return request(`${directBase}${url}`, { ...options, _isRetry: true });
     }
 
     throw err;
