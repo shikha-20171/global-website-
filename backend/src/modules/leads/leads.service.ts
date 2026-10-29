@@ -36,9 +36,20 @@ export class LeadsService {
     });
 
     if (existingRecent) {
-      throw new RateLimitError(
-        "An inquiry was recently submitted with this email. Our enterprise architects will contact you shortly."
-      );
+      const updated = await prisma.leadEnquiry.update({
+        where: { id: existingRecent.id },
+        data: {
+          name: input.name,
+          company: input.company,
+          phone: input.phone || existingRecent.phone,
+          country: input.country,
+          companySize: input.companySize || existingRecent.companySize,
+          interestedSolution: input.solution || existingRecent.interestedSolution,
+          budgetRange: input.budget || existingRecent.budgetRange,
+          requirement: input.req,
+        },
+      });
+      return { id: updated.id, status: updated.status };
     }
 
     let source: LeadSource = LeadSource.GENERAL_CONTACT;
@@ -106,9 +117,20 @@ export class LeadsService {
     });
 
     if (existingRecent) {
-      throw new RateLimitError(
-        "A demo request was recently scheduled for this email. A calendar invitation is being prepared."
-      );
+      const updated = await prisma.demoRequest.update({
+        where: { id: existingRecent.id },
+        data: {
+          contactName: input.contactName,
+          company: input.company,
+          phone: input.phone || existingRecent.phone,
+          country: input.country,
+          preferredDate: input.preferredDate,
+          preferredTime: input.preferredTime,
+          timeZone: input.timeZone || existingRecent.timeZone,
+          notes: input.notes || existingRecent.notes,
+        },
+      });
+      return { id: updated.id, status: updated.status };
     }
 
     const demo = await prisma.demoRequest.create({
@@ -335,12 +357,54 @@ export class LeadsService {
 
   // --- 5. Admin Demo Requests ---
   async listAdminDemos() {
-    return prisma.demoRequest.findMany({
-      include: {
-        assignedOwner: { select: { id: true, name: true, email: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    const [demos, trialLeads] = await Promise.all([
+      prisma.demoRequest.findMany({
+        include: {
+          assignedOwner: { select: { id: true, name: true, email: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.leadEnquiry.findMany({
+        where: {
+          source: { in: [LeadSource.START_TRIAL, LeadSource.DEMO_REQUEST] },
+        },
+        include: {
+          assignedOwner: { select: { id: true, name: true, email: true } },
+        },
+        orderBy: { submittedAt: "desc" },
+      }),
+    ]);
+
+    const mappedTrialLeads = trialLeads.map((tl: any) => ({
+      id: tl.id,
+      contactName: tl.name,
+      company: tl.company,
+      businessEmail: tl.email,
+      phone: tl.phone || null,
+      country: tl.country,
+      productSlug: tl.interestedSolution || "enterprise-platform",
+      preferredDate: "14-Day Free Trial",
+      preferredTime: "Instant Provisioning",
+      timeZone: "UTC",
+      meetingLink: null,
+      attendeesCount: 1,
+      notes: tl.requirement,
+      assignedOwnerId: tl.assignedOwnerId,
+      assignedOwner: tl.assignedOwner,
+      status: tl.status === LeadStatus.NEW ? DemoStatus.PENDING : DemoStatus.CONFIRMED,
+      createdAt: tl.submittedAt,
+      updatedAt: tl.updatedAt,
+    }));
+
+    // Merge and de-duplicate by businessEmail if both exist
+    const demoEmails = new Set(demos.map((d: any) => d.businessEmail.toLowerCase()));
+    const uniqueTrialDemos = mappedTrialLeads.filter(
+      (tl: any) => !demoEmails.has(tl.businessEmail.toLowerCase())
+    );
+
+    return [...demos, ...uniqueTrialDemos].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   }
 
   async updateAdminDemo(id: string, input: UpdateDemoStatusInput, actorName: string) {

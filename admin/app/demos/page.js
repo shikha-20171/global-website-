@@ -11,6 +11,7 @@ import {
   Building,
   CheckCircle,
   Phone,
+  RefreshCw,
 } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFilterBar from "@/components/admin/AdminFilterBar";
@@ -112,6 +113,27 @@ export default function AdminDemosPage() {
     if (typeof window !== "undefined") {
       try {
         localDemos = JSON.parse(localStorage.getItem("dezoryn_local_demos") || "[]");
+        // Also incorporate any locally saved trial registrations from Get Started
+        const localLeads = JSON.parse(localStorage.getItem("dezoryn_local_leads") || "[]");
+        const trialDemos = localLeads
+          .filter((l) => String(l.source || "").toLowerCase().includes("trial"))
+          .map((l) => ({
+            id: l.id,
+            contactName: l.name,
+            company: l.company,
+            businessEmail: l.email,
+            phone: l.phone || "",
+            product: l.product || "14-Day Free Trial",
+            productSlug: l.solution || "core",
+            country: l.country || "Global",
+            preferredDate: "14-Day Free Trial",
+            preferredTime: "Instant Provisioning",
+            timeZone: "UTC",
+            status: "New Request",
+            notes: l.requirement || "",
+            createdAt: l.submittedAt || null,
+          }));
+        localDemos = [...localDemos, ...trialDemos.filter((td) => !localDemos.some((ld) => ld.businessEmail === td.businessEmail))];
       } catch (_) {}
     }
 
@@ -137,7 +159,10 @@ export default function AdminDemosPage() {
         createdAt: d.createdAt || null,
       }));
 
-      const combined = [...localDemos.filter((loc) => !mapped.some((m) => m.businessEmail === loc.businessEmail && m.id === loc.id)), ...mapped];
+      const combined = [
+        ...localDemos.filter((loc) => !mapped.some((m) => m.businessEmail === loc.businessEmail || m.id === loc.id)),
+        ...mapped,
+      ];
       if (combined.length > 0) {
         setDemos(combined);
       } else {
@@ -324,6 +349,24 @@ export default function AdminDemosPage() {
           { label: "Dashboard", href: "/admin" },
           { label: "Demo Bookings" },
         ]}
+        actions={
+          <button
+            type="button"
+            onClick={() => {
+              loadDemos();
+              setToast({
+                type: "info",
+                message: "Refreshed",
+                description: "Loaded latest demo booking requests.",
+              });
+            }}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs transition cursor-pointer shadow-2xs"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-blue-600" : ""}`} />
+            <span>Refresh</span>
+          </button>
+        }
       />
 
       <AdminFilterBar

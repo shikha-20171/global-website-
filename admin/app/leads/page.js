@@ -17,6 +17,7 @@ import {
   Edit2,
   Trash2,
   Phone,
+  RefreshCw,
 } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFilterBar from "@/components/admin/AdminFilterBar";
@@ -354,14 +355,31 @@ export default function AdminLeadsPage() {
           { label: "Contact Inquiries" },
         ]}
         actions={
-          <button
-            type="button"
-            onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs"
-          >
-            <Download className="h-3.5 w-3.5" />
-            <span>Export CSV</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                refreshLeads();
+                setToast({
+                  type: "info",
+                  message: "Refreshed",
+                  description: "Loaded latest client inquiries.",
+                });
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Refresh</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleExportCSV}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Export CSV</span>
+            </button>
+          </div>
         }
       />
 

@@ -52,9 +52,9 @@ export default function StartTrialClient() {
       setCurrentStep((prev) => prev + 1);
     } else {
       try {
-        const { submitContactInquiry } = await import("@/lib/api");
-        // Fetch contact inquiry
-        await submitContactInquiry({
+        const { submitContactInquiry, submitDemoRequest } = await import("@/lib/api");
+        
+        const leadPayload = {
           name: account.fullName || "Trial Administrator",
           company: company.companyName || "Trial Organization",
           email: account.businessEmail || "trial@organization.com",
@@ -65,9 +65,73 @@ export default function StartTrialClient() {
           budget: selectedPlan,
           req: `14-Day Free Enterprise Trial signup for product ${selectedProduct} on subdomain ${company.workspaceSubdomain}.dezoryn.cloud${company.phone?.trim() ? ` (Direct Phone: ${company.phone.trim()})` : ""}`,
           source: "start-trial",
-        });
+        };
+
+        // 1. Submit to leads engine
+        await submitContactInquiry(leadPayload);
+
+        // 2. Submit to demo bookings engine so it immediately appears in Demo Bookings (/admin/demos)
+        try {
+          await submitDemoRequest({
+            contactName: leadPayload.name,
+            company: leadPayload.company,
+            businessEmail: leadPayload.email,
+            phone: leadPayload.phone,
+            country: leadPayload.country,
+            productSlug: selectedProduct,
+            preferredDate: "14-Day Free Trial",
+            preferredTime: "Instant Provisioning",
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+            notes: `Enterprise Trial (${selectedPlan} tier) on subdomain ${company.workspaceSubdomain}.dezoryn.cloud. Multi-tenant workspace activated.`,
+          });
+        } catch (demoErr) {
+          console.warn("Trial demo sync notice:", demoErr?.message || demoErr);
+        }
       } catch (err) {
         console.warn("Trial lead submission notice:", err.message);
+
+        // Cache locally for offline resilience
+        try {
+          const storedLeads = JSON.parse(localStorage.getItem("dezoryn_local_leads") || "[]");
+          const storedDemos = JSON.parse(localStorage.getItem("dezoryn_local_demos") || "[]");
+          const nowStr = new Date().toISOString();
+
+          storedLeads.unshift({
+            id: `lead-trial-${Date.now()}`,
+            name: account.fullName || "Trial Administrator",
+            company: company.companyName || "Trial Organization",
+            email: account.businessEmail || "trial@organization.com",
+            phone: company.phone?.trim() || "",
+            country: company.country || "United States",
+            companySize: company.companySize || "11-50",
+            product: selectedProduct,
+            budget: selectedPlan,
+            requirement: `14-Day Free Enterprise Trial signup for ${selectedProduct} on subdomain ${company.workspaceSubdomain}.dezoryn.cloud`,
+            source: "START_TRIAL",
+            status: "New",
+            date: "Today",
+            submittedAt: nowStr,
+          });
+          localStorage.setItem("dezoryn_local_leads", JSON.stringify(storedLeads));
+
+          storedDemos.unshift({
+            id: `demo-trial-${Date.now()}`,
+            contactName: account.fullName || "Trial Administrator",
+            company: company.companyName || "Trial Organization",
+            businessEmail: account.businessEmail || "trial@organization.com",
+            phone: company.phone?.trim() || "",
+            country: company.country || "United States",
+            product: selectedProduct.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+            productSlug: selectedProduct,
+            preferredDate: "14-Day Free Trial",
+            preferredTime: "Instant Provisioning",
+            timeZone: "UTC",
+            notes: `Enterprise Trial (${selectedPlan} tier) on subdomain ${company.workspaceSubdomain}.dezoryn.cloud`,
+            status: "New Request",
+            createdAt: nowStr,
+          });
+          localStorage.setItem("dezoryn_local_demos", JSON.stringify(storedDemos));
+        } catch (_) {}
       }
       setIsProvisioned(true);
     }
