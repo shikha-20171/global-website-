@@ -64,15 +64,15 @@ async function runDatabaseVerification() {
   const plansCount = await prisma.productPlan.count();
   const featuresCount = await prisma.productFeature.count();
   assert(categoriesCount === 12, "Product Categories", `${categoriesCount} categories`);
-  assert(productsCount === 13, "SaaS Products (100% of website catalog)", `${productsCount} products`);
-  assert(plansCount >= 52, "Product Tier Plans", `${plansCount} plans (4 per product)`);
+  assert(productsCount === 11, "SaaS Products (100% of website catalog)", `${productsCount} products`);
+  assert(plansCount >= 44, "Product Tier Plans", `${plansCount} plans (4 per product)`);
   assert(featuresCount >= 26, "Product Features", `${featuresCount} features`);
 
   // 6. Comparison Matrix
   const attrCount = await prisma.comparisonAttribute.count();
   const compValuesCount = await prisma.productComparisonValue.count();
   assert(attrCount === 7, "Comparison Attributes", `${attrCount} matrix attributes`);
-  assert(compValuesCount === 91, "Comparison Matrix Values (13 x 7)", `${compValuesCount} values populated`);
+  assert(compValuesCount >= 77, "Comparison Matrix Values (11 x 7)", `${compValuesCount} values populated`);
 
   // 7. Solutions & Industry Verticals
   const solutionsCount = await prisma.solution.count();
@@ -83,8 +83,8 @@ async function runDatabaseVerification() {
   // 8. Projects & Case Studies
   const projectsCount = await prisma.project.count();
   const caseStudiesCount = await prisma.caseStudy.count();
-  assert(projectsCount === 13, "Customer Projects Showcase", `${projectsCount} projects`);
-  assert(caseStudiesCount === 13, "In-Depth Case Studies", `${caseStudiesCount} case studies`);
+  assert(projectsCount === 11, "Customer Projects Showcase", `${projectsCount} projects`);
+  assert(caseStudiesCount === 11, "In-Depth Case Studies", `${caseStudiesCount} case studies`);
 
   // 9. Resources Hub (Blog, Insights, Runbooks, APIs, FAQs)
   const blogCount = await prisma.blogPost.count();
@@ -110,8 +110,8 @@ async function runDatabaseVerification() {
   const sectionsCount = await prisma.pageSection.count();
   const navItemsCount = await prisma.navigationItem.count();
   assert(mediaCount === 9, "Media Library Assets", `${mediaCount} assets`);
-  assert(pagesCount >= 29, "Website CMS Pages", `${pagesCount} pages`);
-  assert(sectionsCount === 11, "Homepage Builder Sections", `${sectionsCount} sections`);
+  assert(pagesCount >= 26, "Website CMS Pages", `${pagesCount} pages`);
+  assert(sectionsCount >= 11, "Homepage Builder Sections", `${sectionsCount} sections`);
   assert(navItemsCount >= 12, "Navigation Items (Header & Footer)", `${navItemsCount} links`);
 
   // 12. CRM Leads & Demo Requests

@@ -632,7 +632,7 @@ export async function searchLiveProducts(query) {
 
 // Check backend service health and database probe
 export async function checkBackendHealth() {
-  return get("/health");
+  return get("/api/v1/health");
 }
 
 export default apiClient;
