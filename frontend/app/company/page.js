@@ -21,8 +21,13 @@ import {
   ArrowRight,
   Sparkles,
   Zap,
+  Code2,
+  Database,
+  Cloud,
+  Star,
 } from "lucide-react";
 
+import { modernTechStack } from "@/lib/data";
 import { buildMetadata, generateBreadcrumbSchema, generateAboutPageSchema } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -38,6 +43,13 @@ export const metadata = buildMetadata({
     "SaaS engineering organization",
   ],
 });
+
+const STACK_ICON_MAP = {
+  Code2,
+  Database,
+  Cloud,
+  Star,
+};
 
 const corePillars = [
   {
@@ -411,6 +423,66 @@ export default async function CompanyPage() {
           </div>
 
           <CompanyWhyChooseCards items={whyDezoryn} />
+        </div>
+      </section>
+
+      {/* ─── OUR MODERN TECHNOLOGY STACK ─── */}
+      <section className="section bg-midnight/50 border-t border-line relative overflow-hidden">
+        {/* Soft atmospheric gradient glows */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[450px] w-[800px] rounded-full bg-electric/10 blur-[150px]" />
+        <div className="pointer-events-none absolute -right-20 top-1/4 h-[350px] w-[350px] rounded-full bg-violet/10 blur-[120px]" />
+
+        <div className="container-x relative z-10">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="text-xs font-mono text-electric uppercase tracking-wider">
+              Engineering Architecture
+            </span>
+            <h2 className="h-section mt-2 text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+              Our Modern <span className="text-gradient-blue">Technology Stack</span>
+            </h2>
+            <p className="lead mt-4 text-cool text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
+              We leverage cutting-edge technologies and proven frameworks to build robust, scalable, and maintainable applications that stand the test of time.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {modernTechStack.map((stack, idx) => {
+              const IconComponent = STACK_ICON_MAP[stack.icon] || Code2;
+              return (
+                <Reveal key={stack.category} delay={idx * 0.08}>
+                  <div className="group relative flex h-full flex-col justify-start overflow-hidden rounded-2xl border border-white/10 bg-[#070b16]/95 p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-2 hover:border-electric/40 hover:bg-[#081024] hover:shadow-[0_20px_45px_-10px_rgba(47,107,255,0.3)]">
+                    {/* Top animated laser border */}
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-electric to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                    {/* Ambient corner light */}
+                    <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-electric/10 blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                    {/* Top squircle icon container */}
+                    <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/20 via-purple-500/15 to-transparent text-indigo-300 shadow-[0_0_20px_rgba(99,102,241,0.2)] transition-transform duration-300 group-hover:scale-110">
+                      <IconComponent size={22} />
+                    </div>
+
+                    {/* Category Title */}
+                    <h3 className="text-lg font-bold text-white tracking-tight mb-5 group-hover:text-[#b9ccff] transition-colors">
+                      {stack.category}
+                    </h3>
+
+                    {/* Technology Chips / Pills */}
+                    <div className="flex flex-wrap gap-2">
+                      {stack.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 bg-white/[0.04] border border-white/10 hover:border-electric/50 hover:bg-electric/10 hover:text-white transition-all duration-200 cursor-default shadow-sm"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
         </div>
       </section>
 

@@ -2844,3 +2844,30 @@ export const nav = [
   { label: "Resources", href: "/resources" },
   { label: "Company", href: "/company" },
 ];
+
+export const modernTechStack = [
+  {
+    category: "Frontend & Client",
+    icon: "Code2",
+    description: "Component-driven interfaces, cross-platform apps, and reactive clients.",
+    tags: ["React", "Next.js", "Electron", "TypeScript", "Vue.js", "Flutter Web"],
+  },
+  {
+    category: "Backend & Database",
+    icon: "Database",
+    description: "High-throughput APIs, relational databases, and distributed caching.",
+    tags: ["Python/FastAPI", "Node.js", "Java", "PHP", "PostgreSQL", "Redis", "MongoDB"],
+  },
+  {
+    category: "Cloud Platforms",
+    icon: "Cloud",
+    description: "Container clusters, managed cloud infrastructure, and CI/CD pipelines.",
+    tags: ["AWS", "Azure", "GCP", "EKS", "GKE", "Docker", "CI/CD", "Terraform"],
+  },
+  {
+    category: "AI & DevOps",
+    icon: "Star",
+    description: "Multi-model LLMs, custom small models, and high-scale graph databases.",
+    tags: ["Multi-LLM (Gemini, GPT-4o)", "Google ADK", "Custom SLMs", "Snowflake", "Neo4j"],
+  },
+];

@@ -20,6 +20,10 @@ import {
   Phone,
   Mail,
   Award,
+  Code2,
+  Database,
+  Cloud,
+  Star,
 } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminTabs from "@/components/admin/AdminTabs";
@@ -28,6 +32,7 @@ import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import LeaderModal from "./components/LeaderModal";
 import OfficeModal from "./components/OfficeModal";
 import { getAdminCompanyProfile, saveAdminCompanyProfile } from "@/lib/api";
+import { modernTechStack } from "@/lib/data";
 
 const DEFAULT_PILLARS = [
   {
@@ -59,6 +64,7 @@ const DEFAULT_PILLARS = [
 export default function AdminCompanyPage() {
   const [activeTab, setActiveTab] = useState("pillars");
   const [pillars, setPillars] = useState(DEFAULT_PILLARS);
+  const [techStack, setTechStack] = useState(modernTechStack);
   const [leaders, setLeaders] = useState([]);
   const [offices, setOffices] = useState([]);
   const [toast, setToast] = useState(null);
@@ -74,6 +80,13 @@ export default function AdminCompanyPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
+    try {
+      const savedStack = localStorage.getItem("dezoryn_tech_stack");
+      if (savedStack) {
+        setTechStack(JSON.parse(savedStack));
+      }
+    } catch (e) {}
+
     getAdminCompanyProfile()
       .then((res) => {
         const data = res?.data || res;
@@ -225,6 +238,7 @@ export default function AdminCompanyPage() {
       <AdminTabs
         tabs={[
           { id: "pillars", label: "Mission, Vision & Values", icon: Target },
+          { id: "stack", label: `Modern Tech Stack (${techStack.length})`, icon: Code2 },
           { id: "leadership", label: `Executive Leadership (${leaders.length})`, icon: Users },
           { id: "offices", label: `Global Presence & Offices (${offices.length})`, icon: MapPin },
         ]}
@@ -274,6 +288,128 @@ export default function AdminCompanyPage() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* Tab: Technology Stack */}
+      {activeTab === "stack" && (
+        <div className="space-y-6">
+          <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h4 className="text-sm font-bold text-slate-900 font-exo">
+                Our Modern Technology Stack (Published on /company)
+              </h4>
+              <p className="text-xs text-slate-600 mt-0.5">
+                We leverage cutting-edge technologies and proven frameworks to build robust, scalable, and maintainable applications.
+              </p>
+            </div>
+            <a
+              href="http://localhost:3000/company"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-blue-200 bg-white text-xs font-semibold text-blue-700 hover:bg-blue-50 transition shrink-0"
+            >
+              <span>Preview Live /company</span>
+              <ExternalLink size={13} />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {techStack.map((cluster, cIdx) => (
+              <div
+                key={cluster.category}
+                className="p-5 rounded-xl border border-slate-200 bg-white shadow-xs flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-xs">
+                      {cluster.icon === "Code2" && <Code2 size={18} />}
+                      {cluster.icon === "Database" && <Database size={18} />}
+                      {cluster.icon === "Cloud" && <Cloud size={18} />}
+                      {cluster.icon === "Star" && <Star size={18} />}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 font-exo">
+                        {cluster.category}
+                      </h3>
+                      <span className="text-[11px] text-slate-500 font-mono">
+                        {cluster.tags.length} Technologies
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-500 mb-3 leading-relaxed">
+                    {cluster.description}
+                  </p>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {cluster.tags.map((tag, tIdx) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300 transition"
+                      >
+                        <span>{tag}</span>
+                        <button
+                          type="button"
+                          title="Remove"
+                          onClick={() => {
+                            const updated = [...techStack];
+                            updated[cIdx] = {
+                              ...updated[cIdx],
+                              tags: updated[cIdx].tags.filter((_, i) => i !== tIdx),
+                            };
+                            setTechStack(updated);
+                          }}
+                          className="text-slate-400 hover:text-rose-600 font-bold"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100">
+                  <input
+                    type="text"
+                    placeholder="Type tech name + press Enter..."
+                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && e.target.value.trim()) {
+                        e.preventDefault();
+                        const val = e.target.value.trim();
+                        const updated = [...techStack];
+                        if (!updated[cIdx].tags.includes(val)) {
+                          updated[cIdx] = {
+                            ...updated[cIdx],
+                            tags: [...updated[cIdx].tags, val],
+                          };
+                          setTechStack(updated);
+                        }
+                        e.target.value = "";
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                try {
+                  localStorage.setItem("dezoryn_tech_stack", JSON.stringify(techStack));
+                } catch (e) {}
+                setToast({ message: "Modern Technology Stack updated successfully!", type: "success" });
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 shadow-sm transition"
+            >
+              <Save size={14} />
+              <span>Save Technology Stack</span>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Tab: Leadership */}
