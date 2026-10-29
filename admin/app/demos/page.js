@@ -113,27 +113,35 @@ export default function AdminDemosPage() {
     if (typeof window !== "undefined") {
       try {
         localDemos = JSON.parse(localStorage.getItem("dezoryn_local_demos") || "[]");
-        // Also incorporate any locally saved trial registrations from Get Started
+        // Also incorporate any locally saved registrations from Get Started / Trial / Demo
         const localLeads = JSON.parse(localStorage.getItem("dezoryn_local_leads") || "[]");
-        const trialDemos = localLeads
-          .filter((l) => String(l.source || "").toLowerCase().includes("trial"))
+        const localLeadDemos = localLeads
+          .filter((l) => {
+            const s = String(l.source || "").toLowerCase();
+            return s.includes("trial") || s.includes("demo");
+          })
           .map((l) => ({
             id: l.id,
             contactName: l.name,
             company: l.company,
             businessEmail: l.email,
             phone: l.phone || "",
-            product: l.product || "14-Day Free Trial",
+            product: l.product || "Software Platform Demo",
             productSlug: l.solution || "core",
             country: l.country || "Global",
-            preferredDate: "14-Day Free Trial",
-            preferredTime: "Instant Provisioning",
+            preferredDate: l.preferredDate || "Demo Request",
+            preferredTime: l.preferredTime || "10:00 AM",
             timeZone: "UTC",
             status: "New Request",
             notes: l.requirement || "",
             createdAt: l.submittedAt || null,
           }));
-        localDemos = [...localDemos, ...trialDemos.filter((td) => !localDemos.some((ld) => ld.businessEmail === td.businessEmail))];
+        localDemos = [
+          ...localDemos,
+          ...localLeadDemos.filter(
+            (td) => !localDemos.some((ld) => (ld.businessEmail || "").toLowerCase() === (td.businessEmail || "").toLowerCase())
+          ),
+        ];
       } catch (_) {}
     }
 

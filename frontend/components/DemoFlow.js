@@ -64,7 +64,7 @@ export default function DemoFlow() {
         contactName: v.name.trim(),
         company: v.company.trim(),
         businessEmail: v.email.trim(),
-        phone: v.phone.trim() || undefined,
+        phone: (v.phone || "").trim() || undefined,
         country: v.country.trim(),
         productSlug: v.product || "schooly-core",
         preferredDate: v.day || "Tomorrow",
@@ -74,8 +74,23 @@ export default function DemoFlow() {
       };
 
       try {
-        const { submitDemoRequest } = await import("@/lib/api");
+        const { submitDemoRequest, submitContactInquiry } = await import("@/lib/api");
         await submitDemoRequest(demoPayload);
+
+        // Also sync into CRM leads database as DEMO_REQUEST for 100% visibility
+        try {
+          await submitContactInquiry({
+            name: demoPayload.contactName,
+            company: demoPayload.company,
+            email: demoPayload.businessEmail,
+            phone: demoPayload.phone,
+            country: demoPayload.country,
+            solution: demoPayload.productSlug,
+            req: demoPayload.notes || `Interactive demo requested for ${demoPayload.preferredDate} at ${demoPayload.preferredTime} (${demoPayload.timeZone})`,
+            source: "demo-request",
+          });
+        } catch (_) {}
+
         setStep(4);
       } catch (err) {
         console.warn("Live Demo API dispatch notice:", err?.message || err);
@@ -100,6 +115,24 @@ export default function DemoFlow() {
             createdAt: new Date().toISOString(),
           };
           localStorage.setItem("dezoryn_local_demos", JSON.stringify([newDemo, ...stored]));
+
+          // Also save to local leads
+          const storedLeads = JSON.parse(localStorage.getItem("dezoryn_local_leads") || "[]");
+          storedLeads.unshift({
+            id: `lead-demo-${Date.now()}`,
+            name: demoPayload.contactName,
+            company: demoPayload.company,
+            email: demoPayload.businessEmail,
+            phone: demoPayload.phone || "",
+            country: demoPayload.country,
+            product: newDemo.product,
+            requirement: demoPayload.notes || `Demo scheduled for ${demoPayload.preferredDate} at ${demoPayload.preferredTime}`,
+            source: "DEMO_REQUEST",
+            status: "New",
+            date: "Today",
+            submittedAt: new Date().toISOString(),
+          });
+          localStorage.setItem("dezoryn_local_leads", JSON.stringify(storedLeads));
         } catch (_) {}
 
         // Confirm booking immediately so visitor is reassured

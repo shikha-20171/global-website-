@@ -59,6 +59,8 @@ export class LeadsService {
       source = LeadSource.START_TRIAL;
     } else if (input.source === "partnership") {
       source = LeadSource.PARTNERSHIP;
+    } else if (input.source === "demo" || input.source === "demo-request" || input.source === "demo_request") {
+      source = LeadSource.DEMO_REQUEST;
     }
 
     const lead = await prisma.leadEnquiry.create({
@@ -107,38 +109,12 @@ export class LeadsService {
   async submitDemoRequest(input: DemoBookingInput) {
     const email = input.businessEmail.toLowerCase().trim();
 
-    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
-    const existingRecent = await prisma.demoRequest.findFirst({
-      where: {
-        businessEmail: email,
-        productSlug: input.productSlug,
-        createdAt: { gte: twoMinutesAgo },
-      },
-    });
-
-    if (existingRecent) {
-      const updated = await prisma.demoRequest.update({
-        where: { id: existingRecent.id },
-        data: {
-          contactName: input.contactName,
-          company: input.company,
-          phone: input.phone || existingRecent.phone,
-          country: input.country,
-          preferredDate: input.preferredDate,
-          preferredTime: input.preferredTime,
-          timeZone: input.timeZone || existingRecent.timeZone,
-          notes: input.notes || existingRecent.notes,
-        },
-      });
-      return { id: updated.id, status: updated.status };
-    }
-
-    const demo = await prisma.demoRequest.create({
-      data: {
+    // Helper to create DemoRequest with column fallback
+    const executeInsert = async (withPhone = true) => {
+      const data: any = {
         contactName: input.contactName,
         company: input.company,
         businessEmail: email,
-        phone: input.phone || null,
         country: input.country,
         productSlug: input.productSlug,
         preferredDate: input.preferredDate,
@@ -146,8 +122,66 @@ export class LeadsService {
         timeZone: input.timeZone || "UTC",
         notes: input.notes || null,
         status: DemoStatus.PENDING,
-      },
-    });
+      };
+      if (withPhone) {
+        data.phone = input.phone || null;
+      } else if (input.phone) {
+        data.notes = [input.notes, `Phone: ${input.phone}`].filter(Boolean).join(" | ");
+      }
+      return prisma.demoRequest.create({ data });
+    };
+
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+    let existingRecent: any = null;
+    try {
+      existingRecent = await prisma.demoRequest.findFirst({
+        where: {
+          businessEmail: email,
+          productSlug: input.productSlug,
+          createdAt: { gte: twoMinutesAgo },
+        },
+      });
+    } catch (findErr: any) {
+      console.warn("[DEMO FIND WARNING]:", findErr?.message);
+    }
+
+    if (existingRecent) {
+      try {
+        const updated = await prisma.demoRequest.update({
+          where: { id: existingRecent.id },
+          data: {
+            contactName: input.contactName,
+            company: input.company,
+            phone: input.phone || existingRecent.phone,
+            country: input.country,
+            preferredDate: input.preferredDate,
+            preferredTime: input.preferredTime,
+            timeZone: input.timeZone || existingRecent.timeZone,
+            notes: input.notes || existingRecent.notes,
+          },
+        });
+        return { id: updated.id, status: updated.status };
+      } catch (updateErr: any) {
+        console.warn("[DEMO UPDATE RETRY]:", updateErr?.message);
+        try {
+          await prisma.$executeRawUnsafe(`ALTER TABLE "DemoRequest" ADD COLUMN IF NOT EXISTS "phone" TEXT;`);
+        } catch (_) {}
+      }
+    }
+
+    let demo: any;
+    try {
+      demo = await executeInsert(true);
+    } catch (insertErr: any) {
+      console.warn("[DEMO INSERT RETRY with self-heal]:", insertErr?.message);
+      try {
+        await prisma.$executeRawUnsafe(`ALTER TABLE "DemoRequest" ADD COLUMN IF NOT EXISTS "phone" TEXT;`);
+        demo = await executeInsert(true);
+      } catch (retryErr: any) {
+        console.warn("[DEMO INSERT FALLBACK without phone column]:", retryErr?.message);
+        demo = await executeInsert(false);
+      }
+    }
 
     // Dispatch confirmation to user and notification to sales admin
     sendDemoBookingEmails({
@@ -357,14 +391,33 @@ export class LeadsService {
 
   // --- 5. Admin Demo Requests ---
   async listAdminDemos() {
-    const [demos, trialLeads] = await Promise.all([
-      prisma.demoRequest.findMany({
+    let demos: any[] = [];
+    try {
+      demos = await prisma.demoRequest.findMany({
         include: {
           assignedOwner: { select: { id: true, name: true, email: true } },
         },
         orderBy: { createdAt: "desc" },
-      }),
-      prisma.leadEnquiry.findMany({
+      });
+    } catch (err: any) {
+      console.warn("[DEMO LIST RETRY with self-heal]:", err?.message);
+      try {
+        await prisma.$executeRawUnsafe(`ALTER TABLE "DemoRequest" ADD COLUMN IF NOT EXISTS "phone" TEXT;`);
+        demos = await prisma.demoRequest.findMany({
+          include: {
+            assignedOwner: { select: { id: true, name: true, email: true } },
+          },
+          orderBy: { createdAt: "desc" },
+        });
+      } catch (retryErr: any) {
+        console.error("[DEMO LIST ERROR]:", retryErr?.message);
+        demos = [];
+      }
+    }
+
+    let trialLeads: any[] = [];
+    try {
+      trialLeads = await prisma.leadEnquiry.findMany({
         where: {
           source: { in: [LeadSource.START_TRIAL, LeadSource.DEMO_REQUEST] },
         },
@@ -372,8 +425,10 @@ export class LeadsService {
           assignedOwner: { select: { id: true, name: true, email: true } },
         },
         orderBy: { submittedAt: "desc" },
-      }),
-    ]);
+      });
+    } catch (trialErr: any) {
+      console.warn("[TRIAL LEADS FETCH WARNING]:", trialErr?.message);
+    }
 
     const mappedTrialLeads = trialLeads.map((tl: any) => ({
       id: tl.id,
@@ -397,13 +452,13 @@ export class LeadsService {
     }));
 
     // Merge and de-duplicate by businessEmail if both exist
-    const demoEmails = new Set(demos.map((d: any) => d.businessEmail.toLowerCase()));
+    const demoEmails = new Set(demos.map((d: any) => (d.businessEmail || "").toLowerCase()));
     const uniqueTrialDemos = mappedTrialLeads.filter(
-      (tl: any) => !demoEmails.has(tl.businessEmail.toLowerCase())
+      (tl: any) => !demoEmails.has((tl.businessEmail || "").toLowerCase())
     );
 
     return [...demos, ...uniqueTrialDemos].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      (a: any, b: any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
     );
   }
 

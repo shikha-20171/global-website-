@@ -2,29 +2,29 @@ import { z } from "zod";
 import { LeadPriority, LeadStatus, DemoStatus, LeadSource } from "@prisma/client";
 
 export const contactInquirySchema = z.object({
-  name: z.string().min(2, "Full name must be at least 2 characters"),
+  name: z.string().min(1, "Full name is required"),
   company: z.string().min(1, "Company name is required"),
   email: z.string().email("Valid business email is required"),
-  phone: z.string().optional(),
+  phone: z.string().nullable().optional(),
   country: z.string().min(1, "Country is required"),
-  companySize: z.string().optional(),
-  solution: z.string().optional(),
-  budget: z.string().optional(),
-  req: z.string().min(10, "Requirement description must be at least 10 characters"),
-  source: z.string().optional(),
+  companySize: z.string().nullable().optional(),
+  solution: z.string().nullable().optional(),
+  budget: z.string().nullable().optional(),
+  req: z.string().min(1, "Requirement description is required"),
+  source: z.string().nullable().optional(),
 });
 
 export const demoBookingSchema = z.object({
-  contactName: z.string().min(2, "Contact name must be at least 2 characters"),
+  contactName: z.string().min(1, "Contact name is required"),
   company: z.string().min(1, "Company name is required"),
   businessEmail: z.string().email("Valid corporate email is required"),
-  phone: z.string().optional(),
+  phone: z.string().nullable().optional(),
   country: z.string().min(1, "Country is required"),
   productSlug: z.string().min(1, "Product slug is required"),
   preferredDate: z.string().min(1, "Preferred date is required"),
   preferredTime: z.string().min(1, "Preferred time is required"),
-  timeZone: z.string().default("UTC"),
-  notes: z.string().optional(),
+  timeZone: z.string().nullable().optional().default("UTC"),
+  notes: z.string().nullable().optional(),
 });
 
 export const newsletterSchema = z.object({
