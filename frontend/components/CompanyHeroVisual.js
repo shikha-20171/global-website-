@@ -95,7 +95,7 @@ export default function CompanyHeroVisual() {
           rotateY,
           transformStyle: "preserve-3d",
         }}
-        className="relative w-full h-full flex items-center justify-center"
+        className="relative w-full h-full flex items-center justify-center scale-[0.78] xs:scale-[0.88] sm:scale-100 origin-center"
       >
         {/* Outermost Orbit Ring (Spinning Clockwise) */}
         <div className="pointer-events-none absolute h-[380px] w-[380px] rounded-full border border-dashed border-white/10 animate-spin-slower" />

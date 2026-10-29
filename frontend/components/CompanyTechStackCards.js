@@ -67,7 +67,7 @@ const THEMES = [
 
 export default function CompanyTechStackCards({ items = [] }) {
   return (
-    <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="mt-10 sm:mt-14 grid gap-5 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full">
       {items.map((stack, idx) => {
         const theme = THEMES[idx % THEMES.length];
         const IconComponent = ICON_MAP[stack.icon] || Code2;
@@ -79,7 +79,7 @@ export default function CompanyTechStackCards({ items = [] }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: idx * 0.1 }}
-            className="group relative h-full flex flex-col"
+            className="group relative h-full flex flex-col w-full"
           >
             {/* Ambient diffuse colored glow behind the card (breathing animation) */}
             <div
@@ -87,8 +87,8 @@ export default function CompanyTechStackCards({ items = [] }) {
               style={{ animationDuration: "3.5s" }}
             />
 
-            {/* Rotating border-beam container */}
-            <div className="relative h-full p-[1.5px] rounded-2xl overflow-hidden transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.8)] flex flex-col">
+            {/* Rotating border-beam container with iOS WebKit isolation */}
+            <div className="relative h-full p-[1.5px] rounded-2xl overflow-hidden transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.8)] flex flex-col isolate">
               {/* Spinning continuous gradient beam around card perimeter */}
               <div
                 className="pointer-events-none absolute -inset-[100%] rounded-full opacity-80 group-hover:opacity-100 transition-opacity duration-300"
@@ -100,28 +100,28 @@ export default function CompanyTechStackCards({ items = [] }) {
               />
 
               {/* Inner card surface */}
-              <div className="relative flex-1 rounded-[15px] bg-[#070b16]/95 p-7 backdrop-blur-xl flex flex-col justify-start border border-white/5">
+              <div className="relative flex-1 rounded-[15px] bg-[#070b16]/95 p-5 sm:p-6 lg:p-7 backdrop-blur-xl flex flex-col justify-start border border-white/5">
                 {/* Diagonal light sheen scan across card on hover */}
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
 
                 {/* Squircle Animated Icon Container */}
                 <div
-                  className={`mb-6 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-md bg-gradient-to-br ${theme.iconGradient} ${theme.iconBorder}`}
+                  className={`mb-5 sm:mb-6 inline-flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl border transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-md bg-gradient-to-br ${theme.iconGradient} ${theme.iconBorder}`}
                 >
                   <IconComponent size={22} />
                 </div>
 
                 {/* Category Title */}
-                <h3 className={`text-xl font-bold tracking-tight mb-5 font-exo ${theme.titleColor}`}>
+                <h3 className={`text-lg sm:text-xl font-bold tracking-tight mb-4 sm:mb-5 font-exo ${theme.titleColor}`}>
                   {stack.category}
                 </h3>
 
                 {/* Technology Chips / Pills */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {stack.tags.map((tag) => (
                     <span
                       key={tag}
-                      className={`inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-medium border transition-all duration-200 cursor-default shadow-xs ${theme.chipBg}`}
+                      className={`inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-medium border transition-all duration-200 cursor-default shadow-xs break-words ${theme.chipBg}`}
                     >
                       {tag}
                     </span>
