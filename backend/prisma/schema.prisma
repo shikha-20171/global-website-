@@ -831,6 +831,7 @@ model DemoRequest {
   contactName     String
   company         String
   businessEmail   String
+  phone           String?
   country         String
   productSlug     String
   preferredDate   String

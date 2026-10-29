@@ -1,6 +1,7 @@
 "use client";
 
 import AdminModal from "@/components/admin/AdminModal";
+import { Phone, MessageCircle } from "lucide-react";
 
 export default function DemoDetailModal({
   isOpen,
@@ -43,7 +44,7 @@ export default function DemoDetailModal({
           </div>
           <div>
             <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider block">
-              Business Email
+              Business Email &amp; Phone
             </span>
             <a
               href={`mailto:${demo.businessEmail}`}
@@ -51,6 +52,26 @@ export default function DemoDetailModal({
             >
               {demo.businessEmail}
             </a>
+            {demo.phone ? (
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                <a
+                  href={`tel:${demo.phone}`}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-mono font-bold text-[11px] border border-emerald-200 transition shadow-2xs"
+                >
+                  <Phone size={11} /> Call: {demo.phone}
+                </a>
+                <a
+                  href={`https://wa.me/${demo.phone.replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-50 text-green-700 hover:bg-green-100 font-mono font-bold text-[11px] border border-green-200 transition shadow-2xs"
+                >
+                  <MessageCircle size={11} /> WhatsApp
+                </a>
+              </div>
+            ) : (
+              <span className="text-slate-400 mt-1 block text-[11px] italic">No phone provided</span>
+            )}
           </div>
           <div>
             <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider block">

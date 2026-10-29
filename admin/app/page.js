@@ -14,6 +14,7 @@ import {
   FileText,
   ChevronRight,
   CheckCircle,
+  Phone,
 } from "lucide-react";
 import { getAdminDashboardMetrics, getAdminLeads, getAdminDemos } from "@/lib/api";
 import { products } from "@/lib/data";
@@ -428,9 +429,18 @@ export default function AdminDashboardPage() {
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-slate-600 mt-1 truncate">
+                    <div className="text-xs text-slate-600 mt-1 flex flex-wrap items-center gap-1.5">
                       <strong className="text-slate-800">{lead.company || "Direct Inquiry"}</strong>
-                      {lead.email && <span className="text-slate-400"> • {lead.email}</span>}
+                      {lead.email && <span className="text-slate-400">• {lead.email}</span>}
+                      {lead.phone && (
+                        <a
+                          href={`tel:${lead.phone}`}
+                          className="inline-flex items-center gap-1 text-emerald-600 font-mono font-bold hover:underline"
+                        >
+                          <Phone size={10} className="shrink-0" />
+                          <span>{lead.phone}</span>
+                        </a>
+                      )}
                     </div>
                     {lead.requirement && (
                       <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">

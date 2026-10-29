@@ -13,6 +13,7 @@ import {
   Sparkles,
   Layers,
   Globe2,
+  Phone,
 } from "lucide-react";
 import { products, formatPrice, startingPrice } from "@/lib/data";
 
@@ -35,6 +36,7 @@ export default function StartTrialClient() {
   const [otp, setOtp] = useState(["4", "8", "1", "9", "3", "0"]);
   const [company, setCompany] = useState({
     companyName: "",
+    phone: "",
     companySize: "11-50 employees",
     country: "United States",
     workspaceSubdomain: "my-company",
@@ -56,11 +58,12 @@ export default function StartTrialClient() {
           name: account.fullName || "Trial Administrator",
           company: company.companyName || "Trial Organization",
           email: account.businessEmail || "trial@organization.com",
+          phone: company.phone?.trim() || undefined,
           country: company.country || "United States",
           companySize: company.companySize,
           solution: selectedProduct,
           budget: selectedPlan,
-          req: `14-Day Free Enterprise Trial signup for product ${selectedProduct} on subdomain ${company.workspaceSubdomain}.dezoryn.cloud`,
+          req: `14-Day Free Enterprise Trial signup for product ${selectedProduct} on subdomain ${company.workspaceSubdomain}.dezoryn.cloud${company.phone?.trim() ? ` (Direct Phone: ${company.phone.trim()})` : ""}`,
           source: "start-trial",
         });
       } catch (err) {
@@ -345,6 +348,25 @@ export default function StartTrialClient() {
                           onChange={(e) => setCompany({ ...company, companyName: e.target.value })}
                           placeholder="Global Horizons Enterprise"
                           className="w-full rounded-lg border border-line bg-midnight px-3.5 py-2.5 text-xs text-white placeholder-cool/50 focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric"
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="block text-xs font-medium text-white/90 flex items-center gap-1.5">
+                            <Phone size={13} className="text-electric" />
+                            Direct Contact Phone / WhatsApp Number
+                          </label>
+                          <span className="text-[10px] font-mono text-cool/70 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                            Required for Dispatch
+                          </span>
+                        </div>
+                        <input
+                          type="tel"
+                          value={company.phone}
+                          onChange={(e) => setCompany({ ...company, phone: e.target.value })}
+                          placeholder="+1 (555) 321-7654 or +91 98765 43210"
+                          className="w-full rounded-lg border border-line bg-midnight px-3.5 py-2.5 text-xs text-white placeholder-cool/50 focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric font-mono"
                         />
                       </div>
 

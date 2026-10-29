@@ -116,6 +116,7 @@ export class LeadsService {
         contactName: input.contactName,
         company: input.company,
         businessEmail: email,
+        phone: input.phone || null,
         country: input.country,
         productSlug: input.productSlug,
         preferredDate: input.preferredDate,
@@ -130,6 +131,7 @@ export class LeadsService {
     sendDemoBookingEmails({
       contactName: input.contactName,
       businessEmail: email,
+      phone: input.phone || undefined,
       company: input.company,
       country: input.country,
       productSlug: input.productSlug,

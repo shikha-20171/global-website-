@@ -18,6 +18,7 @@ export const demoBookingSchema = z.object({
   contactName: z.string().min(2, "Contact name must be at least 2 characters"),
   company: z.string().min(1, "Company name is required"),
   businessEmail: z.string().email("Valid corporate email is required"),
+  phone: z.string().optional(),
   country: z.string().min(1, "Country is required"),
   productSlug: z.string().min(1, "Product slug is required"),
   preferredDate: z.string().min(1, "Preferred date is required"),

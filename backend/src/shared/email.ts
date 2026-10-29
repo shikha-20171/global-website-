@@ -40,6 +40,7 @@ export interface LeadEmailData {
 export interface DemoEmailData {
   contactName: string;
   businessEmail: string;
+  phone?: string;
   company: string;
   country: string;
   productSlug: string;
@@ -397,7 +398,7 @@ export async function sendDemoBookingEmails(
   if (!transporter) {
     console.log("\n========================================================================");
     console.log(`[EMAIL DISPATCH] New Demo Request Booked: ${demo.businessEmail}`);
-    console.log(`  Contact: ${demo.contactName} | Company: ${demo.company}`);
+    console.log(`  Contact: ${demo.contactName} | Phone: ${demo.phone || "N/A"} | Company: ${demo.company}`);
     console.log(`  Product: ${demo.productSlug} | Date: ${demo.preferredDate} at ${demo.preferredTime} (${demo.timeZone})`);
     console.log("------------------------------------------------------------------------");
     console.log("ℹ️  SMTP is not configured in backend/.env. Demo request logged to console.");
@@ -479,6 +480,7 @@ export async function sendDemoBookingEmails(
         <table class="table">
           <tr><td class="lbl">Contact Name</td><td class="val">${demo.contactName}</td></tr>
           <tr><td class="lbl">Business Email</td><td class="val"><a href="mailto:${demo.businessEmail}" style="color: #60a5fa;">${demo.businessEmail}</a></td></tr>
+          ${demo.phone ? `<tr><td class="lbl">Phone / Mobile</td><td class="val"><a href="tel:${demo.phone}" style="color: #10b981; font-weight: bold;">${demo.phone}</a></td></tr>` : ""}
           <tr><td class="lbl">Organization</td><td class="val">${demo.company}</td></tr>
           <tr><td class="lbl">Product</td><td class="val">${demo.productSlug}</td></tr>
           <tr><td class="lbl">Date & Time</td><td class="val">${demo.preferredDate} at ${demo.preferredTime} (${demo.timeZone})</td></tr>

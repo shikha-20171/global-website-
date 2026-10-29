@@ -10,6 +10,7 @@ import {
   Mail,
   Building,
   CheckCircle,
+  Phone,
 } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFilterBar from "@/components/admin/AdminFilterBar";
@@ -33,6 +34,7 @@ const defaultDemos = [
     contactName: "Lars Lindqvist",
     company: "Scandia Fleet & Logistics",
     businessEmail: "lars@scandiafleet.dk",
+    phone: "+45 32 12 34 56",
     country: "Denmark",
     product: "CRM Customer Pipeline Suite",
     productSlug: "crm-customer-pipeline-suite",
@@ -48,6 +50,7 @@ const defaultDemos = [
     contactName: "Khalid Al-Sayed",
     company: "Gulf Communities Development",
     businessEmail: "khalid@gulfcomm.sa",
+    phone: "+966 50 123 4567",
     country: "Saudi Arabia",
     product: "Society Management SaaS",
     productSlug: "society-management-saas",
@@ -63,6 +66,7 @@ const defaultDemos = [
     contactName: "Rajesh Kulkarni, VP Operations",
     company: "MetroHealth Asia",
     businessEmail: "r.kulkarni@metrohealth.sg",
+    phone: "+65 6789 0123",
     country: "Singapore",
     product: "Dezo Care Hospital Operations",
     productSlug: "dezo-care-hospital-operations",
@@ -78,6 +82,7 @@ const defaultDemos = [
     contactName: "Sarah Jenkins, CTO",
     company: "Nordic Education Board",
     businessEmail: "s.jenkins@nordicedu.se",
+    phone: "+46 8 123 4567",
     country: "Sweden",
     product: "Schooly Core Multi Campus",
     productSlug: "schooly-core-multi-campus",
@@ -119,6 +124,7 @@ export default function AdminDemosPage() {
         contactName: d.fullName || d.contactName || "Prospective Client",
         company: d.company || "Enterprise Corp",
         businessEmail: d.workEmail || d.businessEmail || d.email,
+        phone: d.phone || d.phoneNumber || d.contactPhone || "",
         product: d.productSlug ? d.productSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : (d.productInterest || d.product || "Core Enterprise"),
         productSlug: d.productSlug || d.product || "core",
         country: d.country || "Global",
@@ -219,6 +225,18 @@ export default function AdminDemosPage() {
           <span className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition">{val}</span>
           <div className="text-xs text-slate-500 font-medium mt-0.5">{row.company} • {row.country}</div>
           <div className="text-xs font-mono text-slate-400 mt-0.5">{row.businessEmail}</div>
+          {row.phone && (
+            <div className="text-xs font-mono text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+              <Phone size={11} className="shrink-0 text-emerald-600" />
+              <a
+                href={`tel:${row.phone}`}
+                onClick={(e) => e.stopPropagation()}
+                className="hover:underline hover:text-emerald-700"
+              >
+                {row.phone}
+              </a>
+            </div>
+          )}
         </div>
       ),
     },

@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Edit2,
   Trash2,
+  Phone,
 } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFilterBar from "@/components/admin/AdminFilterBar";
@@ -254,6 +255,18 @@ export default function AdminLeadsPage() {
             <Mail size={13} className="text-blue-600 shrink-0" />
             <span className="truncate">{row.email}</span>
           </div>
+          {row.phone && (
+            <div className="text-xs font-mono text-emerald-600 font-semibold flex items-center gap-1.5 mt-1">
+              <Phone size={12} className="text-emerald-600 shrink-0" />
+              <a
+                href={`tel:${row.phone}`}
+                onClick={(e) => e.stopPropagation()}
+                className="hover:underline hover:text-emerald-700"
+              >
+                {row.phone}
+              </a>
+            </div>
+          )}
         </div>
       ),
     },

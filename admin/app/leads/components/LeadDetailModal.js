@@ -1,6 +1,7 @@
 "use client";
 
 import AdminModal from "@/components/admin/AdminModal";
+import { Phone, MessageCircle } from "lucide-react";
 
 export default function LeadDetailModal({
   isOpen,
@@ -58,10 +59,25 @@ export default function LeadDetailModal({
             >
               {lead.email}
             </a>
-            {lead.phone && (
-              <span className="text-slate-700 mt-1 block font-mono">
-                Tel: {lead.phone}
-              </span>
+            {lead.phone ? (
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                <a
+                  href={`tel:${lead.phone}`}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-mono font-bold text-[11px] border border-emerald-200 transition shadow-2xs"
+                >
+                  <Phone size={11} /> Call: {lead.phone}
+                </a>
+                <a
+                  href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-50 text-green-700 hover:bg-green-100 font-mono font-bold text-[11px] border border-green-200 transition shadow-2xs"
+                >
+                  <MessageCircle size={11} /> WhatsApp
+                </a>
+              </div>
+            ) : (
+              <span className="text-slate-400 mt-1 block text-[11px] italic">No phone provided</span>
             )}
           </div>
           <div>

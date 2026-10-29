@@ -23,6 +23,7 @@ export default function DemoFlow() {
     name: "",
     company: "",
     email: "",
+    phone: "",
     country: "",
     req: "",
     day: "",
@@ -63,6 +64,7 @@ export default function DemoFlow() {
         contactName: v.name.trim(),
         company: v.company.trim(),
         businessEmail: v.email.trim(),
+        phone: v.phone.trim() || undefined,
         country: v.country.trim(),
         productSlug: v.product || "schooly-core",
         preferredDate: v.day || "Tomorrow",
@@ -86,6 +88,7 @@ export default function DemoFlow() {
             contactName: demoPayload.contactName,
             company: demoPayload.company,
             businessEmail: demoPayload.businessEmail,
+            phone: demoPayload.phone || "",
             product: (demoPayload.productSlug || "Core Platform").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
             productSlug: demoPayload.productSlug,
             country: demoPayload.country,
@@ -210,6 +213,16 @@ export default function DemoFlow() {
                       value={v.email}
                       onChange={set("email")}
                       placeholder="name@company.com"
+                    />
+                  </Field>
+                  <Field id="d-phone" label="Contact number / WhatsApp" error={err.phone} hint="Direct mobile line for dispatch & demo call coordination">
+                    <input
+                      id="d-phone"
+                      type="tel"
+                      className="input font-mono"
+                      value={v.phone}
+                      onChange={set("phone")}
+                      placeholder="+1 (555) 000-0000 or +91 98765 43210"
                     />
                   </Field>
                   <Field id="d-country" label="Country" error={err.country}>
