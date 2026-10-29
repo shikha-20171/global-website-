@@ -16,6 +16,12 @@
   }
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 :root {
   color-scheme: dark;
   --sat: env(safe-area-inset-top, 0px);
