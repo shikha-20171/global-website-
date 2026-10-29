@@ -15,4 +15,17 @@ export async function dashboardRoutes(app: FastifyInstance) {
     },
     dashboardController.getSummary.bind(dashboardController)
   );
+
+  app.get(
+    "/admin/dashboard/stats",
+    {
+      preHandler: [authenticate],
+      schema: {
+        tags: ["Dashboard"],
+        summary: "Executive administrative dashboard metrics (alias)",
+        security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+      },
+    },
+    dashboardController.getSummary.bind(dashboardController)
+  );
 }

@@ -18,6 +18,19 @@ export async function auditRoutes(app: FastifyInstance) {
   );
 
   app.get(
+    "/admin/audit",
+    {
+      preHandler: [authenticate, requireSuperAdmin],
+      schema: {
+        tags: ["User Governance"],
+        summary: "Retrieve immutable administrative audit trail logs (alias)",
+        security: [{ bearerAuth: [] }, { cookieAuth: [] }],
+      },
+    },
+    auditController.listLogs.bind(auditController)
+  );
+
+  app.get(
     "/admin/audit-logs/:id",
     {
       preHandler: [authenticate, requireSuperAdmin],

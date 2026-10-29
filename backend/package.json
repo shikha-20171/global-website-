@@ -19,6 +19,7 @@
     "db:status": "prisma migrate status",
     "db:test": "tsx tests/test-db.ts",
     "test:db": "tsx tests/test-db.ts",
+    "test:apis": "tsx tests/test-all-apis.ts",
     "test:integration": "tsx tests/test-integration.ts",
     "test": "tsx tests/comprehensive.test.ts",
     "test:comprehensive": "tsx tests/comprehensive.test.ts",
