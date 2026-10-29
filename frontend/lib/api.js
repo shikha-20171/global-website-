@@ -10,13 +10,7 @@ import {
   enterpriseSections,
 } from "./data";
 
-/**
- * Computes safe API base URL depending on execution environment:
- * - When in browser (client-side), relative path "" routes through Next.js rewrite proxy.
- * - When running on server (SSR/Node), uses BACKEND_INTERNAL_URL or NEXT_PUBLIC_API_URL.
- * - If running on Vercel without an external URL configured, safely returns "" to prevent
- *   attempting localhost connections that do not exist in serverless environments.
- */
+
 function getApiBaseUrl() {
   if (typeof window !== "undefined") {
     try {
@@ -28,7 +22,7 @@ function getApiBaseUrl() {
       }
       const custom = localStorage.getItem("dezoryn_backend_url");
       if (custom) return custom.replace(/\/+$/, "");
-    } catch (_) {}
+    } catch (_) { }
   }
 
   const envUrl = (
@@ -59,13 +53,7 @@ function getApiBaseUrl() {
   return "";
 }
 
-/**
- * Safe native HTTP request helper compatible with Next.js Server & Client components.
- * Features:
- * - 3.5s timeout on server so SSR never hangs if a sleeping Render container is waking up.
- * - 25s timeout on client so form submissions survive container spin-up.
- * - Automatic client-side retry against direct NEXT_PUBLIC_API_URL if rewrite proxy fails.
- */
+
 async function request(url, options = {}) {
   const base = getApiBaseUrl();
   const fullUrl = url.startsWith("http") ? url : `${base}${url}`;
@@ -108,7 +96,7 @@ async function request(url, options = {}) {
       try {
         const errData = await res.json();
         errorMsg = errData.message || errData.error || errorMsg;
-      } catch (_) {}
+      } catch (_) { }
       const err = new Error(errorMsg);
       err.status = res.status;
       throw err;
@@ -190,24 +178,24 @@ export function normalizeProduct(p) {
     industries: Array.isArray(p.industries) ? p.industries : [],
     plans: Array.isArray(p.plans) && p.plans.length > 0
       ? p.plans.map((pl) => {
-          const monthly = Number(pl.monthlyPriceUsd ?? pl.monthly_price_usd ?? pl.price ?? 49);
-          const annual = Number(pl.annualPriceUsd ?? pl.annual_price_usd ?? pl.annual ?? Math.round(monthly * 0.8));
-          return {
-            ...pl,
-            id: pl.id || pl.slug || `plan-${monthly}`,
-            name: pl.name || "Standard",
-            for: pl.for || pl.description || "For modern organizations",
-            price: monthly,
-            monthlyPriceUsd: monthly,
-            monthly_price_usd: monthly,
-            annual: annual,
-            annualPriceUsd: annual,
-            annual_price_usd: annual,
-            highlight: Boolean(pl.isHighlighted || pl.highlighted),
-            highlighted: Boolean(pl.isHighlighted || pl.highlighted),
-            features: Array.isArray(pl.features) ? pl.features : [],
-          };
-        })
+        const monthly = Number(pl.monthlyPriceUsd ?? pl.monthly_price_usd ?? pl.price ?? 49);
+        const annual = Number(pl.annualPriceUsd ?? pl.annual_price_usd ?? pl.annual ?? Math.round(monthly * 0.8));
+        return {
+          ...pl,
+          id: pl.id || pl.slug || `plan-${monthly}`,
+          name: pl.name || "Standard",
+          for: pl.for || pl.description || "For modern organizations",
+          price: monthly,
+          monthlyPriceUsd: monthly,
+          monthly_price_usd: monthly,
+          annual: annual,
+          annualPriceUsd: annual,
+          annual_price_usd: annual,
+          highlight: Boolean(pl.isHighlighted || pl.highlighted),
+          highlighted: Boolean(pl.isHighlighted || pl.highlighted),
+          features: Array.isArray(pl.features) ? pl.features : [],
+        };
+      })
       : [],
   };
 }
@@ -224,10 +212,10 @@ export function normalizeBlogPost(p) {
     p.date ||
     (p.publishedAt
       ? new Date(p.publishedAt).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
       : "Recent");
 
   return {
@@ -266,8 +254,8 @@ export function normalizeProject(p) {
   const tech = Array.isArray(p.tech)
     ? p.tech
     : Array.isArray(p.techStack)
-    ? p.techStack
-    : [];
+      ? p.techStack
+      : [];
   return {
     ...p,
     tech,
@@ -303,7 +291,7 @@ export async function getLiveProducts(params = {}) {
     if (Array.isArray(list) && list.length > 0) {
       return list.map(normalizeProduct);
     }
-  } catch (_) {}
+  } catch (_) { }
   return products.map(normalizeProduct);
 }
 
@@ -315,7 +303,7 @@ export async function getLiveProductBySlug(slug) {
     if (prod && (prod.slug || prod.name)) {
       return normalizeProduct(prod);
     }
-  } catch (_) {}
+  } catch (_) { }
   const fallback = getProduct(slug);
   return fallback ? normalizeProduct(fallback) : null;
 }
@@ -325,7 +313,7 @@ export async function getLiveProductCategories() {
   try {
     const res = await get("/api/v1/products/categories");
     if (Array.isArray(res) && res.length > 0) return res;
-  } catch (_) {}
+  } catch (_) { }
   return CATEGORIES.map((c) => ({
     name: c,
     slug: c.toLowerCase().replace(/\s+/g, "-"),
@@ -348,7 +336,7 @@ export async function getLiveSolutions() {
     const res = await get("/api/v1/solutions");
     if (Array.isArray(res) && res.length > 0) return res;
     if (Array.isArray(res?.data) && res.data.length > 0) return res.data;
-  } catch (_) {}
+  } catch (_) { }
   return enterpriseSections.map((s) => ({
     ...s,
     slug: s.slug || s.title?.toLowerCase().replace(/\s+/g, "-"),
@@ -362,7 +350,7 @@ export async function getLiveSolutionBySlug(slug) {
     const res = await get(`/api/v1/solutions/${slug}`);
     const item = res?.data || res;
     if (item && (item.slug || item.title)) return item;
-  } catch (_) {}
+  } catch (_) { }
   const found = enterpriseSections.find(
     (s) => s.slug === slug || s.title?.toLowerCase().replace(/\s+/g, "-") === slug
   );
@@ -375,7 +363,7 @@ export async function getLiveIndustries() {
     const res = await get("/api/v1/industries");
     if (Array.isArray(res) && res.length > 0) return res;
     if (Array.isArray(res?.data) && res.data.length > 0) return res.data;
-  } catch (_) {}
+  } catch (_) { }
   return industries;
 }
 
@@ -385,7 +373,7 @@ export async function getLiveIndustryBySlug(slug) {
     const res = await get(`/api/v1/industries/${slug}`);
     const item = res?.data || res;
     if (item && (item.slug || item.name)) return item;
-  } catch (_) {}
+  } catch (_) { }
   return getIndustry(slug) || null;
 }
 
@@ -397,7 +385,7 @@ export async function getLiveProjects() {
     if (Array.isArray(list) && list.length > 0) {
       return list.map(normalizeProject);
     }
-  } catch (_) {}
+  } catch (_) { }
   return projects.map(normalizeProject);
 }
 
@@ -407,7 +395,7 @@ export async function getLiveProjectBySlug(slug) {
     const res = await get(`/api/v1/projects/${slug}`);
     const item = res?.data || res;
     if (item && (item.slug || item.name)) return normalizeProject(item);
-  } catch (_) {}
+  } catch (_) { }
   const found = projects.find((p) => p.slug === slug);
   return found ? normalizeProject(found) : null;
 }
@@ -418,7 +406,7 @@ export async function getLiveCaseStudies() {
     const res = await get("/api/v1/case-studies");
     const list = res?.caseStudies || (Array.isArray(res) ? res : res?.data || null);
     if (Array.isArray(list) && list.length > 0) return list;
-  } catch (_) {}
+  } catch (_) { }
   return projects.map(normalizeProject);
 }
 
@@ -428,7 +416,7 @@ export async function getLiveCaseStudyBySlug(slug) {
     const res = await get(`/api/v1/case-studies/${slug}`);
     const item = res?.data || res;
     if (item && (item.slug || item.title || item.name)) return item;
-  } catch (_) {}
+  } catch (_) { }
   const found = projects.find((p) => p.slug === slug);
   return found ? normalizeProject(found) : null;
 }
@@ -441,7 +429,7 @@ export async function getLiveBlogPosts(params = {}) {
     if (Array.isArray(list) && list.length > 0) {
       return list.map(normalizeBlogPost);
     }
-  } catch (_) {}
+  } catch (_) { }
   return posts.map(normalizeBlogPost);
 }
 
@@ -452,7 +440,7 @@ export async function getLiveBlogPostBySlug(slug) {
     if (res && (res.slug || res.title)) {
       return normalizeBlogPost(res);
     }
-  } catch (_) {}
+  } catch (_) { }
   const fallback = getPost(slug);
   return fallback ? normalizeBlogPost(fallback) : null;
 }
@@ -472,7 +460,7 @@ export async function getLiveCareers() {
     const res = await get("/api/v1/content/careers");
     if (Array.isArray(res)) return res;
     if (Array.isArray(res?.data)) return res.data;
-  } catch (_) {}
+  } catch (_) { }
   return [];
 }
 
@@ -538,7 +526,7 @@ export async function getLiveCompanyProfile() {
   try {
     const res = await get("/api/v1/company");
     if (res && typeof res === "object") return res;
-  } catch (_) {}
+  } catch (_) { }
   return {
     name: "DEZORYN TECHNOLOGY PRIVATE LIMITED",
     tagline: "Software Products, Enterprise Platforms & Digital Solutions",
@@ -565,7 +553,7 @@ export async function getLiveLegalPolicies() {
     if (Array.isArray(list) && list.length > 0) {
       return list.map(normalizeLegalPolicy);
     }
-  } catch (_) {}
+  } catch (_) { }
   return [];
 }
 
@@ -574,7 +562,7 @@ export async function getLiveLegalPolicy(slug) {
   try {
     const res = await get(`/api/v1/legal/${slug}`);
     if (res) return normalizeLegalPolicy(res);
-  } catch (_) {}
+  } catch (_) { }
   return null;
 }
 
@@ -593,7 +581,7 @@ export async function getLivePages() {
     const res = await get("/api/v1/pages");
     if (Array.isArray(res)) return res;
     if (Array.isArray(res?.data)) return res.data;
-  } catch (_) {}
+  } catch (_) { }
   return [];
 }
 
@@ -602,7 +590,7 @@ export async function getLivePage(slug) {
   try {
     const res = await get(`/api/v1/pages/${slug}`);
     if (res && (res.slug || res.title || res.sections)) return res;
-  } catch (_) {}
+  } catch (_) { }
   return null;
 }
 

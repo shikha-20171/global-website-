@@ -156,8 +156,31 @@ export default function AdminDashboardPage() {
     }
 
     loadData();
+
+    // 1. Live auto-polling every 6 seconds for real-time dashboard updates
+    const pollInterval = setInterval(() => {
+      if (mounted) loadData();
+    }, 6000);
+
+    // 2. Window focus listener: immediately refresh when switching from website tab to admin tab
+    const onFocus = () => {
+      if (mounted) loadData();
+    };
+    window.addEventListener("focus", onFocus);
+
+    // 3. Cross-tab storage listener: immediately refresh when website submits in another tab
+    const onStorage = (e) => {
+      if (e.key === "dezoryn_local_leads" || e.key === "dezoryn_local_demos") {
+        if (mounted) loadData();
+      }
+    };
+    window.addEventListener("storage", onStorage);
+
     return () => {
       mounted = false;
+      clearInterval(pollInterval);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("storage", onStorage);
     };
   }, []);
 
@@ -173,9 +196,15 @@ export default function AdminDashboardPage() {
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 p-6 sm:p-8 text-white shadow-md">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md mb-2.5">
-              <Sparkles size={13} className="text-amber-300" />
-              <span>Admin Portal</span>
+            <div className="flex items-center gap-2 mb-2.5">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md">
+                <Sparkles size={13} className="text-amber-300" />
+                <span>Admin Portal</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-3 py-1 text-xs font-mono font-bold text-emerald-300 backdrop-blur-md">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Live Sync Active</span>
+              </div>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
               Welcome back, Admin 👋

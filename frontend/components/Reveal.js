@@ -14,7 +14,7 @@ export default function Reveal({
   random = true,
 }) {
   const M = motion[as] || motion.div;
-  // Natural subtle variance (0 to 50ms) so elements appear organic, not robotic
+
   const jitter = random ? ((Math.sin(delay * 99 + 1) + 1) * 0.03) : 0;
   const finalDelay = delay + jitter;
 

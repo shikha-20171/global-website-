@@ -1,8 +1,3 @@
-/**
- * DEZORYN TECHNOLOGY — central content + pricing data.
- * Prices are never hard-coded in components —
- * always call formatPrice()/getPlanPrice().
- */
 
 /* ───────────── Currency architecture ───────────── */
 export const DEFAULT_CURRENCY = "USD";
@@ -37,14 +32,22 @@ export function getPlanPrice(plan, cycle = "monthly") {
 
 /* Default plan ladder. Products can override. */
 const mk = (starter, growth, business, enterprise = 299) => [
-  { id: "starter", name: "Starter", for: "For small businesses", monthly_price_usd: starter,
-    features: ["Up to 100 users", "Core modules", "Email support", "Regular updates"] },
-  { id: "growth", name: "Growth", for: "For growing businesses", monthly_price_usd: growth,
-    features: ["Up to 500 users", "Advanced features", "Priority support", "API access"] },
-  { id: "business", name: "Business", for: "For established organizations", monthly_price_usd: business, highlighted: true,
-    features: ["Up to 2,000 users", "All features", "Custom integrations", "Dedicated support"] },
-  { id: "enterprise", name: "Enterprise", for: "For large organizations", monthly_price_usd: enterprise,
-    features: ["Unlimited / custom users", "Custom deployment", "SLA & account manager", "Enterprise analytics"] },
+  {
+    id: "starter", name: "Starter", for: "For small businesses", monthly_price_usd: starter,
+    features: ["Up to 100 users", "Core modules", "Email support", "Regular updates"]
+  },
+  {
+    id: "growth", name: "Growth", for: "For growing businesses", monthly_price_usd: growth,
+    features: ["Up to 500 users", "Advanced features", "Priority support", "API access"]
+  },
+  {
+    id: "business", name: "Business", for: "For established organizations", monthly_price_usd: business, highlighted: true,
+    features: ["Up to 2,000 users", "All features", "Custom integrations", "Dedicated support"]
+  },
+  {
+    id: "enterprise", name: "Enterprise", for: "For large organizations", monthly_price_usd: enterprise,
+    features: ["Unlimited / custom users", "Custom deployment", "SLA & account manager", "Enterprise analytics"]
+  },
 ].map((p) => ({
   ...p,
   annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null,
@@ -71,146 +74,146 @@ export const products = [
     hue: 160,
     tags: ["Student ERP", "Fees & Billing", "Attendance", "Parent App"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For standalone elementary & high schools",
-    "monthly_price_usd": 39,
-    "features": [
-      "Up to 250 Students & 25 Staff",
-      "Admissions & Student Demographic Ledger",
-      "Digital Fee Receipts & SMS Due Alerts",
-      "Daily Attendance Registers & RFID Sync",
-      "Standard Email Support"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For established K-12 private institutions",
-    "monthly_price_usd": 99,
-    "features": [
-      "Up to 1,000 Students & 75 Staff",
-      "Automated Timetable & Teacher Workload Engine",
-      "CBSE/ICSE/State Board Report Cards",
-      "Parent Mobile App & Direct Teacher Chat",
-      "Priority Live Chat & Onboarding Call"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For multi-branch campus networks",
-    "monthly_price_usd": 189,
-    "highlighted": true,
-    "features": [
-      "Up to 3,000 Students across Campuses",
-      "School Bus Live GPS Telemetry & Parent Alerts",
-      "Library, Hostel & Canteen Inventory Integration",
-      "Online Fee Gateway with Zero Discrepancy Reconciliation",
-      "Dedicated Education Success Manager"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For nationwide educational societies & trust groups",
-    "monthly_price_usd": 399,
-    "features": [
-      "Unlimited Students & Multi-Campus Trust Sync",
-      "Custom White-Labeled Native iOS & Android Apps",
-      "Bi-directional ERP Sync with Tally / SAP Accounting",
-      "Dedicated On-Campus Engineer & 24/7 Hotline",
-      "Custom Data Sovereignty & Private Cloud VPC"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For standalone elementary & high schools",
+        "monthly_price_usd": 39,
+        "features": [
+          "Up to 250 Students & 25 Staff",
+          "Admissions & Student Demographic Ledger",
+          "Digital Fee Receipts & SMS Due Alerts",
+          "Daily Attendance Registers & RFID Sync",
+          "Standard Email Support"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For established K-12 private institutions",
+        "monthly_price_usd": 99,
+        "features": [
+          "Up to 1,000 Students & 75 Staff",
+          "Automated Timetable & Teacher Workload Engine",
+          "CBSE/ICSE/State Board Report Cards",
+          "Parent Mobile App & Direct Teacher Chat",
+          "Priority Live Chat & Onboarding Call"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For multi-branch campus networks",
+        "monthly_price_usd": 189,
+        "highlighted": true,
+        "features": [
+          "Up to 3,000 Students across Campuses",
+          "School Bus Live GPS Telemetry & Parent Alerts",
+          "Library, Hostel & Canteen Inventory Integration",
+          "Online Fee Gateway with Zero Discrepancy Reconciliation",
+          "Dedicated Education Success Manager"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For nationwide educational societies & trust groups",
+        "monthly_price_usd": 399,
+        "features": [
+          "Unlimited Students & Multi-Campus Trust Sync",
+          "Custom White-Labeled Native iOS & Android Apps",
+          "Bi-directional ERP Sync with Tally / SAP Accounting",
+          "Dedicated On-Campus Engineer & 24/7 Hotline",
+          "Custom Data Sovereignty & Private Cloud VPC"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "How does Schooly Core handle multi-branch school campuses?",
-    "Schooly Core provides a centralized Trust Executive Cockpit where group directors can review fee collections, teacher attendance, and academic grades across all branches in real time, while granting each campus head autonomy over daily timetables and admissions."
-  ],
-  [
-    "Is the Parent Mobile App available on both iOS and Android?",
-    "Yes. The parent mobile application is natively compiled for both Apple iOS and Android devices, featuring instantaneous push notifications for attendance check-in/out, digital homework submissions, bus GPS tracking, and report cards."
-  ],
-  [
-    "Can we customize report card formats for CBSE, ICSE, or State boards?",
-    "Absolutely. Schooly Core includes a dynamic rubric and grade book moderation engine that generates customizable PDF report cards matching exact board-mandated grading scales (e.g. CBSE 8-point grading, ICSE marks grids, or international letter scales)."
-  ],
-  [
-    "How are school fees reconciled with our bank account?",
-    "Parents can pay school fees via UPI, credit/debit cards, and NetBanking through integrated payment gateways. Transactions automatically match student ledger roll numbers with instantaneous digital receipts, completely eliminating manual bank statement reconciliations."
-  ],
-  [
-    "Can Schooly Core integrate with biometric attendance devices and RFID turnstiles?",
-    "Yes. We support TCP/IP and cloud webhook integrations with standard biometric fingerprint, facial recognition, and RFID smart card turnstiles installed at school entry gates and buses."
-  ]
-],
+      [
+        "How does Schooly Core handle multi-branch school campuses?",
+        "Schooly Core provides a centralized Trust Executive Cockpit where group directors can review fee collections, teacher attendance, and academic grades across all branches in real time, while granting each campus head autonomy over daily timetables and admissions."
+      ],
+      [
+        "Is the Parent Mobile App available on both iOS and Android?",
+        "Yes. The parent mobile application is natively compiled for both Apple iOS and Android devices, featuring instantaneous push notifications for attendance check-in/out, digital homework submissions, bus GPS tracking, and report cards."
+      ],
+      [
+        "Can we customize report card formats for CBSE, ICSE, or State boards?",
+        "Absolutely. Schooly Core includes a dynamic rubric and grade book moderation engine that generates customizable PDF report cards matching exact board-mandated grading scales (e.g. CBSE 8-point grading, ICSE marks grids, or international letter scales)."
+      ],
+      [
+        "How are school fees reconciled with our bank account?",
+        "Parents can pay school fees via UPI, credit/debit cards, and NetBanking through integrated payment gateways. Transactions automatically match student ledger roll numbers with instantaneous digital receipts, completely eliminating manual bank statement reconciliations."
+      ],
+      [
+        "Can Schooly Core integrate with biometric attendance devices and RFID turnstiles?",
+        "Yes. We support TCP/IP and cloud webhook integrations with standard biometric fingerprint, facial recognition, and RFID smart card turnstiles installed at school entry gates and buses."
+      ]
+    ],
     steps: [
-  [
-    "Campus Discovery",
-    "We audit your grade structures, fee schedules, and academic session calendars."
-  ],
-  [
-    "Student Master Sync",
-    "Import student, parent, and faculty records with zero historical data loss."
-  ],
-  [
-    "Teacher & Admin Training",
-    "Hands-on virtual and on-campus onboarding sessions for staff and bus drivers."
-  ],
-  [
-    "Go-Live & Parent Launch",
-    "Dispatched branded login credentials and automated parent app welcome sequence."
-  ]
-],
+      [
+        "Campus Discovery",
+        "We audit your grade structures, fee schedules, and academic session calendars."
+      ],
+      [
+        "Student Master Sync",
+        "Import student, parent, and faculty records with zero historical data loss."
+      ],
+      [
+        "Teacher & Admin Training",
+        "Hands-on virtual and on-campus onboarding sessions for staff and bus drivers."
+      ],
+      [
+        "Go-Live & Parent Launch",
+        "Dispatched branded login credentials and automated parent app welcome sequence."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "Student PII Encryption",
-    "AES-256 zero-knowledge encryption guarding student demographic and medical records."
-  ],
-  [
-    "KeyRound",
-    "Role-Based Staff Access",
-    "Strict privilege tiers separating teachers, accountants, principals, and bus coordinators."
-  ],
-  [
-    "FileClock",
-    "Fee Audit Trails",
-    "Immutable financial logs with cryptographic receipts for every cash or online rupee collected."
-  ],
-  [
-    "ShieldCheck",
-    "Campus Cloud Redundancy",
-    "99.99% academic cloud availability with automated daily offsite snapshots."
-  ]
-],
+      [
+        "Lock",
+        "Student PII Encryption",
+        "AES-256 zero-knowledge encryption guarding student demographic and medical records."
+      ],
+      [
+        "KeyRound",
+        "Role-Based Staff Access",
+        "Strict privilege tiers separating teachers, accountants, principals, and bus coordinators."
+      ],
+      [
+        "FileClock",
+        "Fee Audit Trails",
+        "Immutable financial logs with cryptographic receipts for every cash or online rupee collected."
+      ],
+      [
+        "ShieldCheck",
+        "Campus Cloud Redundancy",
+        "99.99% academic cloud availability with automated daily offsite snapshots."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "K-12 Board Aligned",
-    "desc": "CBSE, ICSE & International scales"
-  },
-  {
-    "title": "< 48h Setup",
-    "desc": "Rapid campus enrollment migration"
-  },
-  {
-    "title": "Zero Data Leak",
-    "desc": "Strict minor privacy governance"
-  }
-],
+      {
+        "title": "K-12 Board Aligned",
+        "desc": "CBSE, ICSE & International scales"
+      },
+      {
+        "title": "< 48h Setup",
+        "desc": "Rapid campus enrollment migration"
+      },
+      {
+        "title": "Zero Data Leak",
+        "desc": "Strict minor privacy governance"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Student Roster Sync",
-    "desc": "Real-time RFID & Biometric Gate"
-  },
-  {
-    "title": "Academic Uptime",
-    "desc": "99.99% Cloud SLA Campus Edge"
-  }
-],
+      {
+        "title": "Student Roster Sync",
+        "desc": "Real-time RFID & Biometric Gate"
+      },
+      {
+        "title": "Academic Uptime",
+        "desc": "99.99% Cloud SLA Campus Edge"
+      }
+    ],
     benefits: [
       "Automates end-to-end campus administration",
       "Real-time student attendance and report cards",
@@ -242,146 +245,146 @@ export const products = [
     hue: 350,
     tags: ["Hospital ERP", "EHR / EMR", "OPD / IPD", "Pharmacy & Labs"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For specialized clinics & day-care centers",
-    "monthly_price_usd": 59,
-    "features": [
-      "Up to 25 Beds & 5 On-Duty Doctors",
-      "OPD Token Queue & Patient Registration",
-      "Standard Electronic Health Records (EHR)",
-      "Pharmacy POS & Retail Prescription Dispensing",
-      "Email & Chat Helpdesk"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For mid-size specialty hospitals & nursing homes",
-    "monthly_price_usd": 149,
-    "features": [
-      "Up to 100 Beds & 25 On-Duty Doctors",
-      "IPD Ward Matrix & Intensive Care Unit (ICU) Telemetry",
-      "Laboratory Information System (LIS) Analyzer Sync",
-      "Doctor Roster Shift Scheduler & Tele-Consultations",
-      "Priority 24/7 Clinical Emergency Support"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For multi-specialty tertiary care hospitals",
-    "monthly_price_usd": 299,
-    "highlighted": true,
-    "features": [
-      "Up to 350 Beds & 75 On-Duty Doctors",
-      "Operation Theater (OT) Surgical Suite Scheduling",
-      "Cashless TPA & Medical Insurance Desk Management",
-      "Hospital Pharmacy Batch Expiry & Central Inventory",
-      "Dedicated Hospital Systems Specialist"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For multi-city healthcare chains & medical colleges",
-    "monthly_price_usd": 599,
-    "features": [
-      "Unlimited Beds & Multi-Hospital Network Synchronization",
-      "HL7/FHIR & ABDM Health Cloud Standards Integration",
-      "PACS Radiology & DICOM Imaging Server Integration",
-      "Dedicated On-Premise / Private HIPAA Cloud Cluster",
-      "Guaranteed 15-Minute Critical Incident SLA"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For specialized clinics & day-care centers",
+        "monthly_price_usd": 59,
+        "features": [
+          "Up to 25 Beds & 5 On-Duty Doctors",
+          "OPD Token Queue & Patient Registration",
+          "Standard Electronic Health Records (EHR)",
+          "Pharmacy POS & Retail Prescription Dispensing",
+          "Email & Chat Helpdesk"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For mid-size specialty hospitals & nursing homes",
+        "monthly_price_usd": 149,
+        "features": [
+          "Up to 100 Beds & 25 On-Duty Doctors",
+          "IPD Ward Matrix & Intensive Care Unit (ICU) Telemetry",
+          "Laboratory Information System (LIS) Analyzer Sync",
+          "Doctor Roster Shift Scheduler & Tele-Consultations",
+          "Priority 24/7 Clinical Emergency Support"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For multi-specialty tertiary care hospitals",
+        "monthly_price_usd": 299,
+        "highlighted": true,
+        "features": [
+          "Up to 350 Beds & 75 On-Duty Doctors",
+          "Operation Theater (OT) Surgical Suite Scheduling",
+          "Cashless TPA & Medical Insurance Desk Management",
+          "Hospital Pharmacy Batch Expiry & Central Inventory",
+          "Dedicated Hospital Systems Specialist"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For multi-city healthcare chains & medical colleges",
+        "monthly_price_usd": 599,
+        "features": [
+          "Unlimited Beds & Multi-Hospital Network Synchronization",
+          "HL7/FHIR & ABDM Health Cloud Standards Integration",
+          "PACS Radiology & DICOM Imaging Server Integration",
+          "Dedicated On-Premise / Private HIPAA Cloud Cluster",
+          "Guaranteed 15-Minute Critical Incident SLA"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "Does Dezo Care comply with ABDM (Ayushman Bharat Digital Mission) and HL7/FHIR standards?",
-    "Yes. Dezo Care is engineered from the ground up to support ABDM M1, M2, and M3 milestones, enabling seamless ABHA ID creation, health record linking, and standardized HL7/FHIR interoperability across diagnostic facilities and government health exchanges."
-  ],
-  [
-    "How does Dezo Care manage IPD ward admissions and bed occupancy?",
-    "The interactive IPD ward matrix provides real-time color-coded visual bed telemetry across general wards, deluxe suites, and ICUs. Nurses can instantly update bed occupancy, track patient vitals, schedule doctor rounds, and coordinate room sanitization workflows."
-  ],
-  [
-    "Can our diagnostic laboratory machines integrate directly with Dezo Care?",
-    "Yes. Our LIS (Laboratory Information System) module provides bidirectional interfacing with standard clinical chemistry, hematology, and immunology analyzers. Test results post automatically to patient EHRs, eliminating manual data transcription errors."
-  ],
-  [
-    "How are cashless TPA and health insurance claims processed?",
-    "Dezo Care includes a dedicated TPA portal where hospital billing desks can upload pre-authorization requests, manage query rebuttals, track approval limits, and generate final itemized discharge summaries with zero billing discrepancies."
-  ],
-  [
-    "Is patient medical data secure and HIPAA-compliant?",
-    "All clinical notes, diagnostic imaging, and pharmacy logs are encrypted at rest with AES-256 and transmitted exclusively over TLS 1.3. Role-based access controls ensure doctors only view records of patients under their active consultation care."
-  ]
-],
+      [
+        "Does Dezo Care comply with ABDM (Ayushman Bharat Digital Mission) and HL7/FHIR standards?",
+        "Yes. Dezo Care is engineered from the ground up to support ABDM M1, M2, and M3 milestones, enabling seamless ABHA ID creation, health record linking, and standardized HL7/FHIR interoperability across diagnostic facilities and government health exchanges."
+      ],
+      [
+        "How does Dezo Care manage IPD ward admissions and bed occupancy?",
+        "The interactive IPD ward matrix provides real-time color-coded visual bed telemetry across general wards, deluxe suites, and ICUs. Nurses can instantly update bed occupancy, track patient vitals, schedule doctor rounds, and coordinate room sanitization workflows."
+      ],
+      [
+        "Can our diagnostic laboratory machines integrate directly with Dezo Care?",
+        "Yes. Our LIS (Laboratory Information System) module provides bidirectional interfacing with standard clinical chemistry, hematology, and immunology analyzers. Test results post automatically to patient EHRs, eliminating manual data transcription errors."
+      ],
+      [
+        "How are cashless TPA and health insurance claims processed?",
+        "Dezo Care includes a dedicated TPA portal where hospital billing desks can upload pre-authorization requests, manage query rebuttals, track approval limits, and generate final itemized discharge summaries with zero billing discrepancies."
+      ],
+      [
+        "Is patient medical data secure and HIPAA-compliant?",
+        "All clinical notes, diagnostic imaging, and pharmacy logs are encrypted at rest with AES-256 and transmitted exclusively over TLS 1.3. Role-based access controls ensure doctors only view records of patients under their active consultation care."
+      ]
+    ],
     steps: [
-  [
-    "Clinical Workflow Audit",
-    "Mapping your OPD departments, bed wards, operation theaters, and diagnostic labs."
-  ],
-  [
-    "EHR & Pharmacy Migration",
-    "Importing drug formulary, doctor schedules, and legacy patient records."
-  ],
-  [
-    "Nursing & Staff Training",
-    "Hands-on simulations for triage desks, nurses, lab technicians, and pharmacists."
-  ],
-  [
-    "Clinical Cutover",
-    "Zero-downtime go-live with on-site clinical support engineers."
-  ]
-],
+      [
+        "Clinical Workflow Audit",
+        "Mapping your OPD departments, bed wards, operation theaters, and diagnostic labs."
+      ],
+      [
+        "EHR & Pharmacy Migration",
+        "Importing drug formulary, doctor schedules, and legacy patient records."
+      ],
+      [
+        "Nursing & Staff Training",
+        "Hands-on simulations for triage desks, nurses, lab technicians, and pharmacists."
+      ],
+      [
+        "Clinical Cutover",
+        "Zero-downtime go-live with on-site clinical support engineers."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "HIPAA & ABDM Compliant",
-    "End-to-end cryptographic sealing of patient electronic medical charts."
-  ],
-  [
-    "KeyRound",
-    "Medical Role Segregation",
-    "Strict barriers between doctors, nursing staff, pharmacists, and billing clerks."
-  ],
-  [
-    "FileClock",
-    "Clinical Prescription Audit",
-    "Full timestamped records of doctor prescription edits and pharmacy dispensations."
-  ],
-  [
-    "ShieldCheck",
-    "24/7 Redundant Care SLA",
-    "Multi-zone cloud failover ensuring hospital terminals never freeze during emergencies."
-  ]
-],
+      [
+        "Lock",
+        "HIPAA & ABDM Compliant",
+        "End-to-end cryptographic sealing of patient electronic medical charts."
+      ],
+      [
+        "KeyRound",
+        "Medical Role Segregation",
+        "Strict barriers between doctors, nursing staff, pharmacists, and billing clerks."
+      ],
+      [
+        "FileClock",
+        "Clinical Prescription Audit",
+        "Full timestamped records of doctor prescription edits and pharmacy dispensations."
+      ],
+      [
+        "ShieldCheck",
+        "24/7 Redundant Care SLA",
+        "Multi-zone cloud failover ensuring hospital terminals never freeze during emergencies."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "NABH / ABDM Ready",
-    "desc": "Digital clinical compliance"
-  },
-  {
-    "title": "Sub-Second OPD",
-    "desc": "Instant patient queue token"
-  },
-  {
-    "title": "Zero Paperwork",
-    "desc": "Unified EHR & digital discharge"
-  }
-],
+      {
+        "title": "NABH / ABDM Ready",
+        "desc": "Digital clinical compliance"
+      },
+      {
+        "title": "Sub-Second OPD",
+        "desc": "Instant patient queue token"
+      },
+      {
+        "title": "Zero Paperwork",
+        "desc": "Unified EHR & digital discharge"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Clinical Ward Telemetry",
-    "desc": "Live ICU & Inpatient Bed Matrix"
-  },
-  {
-    "title": "Health Cloud Security",
-    "desc": "NABH & ABDM Tier-4 Data Vault"
-  }
-],
+      {
+        "title": "Clinical Ward Telemetry",
+        "desc": "Live ICU & Inpatient Bed Matrix"
+      },
+      {
+        "title": "Health Cloud Security",
+        "desc": "NABH & ABDM Tier-4 Data Vault"
+      }
+    ],
     benefits: [
       "Smooth patient journey from registration to discharge",
       "Zero-paperwork electronic medical records (EMR/EHR)",
@@ -413,146 +416,146 @@ export const products = [
     hue: 210,
     tags: ["Property Matrix", "Site Visits", "Channel Partners", "Booking Flow"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For boutique developers & regional builders",
-    "monthly_price_usd": 49,
-    "features": [
-      "Up to 2 Projects & 150 Unit Inventory",
-      "Real-Time Interactive Unit Availability Matrix",
-      "Site Visit Scheduling & Chauffeur Coordination",
-      "Standard Token Booking Receipts & Invoices",
-      "Standard Support Desk"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For mid-size residential & commercial developers",
-    "monthly_price_usd": 119,
-    "features": [
-      "Up to 8 Projects & 750 Unit Inventory",
-      "Channel Partner (CP) Broker Portal & Lead Tagging",
-      "Digital Buyer KYC & E-Sign Allotment Letters",
-      "Automated WhatsApp Buyer Follow-up Cadences",
-      "Priority Sales Support & Training"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For established township & multi-tower builders",
-    "monthly_price_usd": 239,
-    "highlighted": true,
-    "features": [
-      "Up to 25 Projects & 3,000 Unit Inventory",
-      "Construction-Linked Milestone Demand Notes Engine",
-      "Channel Partner Commission Reconciliation & Payouts",
-      "Multi-Tier Pricing Schedules & Inventory Blocking Locks",
-      "Dedicated Real Estate Tech Specialist"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For national real estate conglomerates & REITs",
-    "monthly_price_usd": 499,
-    "features": [
-      "Unlimited Projects & Developer Entity Management",
-      "RERA Escrow Account & Bank Subvention Tracking",
-      "Custom ERP Integration with SAP / Salesforce",
-      "Dedicated Solutions Architect & Private Cloud VPC",
-      "Custom 3D Virtual Tour & Interactive Masterplan Embeds"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For boutique developers & regional builders",
+        "monthly_price_usd": 49,
+        "features": [
+          "Up to 2 Projects & 150 Unit Inventory",
+          "Real-Time Interactive Unit Availability Matrix",
+          "Site Visit Scheduling & Chauffeur Coordination",
+          "Standard Token Booking Receipts & Invoices",
+          "Standard Support Desk"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For mid-size residential & commercial developers",
+        "monthly_price_usd": 119,
+        "features": [
+          "Up to 8 Projects & 750 Unit Inventory",
+          "Channel Partner (CP) Broker Portal & Lead Tagging",
+          "Digital Buyer KYC & E-Sign Allotment Letters",
+          "Automated WhatsApp Buyer Follow-up Cadences",
+          "Priority Sales Support & Training"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For established township & multi-tower builders",
+        "monthly_price_usd": 239,
+        "highlighted": true,
+        "features": [
+          "Up to 25 Projects & 3,000 Unit Inventory",
+          "Construction-Linked Milestone Demand Notes Engine",
+          "Channel Partner Commission Reconciliation & Payouts",
+          "Multi-Tier Pricing Schedules & Inventory Blocking Locks",
+          "Dedicated Real Estate Tech Specialist"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For national real estate conglomerates & REITs",
+        "monthly_price_usd": 499,
+        "features": [
+          "Unlimited Projects & Developer Entity Management",
+          "RERA Escrow Account & Bank Subvention Tracking",
+          "Custom ERP Integration with SAP / Salesforce",
+          "Dedicated Solutions Architect & Private Cloud VPC",
+          "Custom 3D Virtual Tour & Interactive Masterplan Embeds"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "How does the interactive unit inventory matrix prevent double-booking?",
-    "When a sales executive or broker selects an apartment, villa, or commercial plot for a client token payment, the system applies a temporary inventory lock across all channels. If payment succeeds, the unit status shifts to 'Booked' in real time across all connected devices."
-  ],
-  [
-    "Can Channel Partners (Brokers) view their registered leads and commissions?",
-    "Yes. Channel partners receive dedicated portal logins where they can register prospective buyers, track site visit attendance, view allotment statuses, and monitor accrued brokerage commissions with full ledger transparency."
-  ],
-  [
-    "How are construction milestone demand notes generated?",
-    "When a project engineer marks a construction slab or finishing stage completed in the construction tracker, DEZORYN Real Estate automatically drafts and dispatches personalized demand letters with payment deadlines and interest calculation to all relevant buyers via WhatsApp and Email."
-  ],
-  [
-    "Is the platform compliant with RERA regulations?",
-    "Yes. The platform includes built-in RERA compliance safeguards, ensuring project registration numbers, approved sanctions, carpet area disclosures, and designated escrow bank account details are consistently printed on all booking receipts and allotment letters."
-  ],
-  [
-    "Does DEZORYN Real Estate integrate with popular property portals like 99acres and MagicBricks?",
-    "Yes. Inbound leads from 99acres, MagicBricks, Facebook Ads, and Google Campaigns are ingested in sub-seconds via webhooks, automatically tagged to projects, and routed to available site sales executives."
-  ]
-],
+      [
+        "How does the interactive unit inventory matrix prevent double-booking?",
+        "When a sales executive or broker selects an apartment, villa, or commercial plot for a client token payment, the system applies a temporary inventory lock across all channels. If payment succeeds, the unit status shifts to 'Booked' in real time across all connected devices."
+      ],
+      [
+        "Can Channel Partners (Brokers) view their registered leads and commissions?",
+        "Yes. Channel partners receive dedicated portal logins where they can register prospective buyers, track site visit attendance, view allotment statuses, and monitor accrued brokerage commissions with full ledger transparency."
+      ],
+      [
+        "How are construction milestone demand notes generated?",
+        "When a project engineer marks a construction slab or finishing stage completed in the construction tracker, DEZORYN Real Estate automatically drafts and dispatches personalized demand letters with payment deadlines and interest calculation to all relevant buyers via WhatsApp and Email."
+      ],
+      [
+        "Is the platform compliant with RERA regulations?",
+        "Yes. The platform includes built-in RERA compliance safeguards, ensuring project registration numbers, approved sanctions, carpet area disclosures, and designated escrow bank account details are consistently printed on all booking receipts and allotment letters."
+      ],
+      [
+        "Does DEZORYN Real Estate integrate with popular property portals like 99acres and MagicBricks?",
+        "Yes. Inbound leads from 99acres, MagicBricks, Facebook Ads, and Google Campaigns are ingested in sub-seconds via webhooks, automatically tagged to projects, and routed to available site sales executives."
+      ]
+    ],
     steps: [
-  [
-    "Inventory Blueprinting",
-    "Uploading floor plans, unit specifications, price sheets, and payment plans."
-  ],
-  [
-    "Channel Partner Onboarding",
-    "Registering external brokers, tagging active leads, and establishing brokerage tiers."
-  ],
-  [
-    "Sales Team Walkthrough",
-    "Training on-site executives on unit locking, site visit apps, and digital KYC."
-  ],
-  [
-    "Public Launch & Matrix Activation",
-    "Unlocking live unit availability matrix across sales galleries and portals."
-  ]
-],
+      [
+        "Inventory Blueprinting",
+        "Uploading floor plans, unit specifications, price sheets, and payment plans."
+      ],
+      [
+        "Channel Partner Onboarding",
+        "Registering external brokers, tagging active leads, and establishing brokerage tiers."
+      ],
+      [
+        "Sales Team Walkthrough",
+        "Training on-site executives on unit locking, site visit apps, and digital KYC."
+      ],
+      [
+        "Public Launch & Matrix Activation",
+        "Unlocking live unit availability matrix across sales galleries and portals."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "RERA Document Security",
-    "Watermarked, tamper-proof digital allotment letters and KYC document storage."
-  ],
-  [
-    "KeyRound",
-    "Granular Inventory Permissions",
-    "Controlled access permitting only authorized sales directors to unlock reserved units."
-  ],
-  [
-    "FileClock",
-    "Buyer Ledger Audit",
-    "Cryptographically audited trail of token payments, receipts, and interest waivers."
-  ],
-  [
-    "ShieldCheck",
-    "High-Availability Matrix",
-    "Sub-second database sync guaranteeing zero double-allocations during project launches."
-  ]
-],
+      [
+        "Lock",
+        "RERA Document Security",
+        "Watermarked, tamper-proof digital allotment letters and KYC document storage."
+      ],
+      [
+        "KeyRound",
+        "Granular Inventory Permissions",
+        "Controlled access permitting only authorized sales directors to unlock reserved units."
+      ],
+      [
+        "FileClock",
+        "Buyer Ledger Audit",
+        "Cryptographically audited trail of token payments, receipts, and interest waivers."
+      ],
+      [
+        "ShieldCheck",
+        "High-Availability Matrix",
+        "Sub-second database sync guaranteeing zero double-allocations during project launches."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "RERA Compliant",
-    "desc": "Automated escrow & demand notes"
-  },
-  {
-    "title": "Zero Double-Booking",
-    "desc": "Instant unit inventory locks"
-  },
-  {
-    "title": "Direct CP Portal",
-    "desc": "Transparent brokerage payouts"
-  }
-],
+      {
+        "title": "RERA Compliant",
+        "desc": "Automated escrow & demand notes"
+      },
+      {
+        "title": "Zero Double-Booking",
+        "desc": "Instant unit inventory locks"
+      },
+      {
+        "title": "Direct CP Portal",
+        "desc": "Transparent brokerage payouts"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Unit Inventory Engine",
-    "desc": "Sub-Second Live Unit Locking"
-  },
-  {
-    "title": "Sales Cloud Velocity",
-    "desc": "RERA Escrow & Milestone Pipeline"
-  }
-],
+      {
+        "title": "Unit Inventory Engine",
+        "desc": "Sub-Second Live Unit Locking"
+      },
+      {
+        "title": "Sales Cloud Velocity",
+        "desc": "RERA Escrow & Milestone Pipeline"
+      }
+    ],
     benefits: [
       "Live unit availability and pricing matrix across all sales channels",
       "Effortless scheduling and tracking for client site visits",
@@ -584,146 +587,146 @@ export const products = [
     hue: 215,
     tags: ["Gate Security", "Maintenance Dues", "Resident App", "Helpdesk"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For standalone apartment buildings & housing societies",
-    "monthly_price_usd": 29,
-    "features": [
-      "Up to 100 Flats / Units & 1 Security Gate",
-      "Security Guard Tablet Kiosk & Visitor Pass Generation",
-      "Maintenance Dues Invoicing & Automated UPI QR Receipts",
-      "Digital Resident Notice Board & Emergency Contacts",
-      "Standard Helpdesk Support"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For gated residential societies & high-rise complexes",
-    "monthly_price_usd": 79,
-    "features": [
-      "Up to 500 Flats / Units & 3 Security Gates",
-      "Daily Staff & Domestic Maid Biometric Attendance",
-      "Resident Complaint Helpdesk with SLA Escalation Tracking",
-      "Clubhouse & Community Amenity Slot Reservation",
-      "Priority Customer Support"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For expansive residential townships & multi-tower clusters",
-    "monthly_price_usd": 149,
-    "highlighted": true,
-    "features": [
-      "Up to 2,000 Flats / Units & Unlimited Gates",
-      "Automated Late-Payment Interest & Dynamic Penalties",
-      "Vendor Work Order Dispatch & Asset Maintenance (AMC)",
-      "Digital Resident Voting & AGM Poll Resolution Engine",
-      "Dedicated Society Operations Manager"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For mega townships, smart cities & property management groups",
-    "monthly_price_usd": 349,
-    "features": [
-      "Unlimited Flats, Multi-Society Centralized Portfolio",
-      "ANPR (Automated Number Plate Recognition) Boom Barrier Sync",
-      "Multi-Tower Water & Energy Sub-Meter IoT Integration",
-      "Custom Branded Resident Community Mobile App",
-      "24/7 Dedicated Emergency Operations Hotline"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For standalone apartment buildings & housing societies",
+        "monthly_price_usd": 29,
+        "features": [
+          "Up to 100 Flats / Units & 1 Security Gate",
+          "Security Guard Tablet Kiosk & Visitor Pass Generation",
+          "Maintenance Dues Invoicing & Automated UPI QR Receipts",
+          "Digital Resident Notice Board & Emergency Contacts",
+          "Standard Helpdesk Support"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For gated residential societies & high-rise complexes",
+        "monthly_price_usd": 79,
+        "features": [
+          "Up to 500 Flats / Units & 3 Security Gates",
+          "Daily Staff & Domestic Maid Biometric Attendance",
+          "Resident Complaint Helpdesk with SLA Escalation Tracking",
+          "Clubhouse & Community Amenity Slot Reservation",
+          "Priority Customer Support"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For expansive residential townships & multi-tower clusters",
+        "monthly_price_usd": 149,
+        "highlighted": true,
+        "features": [
+          "Up to 2,000 Flats / Units & Unlimited Gates",
+          "Automated Late-Payment Interest & Dynamic Penalties",
+          "Vendor Work Order Dispatch & Asset Maintenance (AMC)",
+          "Digital Resident Voting & AGM Poll Resolution Engine",
+          "Dedicated Society Operations Manager"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For mega townships, smart cities & property management groups",
+        "monthly_price_usd": 349,
+        "features": [
+          "Unlimited Flats, Multi-Society Centralized Portfolio",
+          "ANPR (Automated Number Plate Recognition) Boom Barrier Sync",
+          "Multi-Tower Water & Energy Sub-Meter IoT Integration",
+          "Custom Branded Resident Community Mobile App",
+          "24/7 Dedicated Emergency Operations Hotline"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "How does the Smart Gate Kiosk protect resident privacy?",
-    "When visitors arrive at the main gate, security guards enter only the visitor's mobile number and flat number. Resident phone numbers are never displayed on the guard terminal; approval is requested directly via an in-app interactive push notification or automated IVR call."
-  ],
-  [
-    "How are society maintenance dues collected and reconciled?",
-    "The billing engine generates monthly or quarterly maintenance dues based on flat square footage or fixed rates. Residents pay directly via integrated UPI, debit/credit cards, or NetBanking inside the resident mobile app, with instantaneous automated receipt generation."
-  ],
-  [
-    "Can residents track domestic help and daily staff entry/exit?",
-    "Yes. Maids, drivers, and daily contractors receive digital ID badges. The moment they check in at the security gate, the resident app receives an instantaneous alert showing their check-in timestamp and past attendance records."
-  ],
-  [
-    "How are community facilities (Clubhouse, Tennis Court, Swimming Pool) booked?",
-    "Residents can check live amenity availability on the mobile app, review booking rules, pay security deposits, and reserve slots with instantaneous confirmation, preventing double-bookings and disputes."
-  ],
-  [
-    "Does SocietyOS support automated boom barriers with RFID or ANPR camera systems?",
-    "Yes. SocietyOS integrates with standard Wiegand RFID windshield tags and AI-powered ANPR (Automatic Number Plate Recognition) cameras to automatically raise boom barriers for authorized resident vehicles without stopping."
-  ]
-],
+      [
+        "How does the Smart Gate Kiosk protect resident privacy?",
+        "When visitors arrive at the main gate, security guards enter only the visitor's mobile number and flat number. Resident phone numbers are never displayed on the guard terminal; approval is requested directly via an in-app interactive push notification or automated IVR call."
+      ],
+      [
+        "How are society maintenance dues collected and reconciled?",
+        "The billing engine generates monthly or quarterly maintenance dues based on flat square footage or fixed rates. Residents pay directly via integrated UPI, debit/credit cards, or NetBanking inside the resident mobile app, with instantaneous automated receipt generation."
+      ],
+      [
+        "Can residents track domestic help and daily staff entry/exit?",
+        "Yes. Maids, drivers, and daily contractors receive digital ID badges. The moment they check in at the security gate, the resident app receives an instantaneous alert showing their check-in timestamp and past attendance records."
+      ],
+      [
+        "How are community facilities (Clubhouse, Tennis Court, Swimming Pool) booked?",
+        "Residents can check live amenity availability on the mobile app, review booking rules, pay security deposits, and reserve slots with instantaneous confirmation, preventing double-bookings and disputes."
+      ],
+      [
+        "Does SocietyOS support automated boom barriers with RFID or ANPR camera systems?",
+        "Yes. SocietyOS integrates with standard Wiegand RFID windshield tags and AI-powered ANPR (Automatic Number Plate Recognition) cameras to automatically raise boom barriers for authorized resident vehicles without stopping."
+      ]
+    ],
     steps: [
-  [
-    "Society Layout Modeling",
-    "Configuring towers, wings, flat numbers, parking bays, and security gate check-points."
-  ],
-  [
-    "Resident & Vehicle Directory",
-    "Importing owner and tenant directories, authorized vehicles, and daily staff."
-  ],
-  [
-    "Gate Guard Training",
-    "Equipping security guards with intuitive multi-lingual tablet check-in software."
-  ],
-  [
-    "Resident App Rollout",
-    "Dispatched digital invitation links with immediate maintenance dues payment activation."
-  ]
-],
+      [
+        "Society Layout Modeling",
+        "Configuring towers, wings, flat numbers, parking bays, and security gate check-points."
+      ],
+      [
+        "Resident & Vehicle Directory",
+        "Importing owner and tenant directories, authorized vehicles, and daily staff."
+      ],
+      [
+        "Gate Guard Training",
+        "Equipping security guards with intuitive multi-lingual tablet check-in software."
+      ],
+      [
+        "Resident App Rollout",
+        "Dispatched digital invitation links with immediate maintenance dues payment activation."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "Resident PII Protection",
-    "Resident phone numbers and private directory data masked from frontline guards."
-  ],
-  [
-    "KeyRound",
-    "Committee Role Hierarchies",
-    "Distinct privilege tiers separating RWA treasurers, presidents, guards, and residents."
-  ],
-  [
-    "FileClock",
-    "Complete Visitor Logs",
-    "Encrypted photo and entry/exit timestamp archives for all visitors, cabs, and delivery agents."
-  ],
-  [
-    "ShieldCheck",
-    "Banking-Grade Accounting",
-    "Statutory audited society accounting ledgers with zero discrepancy reconciliation."
-  ]
-],
+      [
+        "Lock",
+        "Resident PII Protection",
+        "Resident phone numbers and private directory data masked from frontline guards."
+      ],
+      [
+        "KeyRound",
+        "Committee Role Hierarchies",
+        "Distinct privilege tiers separating RWA treasurers, presidents, guards, and residents."
+      ],
+      [
+        "FileClock",
+        "Complete Visitor Logs",
+        "Encrypted photo and entry/exit timestamp archives for all visitors, cabs, and delivery agents."
+      ],
+      [
+        "ShieldCheck",
+        "Banking-Grade Accounting",
+        "Statutory audited society accounting ledgers with zero discrepancy reconciliation."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "RWA Certified",
-    "desc": "Transparent digital accounting"
-  },
-  {
-    "title": "Instant Gate Passes",
-    "desc": "One-tap guest approvals"
-  },
-  {
-    "title": "Privacy First",
-    "desc": "Masked resident phone numbers"
-  }
-],
+      {
+        "title": "RWA Certified",
+        "desc": "Transparent digital accounting"
+      },
+      {
+        "title": "Instant Gate Passes",
+        "desc": "One-tap guest approvals"
+      },
+      {
+        "title": "Privacy First",
+        "desc": "Masked resident phone numbers"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Gate Security Kiosk",
-    "desc": "Sub-5s Visitor Check-In Flow"
-  },
-  {
-    "title": "Resident Ledger Sync",
-    "desc": "Automated UPI & Maintenance Dues"
-  }
-],
+      {
+        "title": "Gate Security Kiosk",
+        "desc": "Sub-5s Visitor Check-In Flow"
+      },
+      {
+        "title": "Resident Ledger Sync",
+        "desc": "Automated UPI & Maintenance Dues"
+      }
+    ],
     benefits: [
       "100% transparent society accounting and digital ledgers",
       "Fast gate pass approvals for guests, cabs, and delivery agents",
@@ -755,146 +758,146 @@ export const products = [
     hue: 190,
     tags: ["Automated Payroll", "Attendance & Shifts", "Employee App", "Performance"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For fast-growing startups & small businesses",
-    "monthly_price_usd": 39,
-    "features": [
-      "Up to 50 Employees",
-      "Biometric Machine & Mobile Geofence Attendance",
-      "Leave Management & Company Holiday Calendars",
-      "Digital Salary Slips Generation & Email Delivery",
-      "Standard Email Support"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For mid-size companies & regional enterprises",
-    "monthly_price_usd": 99,
-    "features": [
-      "Up to 250 Employees",
-      "Statutory Payroll Engine (PF, ESI, TDS, PT & Form 16)",
-      "Employee Self-Service (ESS) Native Mobile App",
-      "Expense Reimbursements & Multi-Tier Approval Matrix",
-      "Priority 24/7 HR Tech Support"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For large enterprise organizations & multi-shift operations",
-    "monthly_price_usd": 199,
-    "highlighted": true,
-    "features": [
-      "Up to 1,000 Employees",
-      "Performance Management (OKR & 360° Appraisal Cycles)",
-      "Applicant Tracking System (ATS) with Digital Offer Letters",
-      "Shift Rosters with Automated Overtime & Night Allowances",
-      "Dedicated HR Success Strategist"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For multinational corporations & diversified conglomerates",
-    "monthly_price_usd": 299,
-    "features": [
-      "Unlimited Employees & Multi-Entity Subsidiaries",
-      "Multi-Currency Global Payroll & Expatriate Taxation",
-      "Bi-directional ERP Sync with SAP / Oracle / Workday",
-      "Dedicated On-Premise / Private Cloud VPC",
-      "Custom Enterprise Security & Compliance Auditing"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For fast-growing startups & small businesses",
+        "monthly_price_usd": 39,
+        "features": [
+          "Up to 50 Employees",
+          "Biometric Machine & Mobile Geofence Attendance",
+          "Leave Management & Company Holiday Calendars",
+          "Digital Salary Slips Generation & Email Delivery",
+          "Standard Email Support"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For mid-size companies & regional enterprises",
+        "monthly_price_usd": 99,
+        "features": [
+          "Up to 250 Employees",
+          "Statutory Payroll Engine (PF, ESI, TDS, PT & Form 16)",
+          "Employee Self-Service (ESS) Native Mobile App",
+          "Expense Reimbursements & Multi-Tier Approval Matrix",
+          "Priority 24/7 HR Tech Support"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For large enterprise organizations & multi-shift operations",
+        "monthly_price_usd": 199,
+        "highlighted": true,
+        "features": [
+          "Up to 1,000 Employees",
+          "Performance Management (OKR & 360° Appraisal Cycles)",
+          "Applicant Tracking System (ATS) with Digital Offer Letters",
+          "Shift Rosters with Automated Overtime & Night Allowances",
+          "Dedicated HR Success Strategist"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For multinational corporations & diversified conglomerates",
+        "monthly_price_usd": 299,
+        "features": [
+          "Unlimited Employees & Multi-Entity Subsidiaries",
+          "Multi-Currency Global Payroll & Expatriate Taxation",
+          "Bi-directional ERP Sync with SAP / Oracle / Workday",
+          "Dedicated On-Premise / Private Cloud VPC",
+          "Custom Enterprise Security & Compliance Auditing"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "How does DEZORYN HRMS handle statutory tax deductions (PF, ESI, TDS, Professional Tax)?",
-    "Our compliance engine automatically updates with current tax slabs. During monthly payroll processing, employee and employer contributions for Provident Fund, ESI, Professional Tax, and Section 192 TDS are computed automatically, generating statutory government return files with one click."
-  ],
-  [
-    "Can biometric fingerprint and facial recognition attendance machines connect directly?",
-    "Yes. DEZORYN HRMS supports live API push and LAN sync with major biometric hardware providers (e.g. eSSL, ZKTeco, Matrix). Clock-in and clock-out punches update real-time attendance rosters without requiring manual Excel exports."
-  ],
-  [
-    "Does the mobile app support geofenced attendance for field employees?",
-    "Yes. Field sales executives and remote technicians can mark attendance using the native mobile app, which verifies their live GPS coordinates and selfie verification against authorized customer premises or office geofences."
-  ],
-  [
-    "How does the employee self-service (ESS) portal work?",
-    "Employees log into their dedicated web or mobile portal to view salary slips, apply for leaves, submit medical and travel expense bills with photos, access their Form 16, and review annual appraisal feedback."
-  ],
-  [
-    "Can we configure complex rotational shifts and overtime calculations?",
-    "Absolutely. You can build customizable shift templates with morning, evening, and night rotations, automated grace periods, half-day deduction rules, and automated overtime calculations tied directly to monthly payroll."
-  ]
-],
+      [
+        "How does DEZORYN HRMS handle statutory tax deductions (PF, ESI, TDS, Professional Tax)?",
+        "Our compliance engine automatically updates with current tax slabs. During monthly payroll processing, employee and employer contributions for Provident Fund, ESI, Professional Tax, and Section 192 TDS are computed automatically, generating statutory government return files with one click."
+      ],
+      [
+        "Can biometric fingerprint and facial recognition attendance machines connect directly?",
+        "Yes. DEZORYN HRMS supports live API push and LAN sync with major biometric hardware providers (e.g. eSSL, ZKTeco, Matrix). Clock-in and clock-out punches update real-time attendance rosters without requiring manual Excel exports."
+      ],
+      [
+        "Does the mobile app support geofenced attendance for field employees?",
+        "Yes. Field sales executives and remote technicians can mark attendance using the native mobile app, which verifies their live GPS coordinates and selfie verification against authorized customer premises or office geofences."
+      ],
+      [
+        "How does the employee self-service (ESS) portal work?",
+        "Employees log into their dedicated web or mobile portal to view salary slips, apply for leaves, submit medical and travel expense bills with photos, access their Form 16, and review annual appraisal feedback."
+      ],
+      [
+        "Can we configure complex rotational shifts and overtime calculations?",
+        "Absolutely. You can build customizable shift templates with morning, evening, and night rotations, automated grace periods, half-day deduction rules, and automated overtime calculations tied directly to monthly payroll."
+      ]
+    ],
     steps: [
-  [
-    "Organization Structuring",
-    "Configuring departments, designations, salary bands, and leave policies."
-  ],
-  [
-    "Biometric & Employee Sync",
-    "Syncing biometric machines and importing historical attendance and tax declarations."
-  ],
-  [
-    "Parallel Payroll Validation",
-    "Running a test payroll cycle in parallel to verify 100% mathematical parity."
-  ],
-  [
-    "Employee App Launch",
-    "Deploying employee self-service mobile app with instant digital salary slip delivery."
-  ]
-],
+      [
+        "Organization Structuring",
+        "Configuring departments, designations, salary bands, and leave policies."
+      ],
+      [
+        "Biometric & Employee Sync",
+        "Syncing biometric machines and importing historical attendance and tax declarations."
+      ],
+      [
+        "Parallel Payroll Validation",
+        "Running a test payroll cycle in parallel to verify 100% mathematical parity."
+      ],
+      [
+        "Employee App Launch",
+        "Deploying employee self-service mobile app with instant digital salary slip delivery."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "Encrypted Salary Vault",
-    "Bank-grade AES-256 encryption protecting employee compensation and tax records."
-  ],
-  [
-    "KeyRound",
-    "Strict HR Access Control",
-    "Granular separation preventing department managers from viewing confidential salary data."
-  ],
-  [
-    "FileClock",
-    "Immutable Audit Records",
-    "Complete audit logging for every salary revision, bonus award, and tax override."
-  ],
-  [
-    "ShieldCheck",
-    "Statutory Compliance",
-    "Automated compliance with current Provident Fund, ESI, and Income Tax statutes."
-  ]
-],
+      [
+        "Lock",
+        "Encrypted Salary Vault",
+        "Bank-grade AES-256 encryption protecting employee compensation and tax records."
+      ],
+      [
+        "KeyRound",
+        "Strict HR Access Control",
+        "Granular separation preventing department managers from viewing confidential salary data."
+      ],
+      [
+        "FileClock",
+        "Immutable Audit Records",
+        "Complete audit logging for every salary revision, bonus award, and tax override."
+      ],
+      [
+        "ShieldCheck",
+        "Statutory Compliance",
+        "Automated compliance with current Provident Fund, ESI, and Income Tax statutes."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "Statutory Compliant",
-    "desc": "PF, ESI, TDS & Form 16 ready"
-  },
-  {
-    "title": "Biometric Live Sync",
-    "desc": "Real-time clock-in punch engine"
-  },
-  {
-    "title": "60fps Mobile ESS",
-    "desc": "One-tap leave & payslip access"
-  }
-],
+      {
+        "title": "Statutory Compliant",
+        "desc": "PF, ESI, TDS & Form 16 ready"
+      },
+      {
+        "title": "Biometric Live Sync",
+        "desc": "Real-time clock-in punch engine"
+      },
+      {
+        "title": "60fps Mobile ESS",
+        "desc": "One-tap leave & payslip access"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Payroll Computation",
-    "desc": "Automated Tax & Bonus Pipeline"
-  },
-  {
-    "title": "Workforce Telemetry",
-    "desc": "Real-Time Biometric Attendance"
-  }
-],
+      {
+        "title": "Payroll Computation",
+        "desc": "Automated Tax & Bonus Pipeline"
+      },
+      {
+        "title": "Workforce Telemetry",
+        "desc": "Real-Time Biometric Attendance"
+      }
+    ],
     benefits: [
       "Run compliant, error-free monthly payroll in minutes",
       "Biometric hardware and mobile geo-fenced attendance tracking",
@@ -926,146 +929,146 @@ export const products = [
     hue: 262,
     tags: ["Sales Pipeline", "Omnichannel Inbox", "Email Sequences", "AI Assist"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For small sales teams & direct outreach reps",
-    "monthly_price_usd": 39,
-    "features": [
-      "Up to 3 Sales Reps & 2,500 Active Contacts",
-      "Visual Drag-and-Drop Deal Pipeline Kanban",
-      "Lead Ingestion from Website Forms & Webhooks",
-      "Call Logging, Notes & Follow-up Task Reminders",
-      "Standard Support"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For expanding sales organizations & outbound teams",
-    "monthly_price_usd": 89,
-    "features": [
-      "Up to 10 Sales Reps & 15,000 Active Contacts",
-      "Automated Multi-Touch Email & WhatsApp Sequences",
-      "Lead Scoring & Intelligent Routing Algorithms",
-      "Sales Quota & Commission Tracking Dashboards",
-      "Priority Sales Support"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For multi-tier enterprise sales divisions",
-    "monthly_price_usd": 189,
-    "highlighted": true,
-    "features": [
-      "Up to 35 Sales Reps & 75,000 Active Contacts",
-      "Multiple Customizable Pipelines & Deal Stage Gates",
-      "AI Revenue Forecasting & Deal Velocity Analytics",
-      "Two-Way Email & Google/Outlook Calendar Synchronization",
-      "Dedicated CRM Implementation Strategist"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For global sales forces & high-velocity transaction teams",
-    "monthly_price_usd": 399,
-    "features": [
-      "Unlimited Sales Reps & Global Account Management",
-      "Custom Automated Workflow Webhooks & REST API Access",
-      "Territorial Lead Assignment & Advanced Enterprise RBAC",
-      "Dedicated Private VPC Deployment Option",
-      "Custom SLA & Executive Quarterly Business Reviews"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For small sales teams & direct outreach reps",
+        "monthly_price_usd": 39,
+        "features": [
+          "Up to 3 Sales Reps & 2,500 Active Contacts",
+          "Visual Drag-and-Drop Deal Pipeline Kanban",
+          "Lead Ingestion from Website Forms & Webhooks",
+          "Call Logging, Notes & Follow-up Task Reminders",
+          "Standard Support"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For expanding sales organizations & outbound teams",
+        "monthly_price_usd": 89,
+        "features": [
+          "Up to 10 Sales Reps & 15,000 Active Contacts",
+          "Automated Multi-Touch Email & WhatsApp Sequences",
+          "Lead Scoring & Intelligent Routing Algorithms",
+          "Sales Quota & Commission Tracking Dashboards",
+          "Priority Sales Support"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For multi-tier enterprise sales divisions",
+        "monthly_price_usd": 189,
+        "highlighted": true,
+        "features": [
+          "Up to 35 Sales Reps & 75,000 Active Contacts",
+          "Multiple Customizable Pipelines & Deal Stage Gates",
+          "AI Revenue Forecasting & Deal Velocity Analytics",
+          "Two-Way Email & Google/Outlook Calendar Synchronization",
+          "Dedicated CRM Implementation Strategist"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For global sales forces & high-velocity transaction teams",
+        "monthly_price_usd": 399,
+        "features": [
+          "Unlimited Sales Reps & Global Account Management",
+          "Custom Automated Workflow Webhooks & REST API Access",
+          "Territorial Lead Assignment & Advanced Enterprise RBAC",
+          "Dedicated Private VPC Deployment Option",
+          "Custom SLA & Executive Quarterly Business Reviews"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "How does DEZORYN CRM capture and route inbound leads?",
-    "Leads from your website, Facebook Lead Ads, Google Ads, LinkedIn, and WhatsApp arrive in sub-seconds via instant webhooks. Our intelligent routing engine distributes leads based on territory, deal size, or round-robin availability to on-duty reps."
-  ],
-  [
-    "Can we configure multiple deal pipelines for different business offerings?",
-    "Yes. You can create unlimited distinct sales pipelines—for example, separate pipelines for Enterprise Software, Consulting Engagements, and Support Subscriptions—each with custom deal stages and closing probability weights."
-  ],
-  [
-    "Does the CRM support automated multi-channel follow-up cadences?",
-    "Yes. When a new prospect fills out a demo form, DEZORYN CRM can trigger automated multi-touch sequences combining WhatsApp messages, personalized emails, and calendar booking links, stopping automatically when the lead replies."
-  ],
-  [
-    "Can our sales reps make calls and send emails directly from the CRM?",
-    "Yes. With integrated telephony and two-way email synchronization (Gmail and Microsoft 365), reps can make click-to-call phone calls with automatic audio recording and review full client email threads inside the contact timeline."
-  ],
-  [
-    "How does AI Lead Scoring prioritize our sales team's daily outreach?",
-    "Our predictive machine learning model analyzes prospect firmographics, email open patterns, website visit frequency, and response speeds, assigning each lead an engagement temperature (Cold, Warm, Hot) to maximize conversion velocity."
-  ]
-],
+      [
+        "How does DEZORYN CRM capture and route inbound leads?",
+        "Leads from your website, Facebook Lead Ads, Google Ads, LinkedIn, and WhatsApp arrive in sub-seconds via instant webhooks. Our intelligent routing engine distributes leads based on territory, deal size, or round-robin availability to on-duty reps."
+      ],
+      [
+        "Can we configure multiple deal pipelines for different business offerings?",
+        "Yes. You can create unlimited distinct sales pipelines—for example, separate pipelines for Enterprise Software, Consulting Engagements, and Support Subscriptions—each with custom deal stages and closing probability weights."
+      ],
+      [
+        "Does the CRM support automated multi-channel follow-up cadences?",
+        "Yes. When a new prospect fills out a demo form, DEZORYN CRM can trigger automated multi-touch sequences combining WhatsApp messages, personalized emails, and calendar booking links, stopping automatically when the lead replies."
+      ],
+      [
+        "Can our sales reps make calls and send emails directly from the CRM?",
+        "Yes. With integrated telephony and two-way email synchronization (Gmail and Microsoft 365), reps can make click-to-call phone calls with automatic audio recording and review full client email threads inside the contact timeline."
+      ],
+      [
+        "How does AI Lead Scoring prioritize our sales team's daily outreach?",
+        "Our predictive machine learning model analyzes prospect firmographics, email open patterns, website visit frequency, and response speeds, assigning each lead an engagement temperature (Cold, Warm, Hot) to maximize conversion velocity."
+      ]
+    ],
     steps: [
-  [
-    "Sales Pipeline Mapping",
-    "Defining your sales stages, deal milestones, and qualification criteria."
-  ],
-  [
-    "Lead Source Integration",
-    "Connecting your website, WhatsApp, advertising campaigns, and email inboxes."
-  ],
-  [
-    "Automated Cadence Setup",
-    "Building intelligent lead assignment rules and automated follow-up sequences."
-  ],
-  [
-    "Sales Rep Kickoff",
-    "Empowering your sales force with Kanban pipelines and mobile CRM access."
-  ]
-],
+      [
+        "Sales Pipeline Mapping",
+        "Defining your sales stages, deal milestones, and qualification criteria."
+      ],
+      [
+        "Lead Source Integration",
+        "Connecting your website, WhatsApp, advertising campaigns, and email inboxes."
+      ],
+      [
+        "Automated Cadence Setup",
+        "Building intelligent lead assignment rules and automated follow-up sequences."
+      ],
+      [
+        "Sales Rep Kickoff",
+        "Empowering your sales force with Kanban pipelines and mobile CRM access."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "Encrypted Lead Vault",
-    "Enterprise AES-256 encryption protecting proprietary customer contact lists."
-  ],
-  [
-    "KeyRound",
-    "Territory-Based Permissions",
-    "Restricting reps from viewing or exporting accounts outside their assigned territories."
-  ],
-  [
-    "FileClock",
-    "Complete Sales Activity Audit",
-    "Audit trails tracking every deal stage change, discount approval, and email dispatch."
-  ],
-  [
-    "ShieldCheck",
-    "99.99% Sales Cloud SLA",
-    "Ensuring your sales executives can close deals without interruptions."
-  ]
-],
+      [
+        "Lock",
+        "Encrypted Lead Vault",
+        "Enterprise AES-256 encryption protecting proprietary customer contact lists."
+      ],
+      [
+        "KeyRound",
+        "Territory-Based Permissions",
+        "Restricting reps from viewing or exporting accounts outside their assigned territories."
+      ],
+      [
+        "FileClock",
+        "Complete Sales Activity Audit",
+        "Audit trails tracking every deal stage change, discount approval, and email dispatch."
+      ],
+      [
+        "ShieldCheck",
+        "99.99% Sales Cloud SLA",
+        "Ensuring your sales executives can close deals without interruptions."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "Sub-Second Ingestion",
-    "desc": "Instant Webhook lead capture"
-  },
-  {
-    "title": "AI Deal Scoring",
-    "desc": "Predictive conversion ranking"
-  },
-  {
-    "title": "Zero Lead Leakage",
-    "desc": "Automated rep follow-up rules"
-  }
-],
+      {
+        "title": "Sub-Second Ingestion",
+        "desc": "Instant Webhook lead capture"
+      },
+      {
+        "title": "AI Deal Scoring",
+        "desc": "Predictive conversion ranking"
+      },
+      {
+        "title": "Zero Lead Leakage",
+        "desc": "Automated rep follow-up rules"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Deal Velocity Pipeline",
-    "desc": "Real-Time Sales Stage Telemetry"
-  },
-  {
-    "title": "AI Lead Routing",
-    "desc": "Zero-Latency Lead Distribution"
-  }
-],
+      {
+        "title": "Deal Velocity Pipeline",
+        "desc": "Real-Time Sales Stage Telemetry"
+      },
+      {
+        "title": "AI Lead Routing",
+        "desc": "Zero-Latency Lead Distribution"
+      }
+    ],
     benefits: [
       "Capture and auto-assign 100% of website and inbound leads",
       "Visual drag-and-drop Kanban pipeline with real-time deal health",
@@ -1097,146 +1100,146 @@ export const products = [
     hue: 200,
     tags: ["WhatsApp Cloud API", "Chatbot Builder", "Broadcast Campaigns", "Shared Inbox"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For local stores & direct-to-consumer brands",
-    "monthly_price_usd": 29,
-    "features": [
-      "Up to 1,000 Active Monthly Conversations",
-      "Official Meta WhatsApp Cloud API Setup",
-      "Multi-Agent Shared Team Inbox (3 Agents)",
-      "Pre-Approved Notification & Order Update Templates",
-      "Standard Support"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For high-volume retail & e-commerce brands",
-    "monthly_price_usd": 79,
-    "features": [
-      "Up to 10,000 Active Monthly Conversations",
-      "Interactive Chatbot Flow Builder with Button Triggers",
-      "CSV Bulk Broadcast Campaigns with Tag Segmentation",
-      "10 Team Agent Logins & Department Routing",
-      "Priority Technical Support"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For mid-to-large consumer enterprises & fintechs",
-    "monthly_price_usd": 169,
-    "highlighted": true,
-    "features": [
-      "Up to 50,000 Active Monthly Conversations",
-      "In-Chat E-Commerce Product Catalog & Payment Gateways",
-      "Webhook Integration with Shopify, WooCommerce & CRMs",
-      "Automated Green Tick Official Business Account Assistance",
-      "Dedicated WhatsApp Campaign Strategist"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For national delivery networks & utility providers",
-    "monthly_price_usd": 519,
-    "features": [
-      "Unlimited High-Throughput Monthly Conversations",
-      "Dedicated Multi-Tenant Meta WABA Account Cluster",
-      "Sub-Second Transactional Messaging SLA (>100 msgs/sec)",
-      "Custom On-Premises Webhook Routing & CRM Sync",
-      "24/7 Priority Emergency Incident Escalation"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For local stores & direct-to-consumer brands",
+        "monthly_price_usd": 29,
+        "features": [
+          "Up to 1,000 Active Monthly Conversations",
+          "Official Meta WhatsApp Cloud API Setup",
+          "Multi-Agent Shared Team Inbox (3 Agents)",
+          "Pre-Approved Notification & Order Update Templates",
+          "Standard Support"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For high-volume retail & e-commerce brands",
+        "monthly_price_usd": 79,
+        "features": [
+          "Up to 10,000 Active Monthly Conversations",
+          "Interactive Chatbot Flow Builder with Button Triggers",
+          "CSV Bulk Broadcast Campaigns with Tag Segmentation",
+          "10 Team Agent Logins & Department Routing",
+          "Priority Technical Support"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For mid-to-large consumer enterprises & fintechs",
+        "monthly_price_usd": 169,
+        "highlighted": true,
+        "features": [
+          "Up to 50,000 Active Monthly Conversations",
+          "In-Chat E-Commerce Product Catalog & Payment Gateways",
+          "Webhook Integration with Shopify, WooCommerce & CRMs",
+          "Automated Green Tick Official Business Account Assistance",
+          "Dedicated WhatsApp Campaign Strategist"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For national delivery networks & utility providers",
+        "monthly_price_usd": 519,
+        "features": [
+          "Unlimited High-Throughput Monthly Conversations",
+          "Dedicated Multi-Tenant Meta WABA Account Cluster",
+          "Sub-Second Transactional Messaging SLA (>100 msgs/sec)",
+          "Custom On-Premises Webhook Routing & CRM Sync",
+          "24/7 Priority Emergency Incident Escalation"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "Is Super WhatsApp built on the official Meta WhatsApp Cloud API?",
-    "Yes. DEZORYN Super WhatsApp is powered directly by Meta's Official WhatsApp Business Cloud API. Your phone number is registered legitimately, ensuring zero risk of account bans associated with unofficial scraping tools."
-  ],
-  [
-    "Can multiple team agents respond to customer chats from a single WhatsApp number?",
-    "Yes. Super WhatsApp provides a centralized shared team inbox where multiple customer support or sales representatives can manage incoming conversations simultaneously, transfer tickets, and insert internal private notes."
-  ],
-  [
-    "How does the Visual Chatbot Flow Builder work?",
-    "You can build automated interactive conversational trees using drag-and-drop nodes with quick reply buttons, list menus, and dynamic variables, answering customer FAQs, qualifying leads, and routing complex inquiries to human agents."
-  ],
-  [
-    "Can we send promotional broadcasts without risking template rejections?",
-    "Our built-in template manager assists you in drafting marketing, utility, and authentication message templates formatted according to Meta's strict quality guidelines, with automated variable testing before submission."
-  ],
-  [
-    "Does Super WhatsApp integrate with our website or e-commerce store?",
-    "Yes. Through pre-built webhooks and REST APIs, you can trigger automated WhatsApp messages for order confirmations, shipping dispatch tracking numbers, abandoned cart reminders, and payment receipts."
-  ]
-],
+      [
+        "Is Super WhatsApp built on the official Meta WhatsApp Cloud API?",
+        "Yes. DEZORYN Super WhatsApp is powered directly by Meta's Official WhatsApp Business Cloud API. Your phone number is registered legitimately, ensuring zero risk of account bans associated with unofficial scraping tools."
+      ],
+      [
+        "Can multiple team agents respond to customer chats from a single WhatsApp number?",
+        "Yes. Super WhatsApp provides a centralized shared team inbox where multiple customer support or sales representatives can manage incoming conversations simultaneously, transfer tickets, and insert internal private notes."
+      ],
+      [
+        "How does the Visual Chatbot Flow Builder work?",
+        "You can build automated interactive conversational trees using drag-and-drop nodes with quick reply buttons, list menus, and dynamic variables, answering customer FAQs, qualifying leads, and routing complex inquiries to human agents."
+      ],
+      [
+        "Can we send promotional broadcasts without risking template rejections?",
+        "Our built-in template manager assists you in drafting marketing, utility, and authentication message templates formatted according to Meta's strict quality guidelines, with automated variable testing before submission."
+      ],
+      [
+        "Does Super WhatsApp integrate with our website or e-commerce store?",
+        "Yes. Through pre-built webhooks and REST APIs, you can trigger automated WhatsApp messages for order confirmations, shipping dispatch tracking numbers, abandoned cart reminders, and payment receipts."
+      ]
+    ],
     steps: [
-  [
-    "Meta Business Verification",
-    "Registering your official WhatsApp Business Account (WABA) with Meta approval."
-  ],
-  [
-    "Template & Catalog Setup",
-    "Drafting approved message templates and connecting your product inventory."
-  ],
-  [
-    "Chatbot Flow Architecture",
-    "Designing automated FAQ workflows, lead qualification trees, and agent routing."
-  ],
-  [
-    "Broadcast & Live Inbox Launch",
-    "Launching your shared multi-agent inbox and automated notification triggers."
-  ]
-],
+      [
+        "Meta Business Verification",
+        "Registering your official WhatsApp Business Account (WABA) with Meta approval."
+      ],
+      [
+        "Template & Catalog Setup",
+        "Drafting approved message templates and connecting your product inventory."
+      ],
+      [
+        "Chatbot Flow Architecture",
+        "Designing automated FAQ workflows, lead qualification trees, and agent routing."
+      ],
+      [
+        "Broadcast & Live Inbox Launch",
+        "Launching your shared multi-agent inbox and automated notification triggers."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "End-to-End Meta Encryption",
-    "All messages encrypted according to official WhatsApp Cloud API protocols."
-  ],
-  [
-    "KeyRound",
-    "Agent Access Controls",
-    "Supervisors can monitor chats and restrict customer phone number exports."
-  ],
-  [
-    "FileClock",
-    "Delivery & Read Receipts",
-    "Cryptographically logged timestamps for message sent, delivered, read, and replied."
-  ],
-  [
-    "ShieldCheck",
-    "Zero-Ban Architecture",
-    "100% compliant with Meta Business policies to protect your brand reputation."
-  ]
-],
+      [
+        "Lock",
+        "End-to-End Meta Encryption",
+        "All messages encrypted according to official WhatsApp Cloud API protocols."
+      ],
+      [
+        "KeyRound",
+        "Agent Access Controls",
+        "Supervisors can monitor chats and restrict customer phone number exports."
+      ],
+      [
+        "FileClock",
+        "Delivery & Read Receipts",
+        "Cryptographically logged timestamps for message sent, delivered, read, and replied."
+      ],
+      [
+        "ShieldCheck",
+        "Zero-Ban Architecture",
+        "100% compliant with Meta Business policies to protect your brand reputation."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "Official Meta API",
-    "desc": "Zero risk of phone number bans"
-  },
-  {
-    "title": "99.8% Inbox Rate",
-    "desc": "Instant high-throughput delivery"
-  },
-  {
-    "title": "Interactive Bots",
-    "desc": "No-code conversational flows"
-  }
-],
+      {
+        "title": "Official Meta API",
+        "desc": "Zero risk of phone number bans"
+      },
+      {
+        "title": "99.8% Inbox Rate",
+        "desc": "Instant high-throughput delivery"
+      },
+      {
+        "title": "Interactive Bots",
+        "desc": "No-code conversational flows"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Meta Cloud API Gateway",
-    "desc": "High-Throughput Message Queue"
-  },
-  {
-    "title": "Team Inbox Telemetry",
-    "desc": "Live Agent Conversation Routing"
-  }
-],
+      {
+        "title": "Meta Cloud API Gateway",
+        "desc": "High-Throughput Message Queue"
+      },
+      {
+        "title": "Team Inbox Telemetry",
+        "desc": "Live Agent Conversation Routing"
+      }
+    ],
     benefits: [
       "Official WhatsApp Cloud API infrastructure with high message throughput",
       "Automated drag-and-drop conversational chatbot flows for 24/7 lead capture",
@@ -1268,146 +1271,146 @@ export const products = [
     hue: 210,
     tags: ["K-12 ERP", "Admissions", "Fees Collection", "Parent Mobile App"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For foundational primary & elementary schools",
-    "monthly_price_usd": 35,
-    "features": [
-      "Up to 300 Students",
-      "Student Information System & Enrollment Records",
-      "Daily Attendance Registers with SMS Notifications",
-      "Standard Fee Collection Desks & Receipts",
-      "Standard Email Helpdesk"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For established K-12 secondary schools",
-    "monthly_price_usd": 89,
-    "features": [
-      "Up to 1,200 Students",
-      "Academic Term Gradebooks & Report Card Generation",
-      "Parent-Teacher Communication App with Circulars",
-      "Staff Leaves, Timetable Roster & Payroll Computation",
-      "Priority Phone & Chat Support"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For multi-campus schools & educational trusts",
-    "monthly_price_usd": 169,
-    "highlighted": true,
-    "features": [
-      "Up to 3,500 Students across Branches",
-      "School Transport Route Dispatch & GPS Driver Tracking",
-      "Online Homework Submissions & Teacher Review Desks",
-      "Consolidated Branch Financial Reporting & Cashflow",
-      "Dedicated Campus Success Specialist"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For regional school boards & district administrative groups",
-    "monthly_price_usd": 699,
-    "features": [
-      "Unlimited Students across District Campuses",
-      "Custom State Board Compliance Examination Formats",
-      "Centralized Treasury & Fee Discrepancy Auditing",
-      "Dedicated On-Campus Engineer & 24/7 Priority Support",
-      "Custom Private Cloud VPC Deployment"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For foundational primary & elementary schools",
+        "monthly_price_usd": 35,
+        "features": [
+          "Up to 300 Students",
+          "Student Information System & Enrollment Records",
+          "Daily Attendance Registers with SMS Notifications",
+          "Standard Fee Collection Desks & Receipts",
+          "Standard Email Helpdesk"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For established K-12 secondary schools",
+        "monthly_price_usd": 89,
+        "features": [
+          "Up to 1,200 Students",
+          "Academic Term Gradebooks & Report Card Generation",
+          "Parent-Teacher Communication App with Circulars",
+          "Staff Leaves, Timetable Roster & Payroll Computation",
+          "Priority Phone & Chat Support"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For multi-campus schools & educational trusts",
+        "monthly_price_usd": 169,
+        "highlighted": true,
+        "features": [
+          "Up to 3,500 Students across Branches",
+          "School Transport Route Dispatch & GPS Driver Tracking",
+          "Online Homework Submissions & Teacher Review Desks",
+          "Consolidated Branch Financial Reporting & Cashflow",
+          "Dedicated Campus Success Specialist"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For regional school boards & district administrative groups",
+        "monthly_price_usd": 699,
+        "features": [
+          "Unlimited Students across District Campuses",
+          "Custom State Board Compliance Examination Formats",
+          "Centralized Treasury & Fee Discrepancy Auditing",
+          "Dedicated On-Campus Engineer & 24/7 Priority Support",
+          "Custom Private Cloud VPC Deployment"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "How does School Master simplify end-of-term examination grading?",
-    "Teachers enter marks into subject-specific digital grade books. School Master automatically calculates weighted term averages, percentage ranks, and attendance percentages, rendering official board-compliant report cards in seconds."
-  ],
-  [
-    "Can school transport buses and student pickups be tracked?",
-    "Yes. The School Transport module manages buses, driver records, and pickup stops, providing parents with a live GPS tracking view when the bus enters their neighborhood route."
-  ],
-  [
-    "Does School Master support online digital homework submissions?",
-    "Yes. Teachers can attach assignments, worksheets, and deadlines. Students and parents receive notifications, submit photos or PDFs of completed work, and receive teacher grading annotations directly in the app."
-  ],
-  [
-    "How are school circulars and emergency notices broadcast to parents?",
-    "School administrators can draft an announcement and broadcast it instantly via push notification, WhatsApp, and SMS to specific grades, sections, or the entire school body with delivery acknowledgment."
-  ],
-  [
-    "Can school fees be collected at on-campus cash counters and online simultaneously?",
-    "Yes. Cashier desks at the school counter use the quick POS interface to issue instant printed thermal receipts, while online transactions via NetBanking and UPI sync to the student's central ledger automatically."
-  ]
-],
+      [
+        "How does School Master simplify end-of-term examination grading?",
+        "Teachers enter marks into subject-specific digital grade books. School Master automatically calculates weighted term averages, percentage ranks, and attendance percentages, rendering official board-compliant report cards in seconds."
+      ],
+      [
+        "Can school transport buses and student pickups be tracked?",
+        "Yes. The School Transport module manages buses, driver records, and pickup stops, providing parents with a live GPS tracking view when the bus enters their neighborhood route."
+      ],
+      [
+        "Does School Master support online digital homework submissions?",
+        "Yes. Teachers can attach assignments, worksheets, and deadlines. Students and parents receive notifications, submit photos or PDFs of completed work, and receive teacher grading annotations directly in the app."
+      ],
+      [
+        "How are school circulars and emergency notices broadcast to parents?",
+        "School administrators can draft an announcement and broadcast it instantly via push notification, WhatsApp, and SMS to specific grades, sections, or the entire school body with delivery acknowledgment."
+      ],
+      [
+        "Can school fees be collected at on-campus cash counters and online simultaneously?",
+        "Yes. Cashier desks at the school counter use the quick POS interface to issue instant printed thermal receipts, while online transactions via NetBanking and UPI sync to the student's central ledger automatically."
+      ]
+    ],
     steps: [
-  [
-    "Academic Year Setup",
-    "Configuring grades, sections, subject combinations, and fee structures."
-  ],
-  [
-    "Historical Record Upload",
-    "Importing previous student rosters, parent contacts, and transfer certificates."
-  ],
-  [
-    "Faculty & Transport Training",
-    "Staff orientation on attendance registers, grade books, and bus routes."
-  ],
-  [
-    "Parent Welcome Broadcast",
-    "Activating parent mobile portal with digital student identification cards."
-  ]
-],
+      [
+        "Academic Year Setup",
+        "Configuring grades, sections, subject combinations, and fee structures."
+      ],
+      [
+        "Historical Record Upload",
+        "Importing previous student rosters, parent contacts, and transfer certificates."
+      ],
+      [
+        "Faculty & Transport Training",
+        "Staff orientation on attendance registers, grade books, and bus routes."
+      ],
+      [
+        "Parent Welcome Broadcast",
+        "Activating parent mobile portal with digital student identification cards."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "Minor Identity Protection",
-    "Strict cryptographic data vaults safeguarding student PII and academic marks."
-  ],
-  [
-    "KeyRound",
-    "Staff Privilege Matrices",
-    "Teachers only access assigned classes; cashiers only view designated fee heads."
-  ],
-  [
-    "FileClock",
-    "Complete Examination Audits",
-    "Detailed logs of teacher mark entries and grade alterations to prevent tampering."
-  ],
-  [
-    "ShieldCheck",
-    "Academic Continuity SLA",
-    "Continuous cloud backups ensuring academic operations run without disruptions."
-  ]
-],
+      [
+        "Lock",
+        "Minor Identity Protection",
+        "Strict cryptographic data vaults safeguarding student PII and academic marks."
+      ],
+      [
+        "KeyRound",
+        "Staff Privilege Matrices",
+        "Teachers only access assigned classes; cashiers only view designated fee heads."
+      ],
+      [
+        "FileClock",
+        "Complete Examination Audits",
+        "Detailed logs of teacher mark entries and grade alterations to prevent tampering."
+      ],
+      [
+        "ShieldCheck",
+        "Academic Continuity SLA",
+        "Continuous cloud backups ensuring academic operations run without disruptions."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "Board Certified",
-    "desc": "State & National curriculum ready"
-  },
-  {
-    "title": "Transport GPS",
-    "desc": "Live bus route student tracking"
-  },
-  {
-    "title": "Counter & Online POS",
-    "desc": "Unified fee reconciliation"
-  }
-],
+      {
+        "title": "Board Certified",
+        "desc": "State & National curriculum ready"
+      },
+      {
+        "title": "Transport GPS",
+        "desc": "Live bus route student tracking"
+      },
+      {
+        "title": "Counter & Online POS",
+        "desc": "Unified fee reconciliation"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Academic Administration",
-    "desc": "Student Information System"
-  },
-  {
-    "title": "Transport Telemetry",
-    "desc": "Live Bus GPS Route Tracking"
-  }
-],
+      {
+        "title": "Academic Administration",
+        "desc": "Student Information System"
+      },
+      {
+        "title": "Transport Telemetry",
+        "desc": "Live Bus GPS Route Tracking"
+      }
+    ],
     benefits: [
       "Automates daily school administration and reduces paperwork by 90%",
       "Real-time fee collection with automated receipt generation and SMS reminders",
@@ -1439,146 +1442,146 @@ export const products = [
     hue: 190,
     tags: ["Test Series", "Batch Scheduling", "Installment Fees", "Rank Analytics"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For independent tutors & single-center academies",
-    "monthly_price_usd": 29,
-    "features": [
-      "Up to 150 Students & 5 Active Batches",
-      "Batch Timetables & Daily Attendance Registers",
-      "Offline Fee Installments Tracker & Receipts",
-      "SMS Alerts for Class Timing Changes",
-      "Standard Support"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For competitive exam prep institutes (IIT-JEE / NEET / UPSC)",
-    "monthly_price_usd": 79,
-    "features": [
-      "Up to 600 Students & 20 Active Batches",
-      "OMR & Online Mock Test Engine with AIR Rankings",
-      "Lead CRM for Demo Classes & Walk-In Inquiries",
-      "Student Performance Heatmaps & Topic Weak-Area AI",
-      "Priority Academic Support"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For multi-center competitive academies & test networks",
-    "monthly_price_usd": 159,
-    "highlighted": true,
-    "features": [
-      "Up to 2,000 Students across Centers",
-      "Automated WhatsApp Installment Due Alerts & UPI Links",
-      "Test Series Video Solution & Study Material DRM Vault",
-      "Faculty Lecture Hours & Hourly Payout Audit",
-      "Dedicated Coaching Success Manager"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For national coaching franchises & test prep brands",
-    "monthly_price_usd": 299,
-    "features": [
-      "Unlimited Students & Multi-City Center Management",
-      "Custom White-Labeled Student Test Prep Mobile App",
-      "Encrypted Video Lecture Streaming with Screenshot Protection",
-      "Centralized Franchise Royalties & P&L Telemetry",
-      "Custom Private Cloud Deployment & 24/7 SLA"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For independent tutors & single-center academies",
+        "monthly_price_usd": 29,
+        "features": [
+          "Up to 150 Students & 5 Active Batches",
+          "Batch Timetables & Daily Attendance Registers",
+          "Offline Fee Installments Tracker & Receipts",
+          "SMS Alerts for Class Timing Changes",
+          "Standard Support"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For competitive exam prep institutes (IIT-JEE / NEET / UPSC)",
+        "monthly_price_usd": 79,
+        "features": [
+          "Up to 600 Students & 20 Active Batches",
+          "OMR & Online Mock Test Engine with AIR Rankings",
+          "Lead CRM for Demo Classes & Walk-In Inquiries",
+          "Student Performance Heatmaps & Topic Weak-Area AI",
+          "Priority Academic Support"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For multi-center competitive academies & test networks",
+        "monthly_price_usd": 159,
+        "highlighted": true,
+        "features": [
+          "Up to 2,000 Students across Centers",
+          "Automated WhatsApp Installment Due Alerts & UPI Links",
+          "Test Series Video Solution & Study Material DRM Vault",
+          "Faculty Lecture Hours & Hourly Payout Audit",
+          "Dedicated Coaching Success Manager"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For national coaching franchises & test prep brands",
+        "monthly_price_usd": 299,
+        "features": [
+          "Unlimited Students & Multi-City Center Management",
+          "Custom White-Labeled Student Test Prep Mobile App",
+          "Encrypted Video Lecture Streaming with Screenshot Protection",
+          "Centralized Franchise Royalties & P&L Telemetry",
+          "Custom Private Cloud Deployment & 24/7 SLA"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "How does the Mock Test Engine calculate All-India Ranks (AIR)?",
-    "Students complete tests online or submit OMR answer sheets. Coaching Master scores responses with negative marking rules, generates percentile curves, and calculates instant institute and national comparative ranks with detailed topic-by-topic scorecards."
-  ],
-  [
-    "Can we track student fee installment schedules and send automated reminders?",
-    "Yes. You can structure multi-part installment plans tied to specific dates. When an installment is due, Coaching Master automatically sends polite WhatsApp reminders with direct UPI payment links to parents."
-  ],
-  [
-    "How does the Lead CRM help convert walk-in demo class inquiries?",
-    "When prospective students visit for counseling, counselors log their target exam and academic background. The CRM triggers automated follow-up reminders, demo class SMS confirmations, and discount coupon expirations to boost enrollment rates."
-  ],
-  [
-    "Can faculty lecture hours and batch coverage be monitored?",
-    "Yes. The academic planner tracks syllabus completion per batch, teacher attendance, and actual hours delivered against target curricula, facilitating transparent hourly payouts for visiting faculty."
-  ],
-  [
-    "Does Coaching Master provide video lecture and study material distribution?",
-    "Yes. You can upload digital PDFs and recorded video lectures with DRM safeguards like dynamic user watermarking, preventing unauthorized redistribution of your proprietary study notes."
-  ]
-],
+      [
+        "How does the Mock Test Engine calculate All-India Ranks (AIR)?",
+        "Students complete tests online or submit OMR answer sheets. Coaching Master scores responses with negative marking rules, generates percentile curves, and calculates instant institute and national comparative ranks with detailed topic-by-topic scorecards."
+      ],
+      [
+        "Can we track student fee installment schedules and send automated reminders?",
+        "Yes. You can structure multi-part installment plans tied to specific dates. When an installment is due, Coaching Master automatically sends polite WhatsApp reminders with direct UPI payment links to parents."
+      ],
+      [
+        "How does the Lead CRM help convert walk-in demo class inquiries?",
+        "When prospective students visit for counseling, counselors log their target exam and academic background. The CRM triggers automated follow-up reminders, demo class SMS confirmations, and discount coupon expirations to boost enrollment rates."
+      ],
+      [
+        "Can faculty lecture hours and batch coverage be monitored?",
+        "Yes. The academic planner tracks syllabus completion per batch, teacher attendance, and actual hours delivered against target curricula, facilitating transparent hourly payouts for visiting faculty."
+      ],
+      [
+        "Does Coaching Master provide video lecture and study material distribution?",
+        "Yes. You can upload digital PDFs and recorded video lectures with DRM safeguards like dynamic user watermarking, preventing unauthorized redistribution of your proprietary study notes."
+      ]
+    ],
     steps: [
-  [
-    "Batch & Course Architecture",
-    "Configuring test prep courses, batch timings, and faculty allocations."
-  ],
-  [
-    "Student Enrollment & Batches",
-    "Enrolling active students, assigning batch tags, and setting fee installments."
-  ],
-  [
-    "Mock Test Engine Integration",
-    "Uploading question papers, answer keys, and negative marking rubrics."
-  ],
-  [
-    "Student App Activation",
-    "Launching student test prep portal with instant rank cards and study materials."
-  ]
-],
+      [
+        "Batch & Course Architecture",
+        "Configuring test prep courses, batch timings, and faculty allocations."
+      ],
+      [
+        "Student Enrollment & Batches",
+        "Enrolling active students, assigning batch tags, and setting fee installments."
+      ],
+      [
+        "Mock Test Engine Integration",
+        "Uploading question papers, answer keys, and negative marking rubrics."
+      ],
+      [
+        "Student App Activation",
+        "Launching student test prep portal with instant rank cards and study materials."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "Study Material DRM",
-    "Dynamic watermark protection guarding question banks and proprietary notes."
-  ],
-  [
-    "KeyRound",
-    "Faculty & Center Separation",
-    "Branch managers view local center batches; master directors oversee all branches."
-  ],
-  [
-    "FileClock",
-    "Fee Installment Ledger",
-    "Audited records of every rupee received via cash, cheque, or online payment."
-  ],
-  [
-    "ShieldCheck",
-    "Test Session Reliability",
-    "Robust auto-save technology ensuring test submissions are never lost during power outages."
-  ]
-],
+      [
+        "Lock",
+        "Study Material DRM",
+        "Dynamic watermark protection guarding question banks and proprietary notes."
+      ],
+      [
+        "KeyRound",
+        "Faculty & Center Separation",
+        "Branch managers view local center batches; master directors oversee all branches."
+      ],
+      [
+        "FileClock",
+        "Fee Installment Ledger",
+        "Audited records of every rupee received via cash, cheque, or online payment."
+      ],
+      [
+        "ShieldCheck",
+        "Test Session Reliability",
+        "Robust auto-save technology ensuring test submissions are never lost during power outages."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "AIR Rank Engine",
-    "desc": "Instant percentile & topic analysis"
-  },
-  {
-    "title": "Fee Installment Sync",
-    "desc": "Automated WhatsApp dues links"
-  },
-  {
-    "title": "DRM Study Vault",
-    "desc": "Watermarked lecture protection"
-  }
-],
+      {
+        "title": "AIR Rank Engine",
+        "desc": "Instant percentile & topic analysis"
+      },
+      {
+        "title": "Fee Installment Sync",
+        "desc": "Automated WhatsApp dues links"
+      },
+      {
+        "title": "DRM Study Vault",
+        "desc": "Watermarked lecture protection"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Mock Test Engine",
-    "desc": "Instant Percentile & AIR Scoring"
-  },
-  {
-    "title": "Batch Performance AI",
-    "desc": "Topic Weakness Detection Matrix"
-  }
-],
+      {
+        "title": "Mock Test Engine",
+        "desc": "Instant Percentile & AIR Scoring"
+      },
+      {
+        "title": "Batch Performance AI",
+        "desc": "Topic Weakness Detection Matrix"
+      }
+    ],
     benefits: [
       "Optimized batch capacity management across multiple study centers",
       "Detailed mock test rank analysis and student strengths/weakness reports",
@@ -1610,146 +1613,146 @@ export const products = [
     hue: 220,
     tags: ["University ERP", "Credit System", "Hostel & Library", "Accreditation"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For standalone degree colleges & polytechnic institutes",
-    "monthly_price_usd": 69,
-    "features": [
-      "Up to 500 Enrolled Undergrads & 3 Departments",
-      "Departmental Student Directory & Course Credits",
-      "Semester Tuition Fee Billing & Scholarship Concessions",
-      "Faculty Subject Allocation & Lecture Rosters",
-      "Standard Campus Helpdesk"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For multi-disciplinary universities & engineering campuses",
-    "monthly_price_usd": 159,
-    "features": [
-      "Up to 2,500 Students & 8 Faculties",
-      "Semester Examination Hall Tickets & CGPA Transcripts",
-      "Hostel Bed Allocation & Mess Billing Integration",
-      "Library RFID Barcode Issue / Return Automation",
-      "Priority Technical Support"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For large university institutions & medical/technical colleges",
-    "monthly_price_usd": 299,
-    "highlighted": true,
-    "features": [
-      "Up to 8,000 Students & Multi-Faculty Campuses",
-      "Campus Placement & Corporate Recruitment Drives Portal",
-      "Research Grant & Faculty Paper Publication Tracking",
-      "Government Accreditation (NAAC/NIRF) Audit Export Engine",
-      "Dedicated University Systems Consultant"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For state/central universities & multi-campus higher education networks",
-    "monthly_price_usd": 359,
-    "features": [
-      "Unlimited Campuses & Affiliated Colleges Network",
-      "Autonomous University Curriculum & CBCS Grading Engine",
-      "Cryptographic Degree Verification QR Portal for Employers",
-      "Dedicated On-Premise University Data Center Deployment",
-      "24/7 Enterprise Tier-1 University SLA"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For standalone degree colleges & polytechnic institutes",
+        "monthly_price_usd": 69,
+        "features": [
+          "Up to 500 Enrolled Undergrads & 3 Departments",
+          "Departmental Student Directory & Course Credits",
+          "Semester Tuition Fee Billing & Scholarship Concessions",
+          "Faculty Subject Allocation & Lecture Rosters",
+          "Standard Campus Helpdesk"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For multi-disciplinary universities & engineering campuses",
+        "monthly_price_usd": 159,
+        "features": [
+          "Up to 2,500 Students & 8 Faculties",
+          "Semester Examination Hall Tickets & CGPA Transcripts",
+          "Hostel Bed Allocation & Mess Billing Integration",
+          "Library RFID Barcode Issue / Return Automation",
+          "Priority Technical Support"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For large university institutions & medical/technical colleges",
+        "monthly_price_usd": 299,
+        "highlighted": true,
+        "features": [
+          "Up to 8,000 Students & Multi-Faculty Campuses",
+          "Campus Placement & Corporate Recruitment Drives Portal",
+          "Research Grant & Faculty Paper Publication Tracking",
+          "Government Accreditation (NAAC/NIRF) Audit Export Engine",
+          "Dedicated University Systems Consultant"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For state/central universities & multi-campus higher education networks",
+        "monthly_price_usd": 359,
+        "features": [
+          "Unlimited Campuses & Affiliated Colleges Network",
+          "Autonomous University Curriculum & CBCS Grading Engine",
+          "Cryptographic Degree Verification QR Portal for Employers",
+          "Dedicated On-Premise University Data Center Deployment",
+          "24/7 Enterprise Tier-1 University SLA"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "Does College Master support the Choice Based Credit System (CBCS)?",
-    "Yes. College Master fully adheres to CBCS guidelines, allowing students to select core, elective, and inter-departmental courses online, while automatically verifying prerequisites and semester credit requirements."
-  ],
-  [
-    "How are semester examination hall tickets and CGPA transcripts managed?",
-    "The examination module verifies student attendance eligibility and fee clearance prior to generating digital hall tickets with QR verification codes. Post-evaluation, it compiles SGPA and cumulative CGPA transcripts formatted to official university guidelines."
-  ],
-  [
-    "Can College Master manage hostel room allocations and mess dues?",
-    "Yes. The residential campus module manages hostel room inventory across blocks, tracking student room allotments, room inventory, warden complaints, and monthly mess fee reconciliations."
-  ],
-  [
-    "How does the Campus Placement module assist final-year recruitments?",
-    "Corporate recruiters receive guest portals to post job descriptions, review eligible student profiles filtered by CGPA criteria, schedule interview slots, and dispatch digital offer letters directly through the platform."
-  ],
-  [
-    "Does the system generate compliance reports for NAAC and NIRF audits?",
-    "Yes. College Master aggregates student diversity ratios, faculty-to-student ratios, research publications, library asset statistics, and placement percentages into structured compliance tables for NAAC and NIRF accreditations."
-  ]
-],
+      [
+        "Does College Master support the Choice Based Credit System (CBCS)?",
+        "Yes. College Master fully adheres to CBCS guidelines, allowing students to select core, elective, and inter-departmental courses online, while automatically verifying prerequisites and semester credit requirements."
+      ],
+      [
+        "How are semester examination hall tickets and CGPA transcripts managed?",
+        "The examination module verifies student attendance eligibility and fee clearance prior to generating digital hall tickets with QR verification codes. Post-evaluation, it compiles SGPA and cumulative CGPA transcripts formatted to official university guidelines."
+      ],
+      [
+        "Can College Master manage hostel room allocations and mess dues?",
+        "Yes. The residential campus module manages hostel room inventory across blocks, tracking student room allotments, room inventory, warden complaints, and monthly mess fee reconciliations."
+      ],
+      [
+        "How does the Campus Placement module assist final-year recruitments?",
+        "Corporate recruiters receive guest portals to post job descriptions, review eligible student profiles filtered by CGPA criteria, schedule interview slots, and dispatch digital offer letters directly through the platform."
+      ],
+      [
+        "Does the system generate compliance reports for NAAC and NIRF audits?",
+        "Yes. College Master aggregates student diversity ratios, faculty-to-student ratios, research publications, library asset statistics, and placement percentages into structured compliance tables for NAAC and NIRF accreditations."
+      ]
+    ],
     steps: [
-  [
-    "University Schema Modeling",
-    "Configuring academic faculties, departments, degree curricula, and credit rules."
-  ],
-  [
-    "Semester Student Enrollment",
-    "Importing historical student academic records, credit transfers, and faculty profiles."
-  ],
-  [
-    "Departmental Staff Onboarding",
-    "Training heads of departments, exam controllers, hostel wardens, and librarians."
-  ],
-  [
-    "Student Campus Portal Launch",
-    "Deploying the comprehensive university web portal for course registration and fees."
-  ]
-],
+      [
+        "University Schema Modeling",
+        "Configuring academic faculties, departments, degree curricula, and credit rules."
+      ],
+      [
+        "Semester Student Enrollment",
+        "Importing historical student academic records, credit transfers, and faculty profiles."
+      ],
+      [
+        "Departmental Staff Onboarding",
+        "Training heads of departments, exam controllers, hostel wardens, and librarians."
+      ],
+      [
+        "Student Campus Portal Launch",
+        "Deploying the comprehensive university web portal for course registration and fees."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "Degree Cryptographic Verification",
-    "SHA-256 hash-sealed transcripts preventing certificate forgery by third parties."
-  ],
-  [
-    "KeyRound",
-    "Faculty Role Boundaries",
-    "Dean-level controls over grade moderations and academic curriculum updates."
-  ],
-  [
-    "FileClock",
-    "Exam Controller Audit Logs",
-    "Strict logging for all internal assessment and end-term grade alterations."
-  ],
-  [
-    "ShieldCheck",
-    "University-Grade Cloud",
-    "Enterprise high-availability architecture tested under heavy semester result traffic."
-  ]
-],
+      [
+        "Lock",
+        "Degree Cryptographic Verification",
+        "SHA-256 hash-sealed transcripts preventing certificate forgery by third parties."
+      ],
+      [
+        "KeyRound",
+        "Faculty Role Boundaries",
+        "Dean-level controls over grade moderations and academic curriculum updates."
+      ],
+      [
+        "FileClock",
+        "Exam Controller Audit Logs",
+        "Strict logging for all internal assessment and end-term grade alterations."
+      ],
+      [
+        "ShieldCheck",
+        "University-Grade Cloud",
+        "Enterprise high-availability architecture tested under heavy semester result traffic."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "CBCS Aligned",
-    "desc": "Choice Based Credit System ready"
-  },
-  {
-    "title": "NAAC / NIRF Ready",
-    "desc": "Automated accreditation metrics"
-  },
-  {
-    "title": "QR Degree Vault",
-    "desc": "Tamper-proof student credentials"
-  }
-],
+      {
+        "title": "CBCS Aligned",
+        "desc": "Choice Based Credit System ready"
+      },
+      {
+        "title": "NAAC / NIRF Ready",
+        "desc": "Automated accreditation metrics"
+      },
+      {
+        "title": "QR Degree Vault",
+        "desc": "Tamper-proof student credentials"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "University Academic Cloud",
-    "desc": "CBCS Course Credit Engine"
-  },
-  {
-    "title": "Campus Placement Matrix",
-    "desc": "Live Student Recruitment Pipeline"
-  }
-],
+      {
+        "title": "University Academic Cloud",
+        "desc": "CBCS Course Credit Engine"
+      },
+      {
+        "title": "Campus Placement Matrix",
+        "desc": "Live Student Recruitment Pipeline"
+      }
+    ],
     benefits: [
       "Unified digital backbone for colleges, universities, and multi-campus institutes",
       "Choice-based credit system (CBCS) and automated course registration",
@@ -1781,146 +1784,146 @@ export const products = [
     hue: 230,
     tags: ["Contract AI", "E-Signatures", "Compliance Vault", "Template Automation"],
     plans: [
-  {
-    "id": "starter",
-    "name": "Starter",
-    "for": "For freelance professionals & boutique agencies",
-    "monthly_price_usd": 39,
-    "features": [
-      "Up to 100 Executed Contracts / Month",
-      "50+ Standard Commercial Legal Templates",
-      "Audit-Logged E-Signatures (ESIGN & eIDAS Compliant)",
-      "Encrypted PDF Document Vault & Expiry Reminders",
-      "Standard Support Desk"
-    ]
-  },
-  {
-    "id": "growth",
-    "name": "Growth",
-    "for": "For mid-market enterprises & growing corporate teams",
-    "monthly_price_usd": 99,
-    "features": [
-      "Up to 500 Executed Contracts / Month",
-      "Dynamic Clause Library & Version Negotiation Portal",
-      "AI Contract Risk Review & Non-Standard Clause Flags",
-      "Sequential Multi-Party Sign-off Workflows",
-      "Priority Legal Tech Support"
-    ]
-  },
-  {
-    "id": "business",
-    "name": "Business",
-    "for": "For corporate legal departments & procurement teams",
-    "monthly_price_usd": 199,
-    "highlighted": true,
-    "features": [
-      "Up to 2,500 Executed Contracts / Month",
-      "Tamper-Evident SHA-256 Audit Trail Certificates",
-      "Salesforce, HubSpot & Zapier Bidirectional Contract Sync",
-      "Conditional Approval Hierarchies by Dollar Value",
-      "Dedicated Legal Operations Specialist"
-    ]
-  },
-  {
-    "id": "enterprise",
-    "name": "Enterprise",
-    "for": "For global enterprises, law firms & financial institutions",
-    "monthly_price_usd": 479,
-    "features": [
-      "Unlimited Monthly Contract Execution Volume",
-      "Private On-Premises Hardware Security Module (HSM) Key Storage",
-      "Custom Master Services Agreement (MSA) Enterprise Terms",
-      "Dedicated Solutions Architect & Private Cloud VPC",
-      "Strict 99.99% Legal Vault Uptime & Zero Data Retention"
-    ]
-  }
-].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
+      {
+        "id": "starter",
+        "name": "Starter",
+        "for": "For freelance professionals & boutique agencies",
+        "monthly_price_usd": 39,
+        "features": [
+          "Up to 100 Executed Contracts / Month",
+          "50+ Standard Commercial Legal Templates",
+          "Audit-Logged E-Signatures (ESIGN & eIDAS Compliant)",
+          "Encrypted PDF Document Vault & Expiry Reminders",
+          "Standard Support Desk"
+        ]
+      },
+      {
+        "id": "growth",
+        "name": "Growth",
+        "for": "For mid-market enterprises & growing corporate teams",
+        "monthly_price_usd": 99,
+        "features": [
+          "Up to 500 Executed Contracts / Month",
+          "Dynamic Clause Library & Version Negotiation Portal",
+          "AI Contract Risk Review & Non-Standard Clause Flags",
+          "Sequential Multi-Party Sign-off Workflows",
+          "Priority Legal Tech Support"
+        ]
+      },
+      {
+        "id": "business",
+        "name": "Business",
+        "for": "For corporate legal departments & procurement teams",
+        "monthly_price_usd": 199,
+        "highlighted": true,
+        "features": [
+          "Up to 2,500 Executed Contracts / Month",
+          "Tamper-Evident SHA-256 Audit Trail Certificates",
+          "Salesforce, HubSpot & Zapier Bidirectional Contract Sync",
+          "Conditional Approval Hierarchies by Dollar Value",
+          "Dedicated Legal Operations Specialist"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "for": "For global enterprises, law firms & financial institutions",
+        "monthly_price_usd": 479,
+        "features": [
+          "Unlimited Monthly Contract Execution Volume",
+          "Private On-Premises Hardware Security Module (HSM) Key Storage",
+          "Custom Master Services Agreement (MSA) Enterprise Terms",
+          "Dedicated Solutions Architect & Private Cloud VPC",
+          "Strict 99.99% Legal Vault Uptime & Zero Data Retention"
+        ]
+      }
+    ].map(p => ({ ...p, annual_price_usd: p.monthly_price_usd ? Math.round(p.monthly_price_usd * (1 - ANNUAL_DISCOUNT)) : null })),
     faq: [
-  [
-    "Are e-signatures generated in DEZORYN Legal Docs legally binding in court?",
-    "Yes. Signatures generated through DEZORYN Legal Docs comply with the US ESIGN Act, UETA, EU eIDAS regulations, and the Indian Information Technology Act 2000. Each completed agreement includes a cryptographic certificate with signer IP addresses, emails, and timestamped audit trails."
-  ],
-  [
-    "How does the AI Contract Review engine identify risky clauses?",
-    "Our legal NLP model reads uploaded PDF or Word contracts, comparing clauses against your organization's pre-approved standard terms. It flags non-standard liabilities, missing indemnification caps, and ambiguous termination periods with color-coded risk scores."
-  ],
-  [
-    "Can multiple parties sign a contract in a specific sequential order?",
-    "Yes. You can establish sequential signing orders—for example, requiring internal CFO approval before the contract is automatically routed to the external vendor—or broadcast for parallel signing when sequence is unimportant."
-  ],
-  [
-    "How are executed contracts archived and searched?",
-    "All completed agreements are indexed with OCR in an encrypted repository. You can execute full-text semantic searches across thousands of past agreements and filter by expiration dates, renewal terms, or governing jurisdictions."
-  ],
-  [
-    "Does the platform support custom company branding on signing links?",
-    "Yes. Business and Enterprise plans allow custom company logos, brand color palettes, and custom email domains on all outbound e-signature invitations dispatched to your clients and partners."
-  ]
-],
+      [
+        "Are e-signatures generated in DEZORYN Legal Docs legally binding in court?",
+        "Yes. Signatures generated through DEZORYN Legal Docs comply with the US ESIGN Act, UETA, EU eIDAS regulations, and the Indian Information Technology Act 2000. Each completed agreement includes a cryptographic certificate with signer IP addresses, emails, and timestamped audit trails."
+      ],
+      [
+        "How does the AI Contract Review engine identify risky clauses?",
+        "Our legal NLP model reads uploaded PDF or Word contracts, comparing clauses against your organization's pre-approved standard terms. It flags non-standard liabilities, missing indemnification caps, and ambiguous termination periods with color-coded risk scores."
+      ],
+      [
+        "Can multiple parties sign a contract in a specific sequential order?",
+        "Yes. You can establish sequential signing orders—for example, requiring internal CFO approval before the contract is automatically routed to the external vendor—or broadcast for parallel signing when sequence is unimportant."
+      ],
+      [
+        "How are executed contracts archived and searched?",
+        "All completed agreements are indexed with OCR in an encrypted repository. You can execute full-text semantic searches across thousands of past agreements and filter by expiration dates, renewal terms, or governing jurisdictions."
+      ],
+      [
+        "Does the platform support custom company branding on signing links?",
+        "Yes. Business and Enterprise plans allow custom company logos, brand color palettes, and custom email domains on all outbound e-signature invitations dispatched to your clients and partners."
+      ]
+    ],
     steps: [
-  [
-    "Clause Library Setup",
-    "Uploading your organization's approved Master Services Agreements, NDAs, and clauses."
-  ],
-  [
-    "Signer Hierarchy Configuration",
-    "Setting up department signing authority limits and sequential approval workflows."
-  ],
-  [
-    "CRM & ERP Integration",
-    "Connecting Salesforce, HubSpot, or billing software for automated contract generation."
-  ],
-  [
-    "Legal Vault Activation",
-    "Activating tamper-evident document storage with automated renewal date alerts."
-  ]
-],
+      [
+        "Clause Library Setup",
+        "Uploading your organization's approved Master Services Agreements, NDAs, and clauses."
+      ],
+      [
+        "Signer Hierarchy Configuration",
+        "Setting up department signing authority limits and sequential approval workflows."
+      ],
+      [
+        "CRM & ERP Integration",
+        "Connecting Salesforce, HubSpot, or billing software for automated contract generation."
+      ],
+      [
+        "Legal Vault Activation",
+        "Activating tamper-evident document storage with automated renewal date alerts."
+      ]
+    ],
     security: [
-  [
-    "Lock",
-    "Cryptographic Signatures",
-    "SHA-256 hash sealing ensuring any alteration invalidates the digital document."
-  ],
-  [
-    "KeyRound",
-    "Signer Identity Verification",
-    "Multi-factor SMS/Email OTP verification required before signature execution."
-  ],
-  [
-    "FileClock",
-    "Tamper-Proof Audit Trail",
-    "Court-admissible certificate detailing IP addresses, timestamps, and identity proofs."
-  ],
-  [
-    "ShieldCheck",
-    "Zero Data Retention Option",
-    "Enterprise tier allows purging contract contents post-execution for strict privacy."
-  ]
-],
+      [
+        "Lock",
+        "Cryptographic Signatures",
+        "SHA-256 hash sealing ensuring any alteration invalidates the digital document."
+      ],
+      [
+        "KeyRound",
+        "Signer Identity Verification",
+        "Multi-factor SMS/Email OTP verification required before signature execution."
+      ],
+      [
+        "FileClock",
+        "Tamper-Proof Audit Trail",
+        "Court-admissible certificate detailing IP addresses, timestamps, and identity proofs."
+      ],
+      [
+        "ShieldCheck",
+        "Zero Data Retention Option",
+        "Enterprise tier allows purging contract contents post-execution for strict privacy."
+      ]
+    ],
     trustMetrics: [
-  {
-    "title": "ESIGN & eIDAS",
-    "desc": "Legally enforceable digital signing"
-  },
-  {
-    "title": "AI Clause Risk",
-    "desc": "Instant liability & indemnity scan"
-  },
-  {
-    "title": "SHA-256 Vault",
-    "desc": "Tamper-evident audit certificates"
-  }
-],
+      {
+        "title": "ESIGN & eIDAS",
+        "desc": "Legally enforceable digital signing"
+      },
+      {
+        "title": "AI Clause Risk",
+        "desc": "Instant liability & indemnity scan"
+      },
+      {
+        "title": "SHA-256 Vault",
+        "desc": "Tamper-evident audit certificates"
+      }
+    ],
     telemetryBadges: [
-  {
-    "title": "Contract Intelligence",
-    "desc": "AI Clause Risk & Redline Engine"
-  },
-  {
-    "title": "Cryptographic Vault",
-    "desc": "ESIGN & eIDAS Sealed Audit Trail"
-  }
-],
+      {
+        "title": "Contract Intelligence",
+        "desc": "AI Clause Risk & Redline Engine"
+      },
+      {
+        "title": "Cryptographic Vault",
+        "desc": "ESIGN & eIDAS Sealed Audit Trail"
+      }
+    ],
     benefits: [
       "Draft and finalize legally binding contracts in minutes instead of days",
       "AI clause analysis that flags hidden liabilities and unfavorable terms",

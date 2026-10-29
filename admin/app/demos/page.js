@@ -187,6 +187,31 @@ export default function AdminDemosPage() {
 
   useEffect(() => {
     loadDemos();
+
+    // 1. Live auto-polling every 5 seconds so new demo bookings show up automatically
+    const pollInterval = setInterval(() => {
+      loadDemos();
+    }, 5000);
+
+    // 2. Window focus listener: immediately refresh when switching from website tab to admin tab
+    const onFocus = () => {
+      loadDemos();
+    };
+    window.addEventListener("focus", onFocus);
+
+    // 3. Cross-tab storage listener: immediately refresh when website submits to localStorage in another tab
+    const onStorage = (e) => {
+      if (e.key === "dezoryn_local_demos" || e.key === "dezoryn_local_leads") {
+        loadDemos();
+      }
+    };
+    window.addEventListener("storage", onStorage);
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   const filtered = demos.filter((d) => {
@@ -358,22 +383,28 @@ export default function AdminDemosPage() {
           { label: "Demo Bookings" },
         ]}
         actions={
-          <button
-            type="button"
-            onClick={() => {
-              loadDemos();
-              setToast({
-                type: "info",
-                message: "Refreshed",
-                description: "Loaded latest demo booking requests.",
-              });
-            }}
-            disabled={loading}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs transition cursor-pointer shadow-2xs"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-blue-600" : ""}`} />
-            <span>Refresh</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              Live Sync Active
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                loadDemos();
+                setToast({
+                  type: "info",
+                  message: "Refreshed",
+                  description: "Loaded latest demo booking requests.",
+                });
+              }}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs transition cursor-pointer shadow-2xs"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-blue-600" : ""}`} />
+              <span>Refresh</span>
+            </button>
+          </div>
         }
       />
 

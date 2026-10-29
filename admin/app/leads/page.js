@@ -154,6 +154,31 @@ export default function AdminLeadsPage() {
 
   useEffect(() => {
     refreshLeads();
+
+    // 1. Live auto-polling every 5 seconds so new inquiries show up immediately without manual refresh
+    const pollInterval = setInterval(() => {
+      refreshLeads();
+    }, 5000);
+
+    // 2. Window focus listener: immediately refresh when switching from website tab to admin tab
+    const onFocus = () => {
+      refreshLeads();
+    };
+    window.addEventListener("focus", onFocus);
+
+    // 3. Cross-tab storage listener: immediately refresh when website submits to localStorage in another tab
+    const onStorage = (e) => {
+      if (e.key === "dezoryn_local_leads" || e.key === "dezoryn_local_demos") {
+        refreshLeads();
+      }
+    };
+    window.addEventListener("storage", onStorage);
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   const filtered = leads.filter((l) => {
@@ -356,6 +381,10 @@ export default function AdminLeadsPage() {
         ]}
         actions={
           <div className="flex items-center gap-2">
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              Live Sync Active
+            </span>
             <button
               type="button"
               onClick={() => {
