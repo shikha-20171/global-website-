@@ -54,7 +54,7 @@ const fallbackCaseStudies = (websiteProjects || []).map((p) => {
 });
 
 export default function AdminCaseStudiesPage() {
-  const [caseStudiesList, setCaseStudiesList] = useState([]);
+  const [caseStudiesList, setCaseStudiesList] = useState(fallbackCaseStudies);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");

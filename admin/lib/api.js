@@ -2,28 +2,51 @@ import api, { adminApiClient, getAdminApiBase } from "./axios";
 
 export { api, adminApiClient, getAdminApiBase };
 
-// Safe unwrap helper
-async function get(url, params = {}) {
+// In-memory SWR (stale-while-revalidate) cache for instant page navigations
+const apiCache = new Map();
+const CACHE_TTL_MS = 25000; // 25 seconds TTL
+
+export function clearAdminApiCache() {
+  apiCache.clear();
+}
+
+// Safe unwrap helper with client-side caching
+async function get(url, params = {}, options = {}) {
+  const cacheKey = `${url}?${JSON.stringify(params)}`;
+  const now = Date.now();
+  const cached = apiCache.get(cacheKey);
+
+  // Return cached result if valid and not explicitly bypassed
+  if (!options?.bypassCache && cached && now - cached.timestamp < CACHE_TTL_MS) {
+    return cached.data;
+  }
+
   const res = await adminApiClient.get(url, { params });
-  return res.data?.data !== undefined ? res.data.data : res.data;
+  const data = res.data?.data !== undefined ? res.data.data : res.data;
+  apiCache.set(cacheKey, { timestamp: now, data });
+  return data;
 }
 
 async function post(url, payload = {}) {
+  apiCache.clear(); // Invalidate cache on mutations
   const res = await adminApiClient.post(url, payload);
   return res.data?.data !== undefined ? res.data.data : res.data;
 }
 
 async function put(url, payload = {}) {
+  apiCache.clear();
   const res = await adminApiClient.put(url, payload);
   return res.data?.data !== undefined ? res.data.data : res.data;
 }
 
 async function patch(url, payload = {}) {
+  apiCache.clear();
   const res = await adminApiClient.patch(url, payload);
   return res.data?.data !== undefined ? res.data.data : res.data;
 }
 
 async function del(url) {
+  apiCache.clear();
   const res = await adminApiClient.delete(url);
   return res.data?.data !== undefined ? res.data.data : res.data;
 }
@@ -123,6 +146,11 @@ export async function getAdminCurrentUser() {
     const token = sessionStorage.getItem("dezoryn_admin_token");
     const storedUser = sessionStorage.getItem("dezoryn_admin_user");
 
+    // Fast fail: if no token exists, immediately fail without waiting for network timeout
+    if (!token) {
+      throw new Error("No active admin session");
+    }
+
     if (token === "static_superadmin_session_token" && storedUser) {
       try {
         return JSON.parse(storedUser);
@@ -130,7 +158,11 @@ export async function getAdminCurrentUser() {
     }
 
     try {
-      return await get("/api/v1/admin/auth/me");
+      const data = await get("/api/v1/admin/auth/me");
+      if (data && typeof window !== "undefined") {
+        sessionStorage.setItem("dezoryn_admin_user", JSON.stringify(data));
+      }
+      return data;
     } catch (err) {
       if (storedUser) {
         try {

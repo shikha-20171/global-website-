@@ -103,7 +103,7 @@ const defaultLeads = [
 ];
 
 export default function AdminLeadsPage() {
-  const [leads, setLeads] = useState([]);
+  const [leads, setLeads] = useState(defaultLeads);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [toast, setToast] = useState(null);
@@ -155,10 +155,10 @@ export default function AdminLeadsPage() {
   useEffect(() => {
     refreshLeads();
 
-    // 1. Live auto-polling every 5 seconds so new inquiries show up immediately without manual refresh
+    // 1. Live auto-polling every 25 seconds so new inquiries show up smoothly
     const pollInterval = setInterval(() => {
       refreshLeads();
-    }, 5000);
+    }, 25000);
 
     // 2. Window focus listener: immediately refresh when switching from website tab to admin tab
     const onFocus = () => {

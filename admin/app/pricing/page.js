@@ -58,8 +58,8 @@ const fallbackPlans = websiteProducts.flatMap((p) => {
 });
 
 export default function AdminPricingPlansPage() {
-  const [plans, setPlans] = useState([]);
-  const [availableProducts, setAvailableProducts] = useState([]);
+  const [plans, setPlans] = useState(fallbackPlans);
+  const [availableProducts, setAvailableProducts] = useState(websiteProducts);
   const [loading, setLoading] = useState(false);
   const [billingCycle, setBillingCycle] = useState("monthly"); // 'monthly' | 'annual'
   const [currency, setCurrency] = useState("USD");

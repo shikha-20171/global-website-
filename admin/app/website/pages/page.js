@@ -31,7 +31,7 @@ import {
 } from "@/lib/api";
 
 export default function AdminWebsitePagesPage() {
-  const [pagesList, setPagesList] = useState([]);
+  const [pagesList, setPagesList] = useState(fallbackWebsitePages);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");

@@ -97,7 +97,7 @@ const defaultDemos = [
 ];
 
 export default function AdminDemosPage() {
-  const [demos, setDemos] = useState([]);
+  const [demos, setDemos] = useState(defaultDemos);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -108,7 +108,7 @@ export default function AdminDemosPage() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [cancelTarget, setCancelTarget] = useState(null);
 
-  const loadDemos = async () => {
+  const loadDemos = async (isBackground = false) => {
     let localDemos = [];
     if (typeof window !== "undefined") {
       try {
@@ -146,7 +146,9 @@ export default function AdminDemosPage() {
     }
 
     try {
-      setLoading(true);
+      if (!isBackground && demos.length === 0) {
+        setLoading(true);
+      }
       const res = await getAdminDemos();
       const list = res?.demos || (Array.isArray(res) ? res : (res?.data || []));
       const mapped = list.map((d) => ({
@@ -181,28 +183,28 @@ export default function AdminDemosPage() {
       const combined = [...localDemos, ...defaultDemos];
       setDemos(combined);
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadDemos();
+    loadDemos(false);
 
-    // 1. Live auto-polling every 5 seconds so new demo bookings show up automatically
+    // 1. Live auto-polling every 25 seconds without blocking UI spinners
     const pollInterval = setInterval(() => {
-      loadDemos();
-    }, 5000);
+      loadDemos(true);
+    }, 25000);
 
     // 2. Window focus listener: immediately refresh when switching from website tab to admin tab
     const onFocus = () => {
-      loadDemos();
+      loadDemos(true);
     };
     window.addEventListener("focus", onFocus);
 
     // 3. Cross-tab storage listener: immediately refresh when website submits to localStorage in another tab
     const onStorage = (e) => {
       if (e.key === "dezoryn_local_demos" || e.key === "dezoryn_local_leads") {
-        loadDemos();
+        loadDemos(true);
       }
     };
     window.addEventListener("storage", onStorage);

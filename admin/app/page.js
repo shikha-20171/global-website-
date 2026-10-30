@@ -101,7 +101,7 @@ export default function AdminDashboardPage() {
   const [metrics, setMetrics] = useState(null);
   const [leads, setLeads] = useState(fallbackDashboardLeads);
   const [demos, setDemos] = useState(fallbackDashboardDemos);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -157,10 +157,10 @@ export default function AdminDashboardPage() {
 
     loadData();
 
-    // 1. Live auto-polling every 6 seconds for real-time dashboard updates
+    // 1. Live auto-polling every 25 seconds for smooth background updates
     const pollInterval = setInterval(() => {
       if (mounted) loadData();
-    }, 6000);
+    }, 25000);
 
     // 2. Window focus listener: immediately refresh when switching from website tab to admin tab
     const onFocus = () => {

@@ -52,7 +52,7 @@ const fallbackIndustries = websiteIndustries.map((ind, idx) => ({
 }));
 
 export default function AdminIndustriesPage() {
-  const [industryList, setIndustryList] = useState([]);
+  const [industryList, setIndustryList] = useState(fallbackIndustries);
 
   const refreshIndustries = () => {
     getAdminIndustries()

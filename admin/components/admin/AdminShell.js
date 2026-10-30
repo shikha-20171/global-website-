@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminHeader";
@@ -17,36 +17,70 @@ export default function AdminShell({ children }) {
     pathname === "/login" ||
     pathname === "/forgot-password" ||
     pathname === "/reset-password";
-  const [authChecking, setAuthChecking] = useState(!isAuthPage);
-  const [currentUser, setCurrentUser] = useState(null);
+
+  // Fast synchronous session check from sessionStorage (0ms initial paint)
+  const [currentUser, setCurrentUser] = useState(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = sessionStorage.getItem("dezoryn_admin_user");
+        return stored ? JSON.parse(stored) : null;
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const [authChecking, setAuthChecking] = useState(() => {
+    if (isAuthPage) return false;
+    if (typeof window !== "undefined") {
+      const token = sessionStorage.getItem("dezoryn_admin_token");
+      const stored = sessionStorage.getItem("dezoryn_admin_user");
+      // If we already have stored credentials, render immediately!
+      if (token && stored) return false;
+    }
+    return true;
+  });
+
+  const verifiedRef = useRef(false);
 
   useEffect(() => {
     if (isAuthPage) return;
-    let mounted = true;
-    getAdminCurrentUser()
-      .then((user) => {
-        if (mounted) {
-          setCurrentUser(user);
-          setAuthChecking(false);
-        }
-      })
-      .catch(() => {
-        if (mounted) {
+
+    if (typeof window !== "undefined") {
+      const token = sessionStorage.getItem("dezoryn_admin_token");
+      const stored = sessionStorage.getItem("dezoryn_admin_user");
+
+      // No token at all: instantly redirect to /login without any network wait!
+      if (!token) {
+        setAuthChecking(false);
+        router.replace("/login");
+        return;
+      }
+
+      if (stored && !currentUser) {
+        try {
+          setCurrentUser(JSON.parse(stored));
+        } catch (_) {}
+      }
+      setAuthChecking(false);
+    }
+
+    // Verify token with backend in background once per session (do NOT block screen or repeat on every route click)
+    if (!verifiedRef.current) {
+      verifiedRef.current = true;
+      getAdminCurrentUser()
+        .then((user) => {
+          if (user) setCurrentUser(user);
+        })
+        .catch(() => {
           const stored = typeof window !== "undefined" && sessionStorage.getItem("dezoryn_admin_user");
-          if (stored) {
-            try {
-              setCurrentUser(JSON.parse(stored));
-              setAuthChecking(false);
-              return;
-            } catch (e) {}
+          if (!stored) {
+            router.replace("/login");
           }
-          router.push("/login");
-        }
-      });
-    return () => {
-      mounted = false;
-    };
-  }, [isAuthPage, pathname, router]);
+        });
+    }
+  }, [isAuthPage, router]);
 
   if (isAuthPage) {
     return (

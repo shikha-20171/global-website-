@@ -52,7 +52,7 @@ export function getAdminApiBase() {
 // Centralized Axios instance for DEZORYN TECHNOLOGY Admin Console
 export const api = axios.create({
   baseURL: getAdminApiBase() || undefined,
-  timeout: 55000,
+  timeout: 15000, // 15s responsive timeout (prevents long hanging on cold starts or slow networks)
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

@@ -80,15 +80,15 @@ const defaultFooterCols = [
 ];
 
 export default function AdminNavigationPage() {
-  const [headerLinks, setHeaderLinks] = useState([]);
-  const [footerCols, setFooterCols] = useState([]);
+  const [headerLinks, setHeaderLinks] = useState(defaultHeaderLinks);
+  const [footerCols, setFooterCols] = useState(defaultFooterCols);
   const [activeTab, setActiveTab] = useState("header");
   const [toast, setToast] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const fetchNavigation = async () => {
     try {
-      setLoading(true);
+      if (headerLinks.length === 0) setLoading(true);
       const data = await getAdminNavigation();
       const items = Array.isArray(data) ? data : data?.items || data?.navigation || [];
       

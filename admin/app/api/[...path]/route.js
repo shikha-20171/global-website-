@@ -74,7 +74,7 @@ async function handleProxy(request, { params }) {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 55000);
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // Fast 15s timeout on Vercel proxy
 
   try {
     const backendRes = await fetch(targetUrl, {

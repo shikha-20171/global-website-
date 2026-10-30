@@ -34,7 +34,7 @@ import {
 } from "@/lib/api";
 
 export default function AdminSolutionsPage() {
-  const [solutions, setSolutions] = useState([]);
+  const [solutions, setSolutions] = useState(fallbackSolutions);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [toast, setToast] = useState(null);

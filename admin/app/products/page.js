@@ -69,7 +69,7 @@ const DEFAULT_CATEGORIES = [
 ];
 
 export default function AdminProductsPage() {
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState(fallbackProducts);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -77,7 +77,7 @@ export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
   const [deleteModal, setDeleteModal] = useState(null);
   const [toast, setToast] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const categories = useMemo(() => {
     const fromProducts = productList
@@ -87,7 +87,7 @@ export default function AdminProductsPage() {
   }, [productList]);
 
   const refreshProducts = () => {
-    setLoading(true);
+    if (productList.length === 0) setLoading(true);
     getAdminProducts()
       .then((data) => {
         const list = Array.isArray(data) ? data : (data?.data || []);
