@@ -12,7 +12,7 @@ import HomeCareers from "@/components/HomeCareers";
 import HomeFAQ from "@/components/HomeFAQ";
 import CTASection from "@/components/CTASection";
 import { products } from "@/lib/data";
-import { getLivePage, getLiveProducts } from "@/lib/api";
+import api from "@/lib/axios";
 import { buildMetadata, generateFAQSchema, generateItemListSchema } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -24,8 +24,9 @@ export async function generateMetadata() {
   let canonical = "/";
 
   try {
-    // Fetch page
-    const livePage = await getLivePage("home");
+    // Direct Axios call for page metadata
+    const res = await api.get("/api/v1/pages/home");
+    const livePage = res.data?.data || res.data?.page || res.data;
     if (livePage) {
       if (livePage.seoTitle) seoTitle = livePage.seoTitle;
       if (livePage.metaDescription) seoDesc = livePage.metaDescription;
@@ -59,10 +60,10 @@ export default async function Home() {
   let railProducts = products.slice(0, 4);
 
   try {
-    // Fetch page
+    // Direct Axios calls inside Home page
     const [pageRes, productsRes] = await Promise.allSettled([
-      getLivePage("home"),
-      getLiveProducts(),
+      api.get("/api/v1/pages/home").then((r) => r.data?.data || r.data?.page || r.data),
+      api.get("/api/v1/products").then((r) => r.data?.data || r.data?.products || (Array.isArray(r.data) ? r.data : [])),
     ]);
 
     if (pageRes.status === "fulfilled" && pageRes.value?.sections) {

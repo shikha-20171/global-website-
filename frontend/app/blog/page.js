@@ -5,7 +5,7 @@ import CTASection from "@/components/CTASection";
 import Breadcrumb from "@/components/Breadcrumb";
 import { posts } from "@/lib/data";
 import { ArrowUpRight, BookOpen } from "lucide-react";
-import { getLiveBlogPosts } from "@/lib/api";
+import api from "@/lib/axios";
 
 import { buildMetadata, generateBreadcrumbSchema, generateItemListSchema } from "@/lib/seo";
 
@@ -28,13 +28,14 @@ export const dynamic = "force-dynamic";
 export default async function BlogPage() {
   let livePosts = posts;
   try {
-    // Fetch blog posts
-    const data = await getLiveBlogPosts();
-    if (Array.isArray(data) && data.length > 0) {
-      livePosts = data;
+    // Direct Axios API call inside Blog page
+    const res = await api.get("/api/v1/resources/blog");
+    const list = res.data?.data || res.data?.posts || (Array.isArray(res.data) ? res.data : null);
+    if (Array.isArray(list) && list.length > 0) {
+      livePosts = list;
     }
   } catch (err) {
-    console.warn("Using baseline blog posts:", err.message);
+    console.warn("Using baseline blog posts:", err?.message || err);
   }
 
   const breadcrumbSchema = generateBreadcrumbSchema([

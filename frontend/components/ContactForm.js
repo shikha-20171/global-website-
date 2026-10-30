@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, AlertCircle, RefreshCw, Send } from "lucide-react";
+import api from "@/lib/axios";
 import Field, { emailOk } from "./Field";
 
 const SOL = [
@@ -78,8 +79,8 @@ export default function ContactForm() {
     };
 
     try {
-      const { submitContactInquiry } = await import("@/lib/api");
-      await submitContactInquiry(leadPayload);
+      // Direct Axios API call inside Contact page/form
+      await api.post("/api/v1/contact", leadPayload);
       setSent(true);
     } catch (apiError) {
       console.warn("Direct API connection notice:", apiError?.message || apiError);

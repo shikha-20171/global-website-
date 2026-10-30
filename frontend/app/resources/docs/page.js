@@ -1,5 +1,5 @@
 import DocumentationView from "@/components/DocumentationView";
-import { getLiveRunbooks } from "@/lib/api";
+import api from "@/lib/axios";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -19,9 +19,9 @@ export const metadata = buildMetadata({
 export default async function DocsPage() {
   let docs = null;
   try {
-    // Fetch runbooks
-    const res = await getLiveRunbooks();
-    const list = Array.isArray(res) ? res : res?.data || [];
+    // Direct Axios API call inside Documentation page
+    const res = await api.get("/api/v1/resources/runbooks");
+    const list = res.data?.data || (Array.isArray(res.data) ? res.data : []);
     if (list.length > 0) {
       docs = list.map((item) => ({
         title: item.title,

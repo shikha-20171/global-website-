@@ -4,7 +4,7 @@ import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 import CTASection from "@/components/CTASection";
 import Button from "@/components/Button";
-import { getLiveApiResources } from "@/lib/api";
+import api from "@/lib/axios";
 import { Code2, Terminal, Copy, Check, ShieldCheck, Zap, ArrowRight } from "lucide-react";
 
 export default function ApiDeveloperPage() {
@@ -19,10 +19,11 @@ export default function ApiDeveloperPage() {
 
   useEffect(() => {
     let active = true;
-    // Fetch live API reference resources
-    getLiveApiResources()
-      .then((res) => {
+    // Direct Axios API call inside ApiClient
+    api.get("/api/v1/resources/api-specs")
+      .then((response) => {
         if (!active) return;
+        const res = response.data?.data || (Array.isArray(response.data) ? response.data : []);
         const list = Array.isArray(res) ? res : res?.data || [];
         if (list.length > 0) {
           const mapped = list.map((item) => ({

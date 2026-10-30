@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 import { ShieldCheck, FileText, Lock, AlertTriangle, ArrowRight } from "lucide-react";
-import { getLiveLegalPolicy, getLiveLegalPolicies } from "@/lib/api";
+import api from "@/lib/axios";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 const legalPages = {
@@ -220,8 +220,9 @@ legalPages.aup = legalPages["acceptable-use"];
 
 export async function generateStaticParams() {
   try {
-    // Fetch legal policies
-    const live = await getLiveLegalPolicies();
+    // Direct Axios call for legal policy slugs
+    const res = await api.get("/api/v1/legal");
+    const live = res.data?.data || (Array.isArray(res.data) ? res.data : []);
     if (Array.isArray(live) && live.length > 0) {
       const slugs = new Set([...Object.keys(legalPages), ...live.map((p) => p.slug)]);
       return Array.from(slugs).map((slug) => ({ slug }));
@@ -233,8 +234,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   let livePolicy = null;
   try {
-    // Fetch legal policy
-    livePolicy = await getLiveLegalPolicy(params.slug);
+    // Direct Axios call for legal policy metadata
+    const res = await api.get(`/api/v1/legal/${params.slug}`);
+    livePolicy = res.data?.data || res.data?.policy || res.data;
   } catch (err) {}
 
   const staticPage = legalPages[params.slug];
@@ -266,10 +268,11 @@ export const dynamicParams = true;
 export default async function LegalPage({ params }) {
   let livePolicy = null;
   try {
-    // Fetch legal policy
-    livePolicy = await getLiveLegalPolicy(params.slug);
+    // Direct Axios call inside Legal slug page
+    const res = await api.get(`/api/v1/legal/${params.slug}`);
+    livePolicy = res.data?.data || res.data?.policy || res.data;
   } catch (err) {
-    console.warn("Legal policy live notice:", err.message);
+    console.warn("Legal policy live notice:", err?.message || err);
   }
 
   const staticPage = legalPages[params.slug];

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { submitContactInquiry } from "@/lib/api";
+import api from "@/lib/axios";
 import {
   X,
   CheckCircle2,
@@ -36,8 +36,8 @@ export default function JobApplicationModal({
     setLoading(true);
     setError(null);
     try {
-      // Fetch contact inquiry
-      await submitContactInquiry({
+      // Direct Axios API call for Job Application
+      await api.post("/api/v1/contact", {
         name: formData.fullName,
         company: "Job Applicant",
         email: formData.email,

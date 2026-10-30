@@ -27,7 +27,7 @@ import CTASection from "@/components/CTASection";
 import Breadcrumb from "@/components/Breadcrumb";
 import FAQ from "@/components/FAQ";
 import { industries, getProduct, products } from "@/lib/data";
-import { getLiveIndustries } from "@/lib/api";
+import api from "@/lib/axios";
 
 const CATEGORIES = [
   "All",
@@ -75,9 +75,10 @@ export default function IndustriesClient() {
 
   useEffect(() => {
     let mounted = true;
-    // Fetch industries
-    getLiveIndustries()
-      .then((data) => {
+    // Direct Axios API call inside IndustriesClient
+    api.get("/api/v1/industries")
+      .then((res) => {
+        const data = res.data?.data || (Array.isArray(res.data) ? res.data : []);
         if (mounted && Array.isArray(data) && data.length > 0) {
           setLiveList(data);
         }

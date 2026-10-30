@@ -6,7 +6,7 @@ import CTASection from "@/components/CTASection";
 import { projects } from "@/lib/data";
 import { caseStudiesDetails } from "@/lib/caseStudiesData";
 import { ArrowUpRight, Building2, Clock, ShieldCheck } from "lucide-react";
-import { getLiveCaseStudies } from "@/lib/api";
+import api from "@/lib/axios";
 
 import { buildMetadata, generateBreadcrumbSchema, generateItemListSchema } from "@/lib/seo";
 
@@ -29,8 +29,9 @@ export const dynamic = "force-dynamic";
 export default async function CaseStudiesPage() {
   let liveProjects = projects;
   try {
-    // Fetch case studies
-    const data = await getLiveCaseStudies();
+    // Direct Axios API call inside Case Studies page
+    const res = await api.get("/api/v1/case-studies");
+    const data = res.data?.data || res.data;
     const list = data?.caseStudies || (Array.isArray(data) ? data : null);
     if (Array.isArray(list) && list.length > 0) {
       const merged = projects.map((proj) => {

@@ -19,7 +19,7 @@ import {
   Quote,
 } from "lucide-react";
 import { projects } from "@/lib/data";
-import { getLiveProjects } from "@/lib/api";
+import api from "@/lib/axios";
 
 const CATEGORIES = [
   { id: "All", label: "All Projects" },
@@ -95,8 +95,10 @@ export default function PortfolioView() {
 
   useEffect(() => {
     let mounted = true;
-    getLiveProjects()
-      .then((data) => {
+    // Direct Axios API call inside PortfolioView
+    api.get("/api/v1/projects")
+      .then((res) => {
+        const data = res.data?.data || res.data?.projects || (Array.isArray(res.data) ? res.data : []);
         if (!mounted || !Array.isArray(data) || data.length === 0) return;
         const normalized = data.map((d) => {
           const matchedStatic = projects.find((p) => p.slug === d.slug);
@@ -116,7 +118,7 @@ export default function PortfolioView() {
         setLiveProjects(normalized);
       })
       .catch((err) => {
-        console.warn("Portfolio live projects notice:", err.message);
+        console.warn("Portfolio live projects notice:", err?.message || err);
       });
 
     return () => {

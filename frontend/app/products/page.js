@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import { products, formatPrice, startingPrice } from "@/lib/data";
 import { ArrowUpRight, Check, Sparkles, Filter, Layers } from "lucide-react";
-import { getLiveProducts } from "@/lib/api";
+import api from "@/lib/axios";
 
 import { buildMetadata, generateBreadcrumbSchema, generateItemListSchema } from "@/lib/seo";
 
@@ -31,13 +31,14 @@ export const dynamic = "force-dynamic";
 export default async function ProductsPage() {
   let liveProducts = products;
   try {
-    // Fetch products
-    const data = await getLiveProducts();
-    if (Array.isArray(data) && data.length > 0) {
-      liveProducts = data;
+    // Direct Axios API call inside Products page
+    const res = await api.get("/api/v1/products");
+    const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+    if (Array.isArray(list) && list.length > 0) {
+      liveProducts = list;
     }
   } catch (err) {
-    console.warn("Using baseline catalog due to API notice:", err.message);
+    console.warn("Using baseline catalog due to API notice:", err?.message || err);
   }
 
   const breadcrumbSchema = generateBreadcrumbSchema([

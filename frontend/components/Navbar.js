@@ -8,7 +8,7 @@ import Logo from "./Logo";
 import SearchModal from "./SearchModal";
 import Icon from "./Icon";
 import { nav, products, industries, formatPrice, startingPrice } from "@/lib/data";
-import { getLiveProducts, getLiveIndustries } from "@/lib/api";
+import api from "@/lib/axios";
 
 const solutionLinks = [
   ["Enterprise Solutions", "/solutions/enterprise"],
@@ -151,14 +151,18 @@ export default function Navbar() {
 
   useEffect(() => {
     let mounted = true;
-    getLiveProducts()
-      .then((p) => {
+    // Direct Axios API call for live products
+    api.get("/api/v1/products")
+      .then((res) => {
+        const p = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
         if (mounted && Array.isArray(p) && p.length > 0) setLiveProducts(p);
       })
       .catch(() => {});
 
-    getLiveIndustries()
-      .then((ind) => {
+    // Direct Axios API call for live industries
+    api.get("/api/v1/industries")
+      .then((res) => {
+        const ind = res.data?.data || (Array.isArray(res.data) ? res.data : null);
         if (mounted && Array.isArray(ind) && ind.length > 0) setLiveIndustries(ind);
       })
       .catch(() => {});

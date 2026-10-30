@@ -9,6 +9,9 @@ import {
   CATEGORIES,
   enterpriseSections,
 } from "./data";
+import api, { getBaseUrl } from "./axios";
+
+export { api, getBaseUrl };
 
 
 function getApiBaseUrl() {

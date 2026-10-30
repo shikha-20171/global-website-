@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import ProductDetail from "@/components/ProductDetail";
 import { products, getProduct } from "@/lib/data";
-import { getLiveProductBySlug } from "@/lib/api";
+import api from "@/lib/axios";
 import {
   buildMetadata,
   generateSoftwareApplicationSchema,
@@ -15,9 +15,10 @@ export const generateStaticParams = () => products.map((p) => ({ slug: p.slug })
 export async function generateMetadata({ params }) {
   let p = null;
   try {
-    // Fetch product by slug
-    const live = await getLiveProductBySlug(params.slug);
-    if (live) p = live;
+    // Direct Axios call for product metadata
+    const res = await api.get(`/api/v1/products/${params.slug}`);
+    const live = res.data?.data || res.data?.product || res.data;
+    if (live && (live.slug || live.name)) p = live;
   } catch (err) {}
   if (!p) p = getProduct(params.slug);
   if (!p) return {};
@@ -42,9 +43,10 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   let p = null;
   try {
-    // Fetch product by slug
-    const live = await getLiveProductBySlug(params.slug);
-    if (live) {
+    // Direct Axios call inside page
+    const res = await api.get(`/api/v1/products/${params.slug}`);
+    const live = res.data?.data || res.data?.product || res.data;
+    if (live && (live.slug || live.name)) {
       p = {
         ...getProduct(params.slug),
         ...live,

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useCompare } from "@/components/CompareContext";
 import { products, getProduct, formatPrice, startingPrice } from "@/lib/data";
-import { getLiveProducts, getLiveComparisonMatrix } from "@/lib/api";
+import api from "@/lib/axios";
 import Breadcrumb from "@/components/Breadcrumb";
 import Reveal from "@/components/Reveal";
 import FAQ from "@/components/FAQ";
@@ -63,24 +63,28 @@ export default function CompareView() {
 
   useEffect(() => {
     let mounted = true;
-    getLiveProducts()
-      .then((data) => {
+    // Direct Axios API call for live products
+    api.get("/api/v1/products")
+      .then((res) => {
+        const data = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
         if (mounted && Array.isArray(data) && data.length > 0) {
           setLiveCatalog(data);
         }
       })
       .catch((err) => {
-        console.warn("Compare live catalog notice:", err.message);
+        console.warn("Compare live catalog notice:", err?.message || err);
       });
 
-    getLiveComparisonMatrix()
-      .then((matrix) => {
+    // Direct Axios API call for comparison matrix
+    api.get("/api/v1/products/compare")
+      .then((res) => {
+        const matrix = res.data?.data || res.data;
         if (mounted && matrix) {
           setMatrixData(matrix);
         }
       })
       .catch((err) => {
-        console.warn("Compare live matrix notice:", err.message);
+        console.warn("Compare live matrix notice:", err?.message || err);
       });
 
     return () => {

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import api from "@/lib/axios";
 import {
   CheckCircle2,
   ArrowRight,
@@ -52,8 +53,6 @@ export default function StartTrialClient() {
       setCurrentStep((prev) => prev + 1);
     } else {
       try {
-        const { submitContactInquiry, submitDemoRequest } = await import("@/lib/api");
-        
         const leadPayload = {
           name: account.fullName || "Trial Administrator",
           company: company.companyName || "Trial Organization",
@@ -67,12 +66,12 @@ export default function StartTrialClient() {
           source: "start-trial",
         };
 
-        // 1. Submit to leads engine
-        await submitContactInquiry(leadPayload);
+        // 1. Direct Axios call: submit to leads engine
+        await api.post("/api/v1/contact", leadPayload);
 
-        // 2. Submit to demo bookings engine so it immediately appears in Demo Bookings (/admin/demos)
+        // 2. Direct Axios call: submit to demo bookings engine for instant /admin/demos sync
         try {
-          await submitDemoRequest({
+          await api.post("/api/v1/demo", {
             contactName: leadPayload.name,
             company: leadPayload.company,
             businessEmail: leadPayload.email,

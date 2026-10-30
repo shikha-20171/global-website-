@@ -8,7 +8,7 @@ import FAQ from "@/components/FAQ";
 import CTASection from "@/components/CTASection";
 import Breadcrumb from "@/components/Breadcrumb";
 import { posts } from "@/lib/data";
-import { getLiveBlogPosts } from "@/lib/api";
+import api from "@/lib/axios";
 import {
   ArrowRight,
   BookOpen,
@@ -55,9 +55,10 @@ export default function ResourcesClient() {
 
   useEffect(() => {
     let mounted = true;
-    // Fetch blog posts
-    getLiveBlogPosts()
-      .then((data) => {
+    // Direct Axios API call inside ResourcesClient
+    api.get("/api/v1/resources/blog")
+      .then((res) => {
+        const data = res.data?.data || res.data;
         const live = data?.posts || (Array.isArray(data) ? data : null);
         if (mounted && Array.isArray(live) && live.length > 0) {
           const mapped = live.map((p, idx) => ({

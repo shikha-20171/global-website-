@@ -7,7 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import CTASection from "@/components/CTASection";
 import { Search, Filter, SlidersHorizontal, ArrowUpRight } from "lucide-react";
 import { products, CATEGORIES, BUSINESS_SIZES, DEPLOYMENTS } from "@/lib/data";
-import { getLiveProducts } from "@/lib/api";
+import api from "@/lib/axios";
 
 function SearchContent() {
   const sp = useSearchParams();
@@ -20,15 +20,16 @@ function SearchContent() {
 
   useEffect(() => {
     let mounted = true;
-    // Fetch products
-    getLiveProducts()
-      .then((data) => {
+    // Direct Axios API call inside Marketplace Search
+    api.get("/api/v1/products")
+      .then((res) => {
+        const data = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
         if (mounted && Array.isArray(data) && data.length > 0) {
           setLiveProducts(data);
         }
       })
       .catch((err) => {
-        console.warn("Search live products notice:", err.message);
+        console.warn("Search live products notice:", err?.message || err);
       })
       .finally(() => {
         if (mounted) setLoading(false);

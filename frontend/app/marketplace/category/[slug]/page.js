@@ -55,7 +55,7 @@ export function generateMetadata({ params }) {
     : {};
 }
 
-import { getLiveProducts } from "@/lib/api";
+import api from "@/lib/axios";
 
 export default async function MarketplaceCategoryPage({ params }) {
   const category = resolveCategory(params.slug);
@@ -63,13 +63,14 @@ export default async function MarketplaceCategoryPage({ params }) {
 
   let allProducts = products;
   try {
-    // Fetch products
-    const live = await getLiveProducts();
+    // Direct Axios API call inside Marketplace Category page
+    const res = await api.get("/api/v1/products");
+    const live = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
     if (Array.isArray(live) && live.length > 0) {
       allProducts = live;
     }
   } catch (err) {
-    console.warn("Marketplace category live notice:", err.message);
+    console.warn("Marketplace category live notice:", err?.message || err);
   }
 
   const matchingProducts = allProducts.filter((p) => {

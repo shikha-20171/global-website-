@@ -6,7 +6,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import CompanyHeroVisual from "@/components/CompanyHeroVisual";
 import CompanyWhyChooseCards from "@/components/CompanyWhyChooseCards";
 import CompanyTechStackCards from "@/components/CompanyTechStackCards";
-import { getLiveCompanyProfile } from "@/lib/api";
+import api from "@/lib/axios";
 import {
   Building2,
   Target,
@@ -114,11 +114,11 @@ export const dynamic = "force-dynamic";
 export default async function CompanyPage() {
   let profile = null;
   try {
-    // API INTEGRATION:
-
-    profile = await getLiveCompanyProfile();
+    // Direct Axios API call inside Company page
+    const res = await api.get("/api/v1/company");
+    profile = res.data?.data || res.data?.profile || res.data;
   } catch (err) {
-    console.warn("Company live profile notice:", err.message);
+    console.warn("Company live profile notice:", err?.message || err);
   }
 
   const pillars = [

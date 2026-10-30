@@ -16,7 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import JobApplicationModal from "./components/JobApplicationModal";
-import { getLiveCareers } from "@/lib/api";
+import api from "@/lib/axios";
 
 const INITIAL_JOBS = [
   {
@@ -101,8 +101,10 @@ export default function CareersClient() {
 
   useEffect(() => {
     let mounted = true;
-    getLiveCareers()
-      .then((data) => {
+    // Direct Axios API call inside CareersClient
+    api.get("/api/v1/careers")
+      .then((res) => {
+        const data = res.data?.data || res.data;
         const list = data?.careers || (Array.isArray(data) ? data : null);
         if (mounted && Array.isArray(list) && list.length > 0) {
           const mapped = list.map((j) => ({

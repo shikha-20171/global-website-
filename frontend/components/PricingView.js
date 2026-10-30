@@ -7,7 +7,7 @@ import FAQ from "./FAQ";
 import Button from "./Button";
 import Reveal from "./Reveal";
 import { products } from "@/lib/data";
-import { getLiveProducts, getLivePricingPlans } from "@/lib/api";
+import api from "@/lib/axios";
 
 const included = [[ShieldCheck, "Secure & Reliable", "Enterprise-grade security"], [Cloud, "Cloud Based", "Access from anywhere"], [RefreshCw, "Regular Updates", "Always up to date"], [Headphones, "Global Support", "We're here to help"]];
 const enterprise = ["Unlimited/custom users", "Advanced security", "Custom integrations", "Dedicated support", "SLA", "Custom deployment", "Enterprise analytics", "Dedicated account management"];
@@ -25,7 +25,11 @@ export default function PricingView({ productSlug }) {
 
   useEffect(() => {
     let mounted = true;
-    Promise.allSettled([getLiveProducts(), getLivePricingPlans()]).then(
+    // Direct Axios API calls inside PricingView
+    Promise.allSettled([
+      api.get("/api/v1/products").then((r) => r.data?.data || r.data?.products || (Array.isArray(r.data) ? r.data : [])),
+      api.get("/api/v1/pricing").then((r) => r.data?.data || r.data),
+    ]).then(
       ([prodResult, planResult]) => {
         if (!mounted) return;
         let prods = products;

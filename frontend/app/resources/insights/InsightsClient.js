@@ -4,7 +4,7 @@ import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 import CTASection from "@/components/CTASection";
 import Reveal from "@/components/Reveal";
-import { getLiveWhitepapers } from "@/lib/api";
+import api from "@/lib/axios";
 import {
   FileText,
   Download,
@@ -94,10 +94,11 @@ export default function InsightsPage() {
 
   useEffect(() => {
     let active = true;
-    // Fetch whitepapers
-    getLiveWhitepapers()
-      .then((res) => {
+    // Direct Axios API call inside InsightsClient
+    api.get("/api/v1/resources/insights")
+      .then((response) => {
         if (!active) return;
+        const res = response.data?.data || (Array.isArray(response.data) ? response.data : []);
         const list = Array.isArray(res) ? res : res?.data || [];
         if (list.length > 0) {
           const normalized = list.map((item) => ({

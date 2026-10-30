@@ -43,13 +43,14 @@ const pillars = [
   },
 ];
 
-import { getLiveCompanyProfile } from "@/lib/api";
+import api from "@/lib/axios";
 
 export default async function MissionPage() {
   let profile = null;
   try {
-    // Fetch company profile
-    profile = await getLiveCompanyProfile();
+    // Direct Axios API call inside Mission page
+    const res = await api.get("/api/v1/company");
+    profile = res.data?.data || res.data?.profile || res.data;
   } catch (err) {}
 
   const missionText = profile?.mission || "To make powerful technology accessible, scalable and intelligent for businesses everywhere.";

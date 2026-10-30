@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 import FooterMark from "./FooterMark";
-import { subscribeNewsletter } from "@/lib/api";
+import api from "@/lib/axios";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 
 function NewsletterForm() {
@@ -22,7 +22,8 @@ function NewsletterForm() {
     setLoading(true);
     setError(null);
     try {
-      await subscribeNewsletter(email, "website_footer");
+      // Direct Axios API call for newsletter subscription
+      await api.post("/api/v1/newsletter/subscribe", { email, source: "website_footer" });
       setSubscribed(true);
       setEmail("");
     } catch (err) {

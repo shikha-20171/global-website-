@@ -7,7 +7,7 @@ import FAQ from "@/components/FAQ";
 import CTASection from "@/components/CTASection";
 import ProductCard from "@/components/ProductCard";
 import { getProduct, projects } from "@/lib/data";
-import { getLiveSolutionBySlug } from "@/lib/api";
+import api from "@/lib/axios";
 import { buildMetadata, generateServiceSchema, generateBreadcrumbSchema } from "@/lib/seo";
 import {
   Layers,
@@ -693,8 +693,9 @@ export async function generateMetadata({ params }) {
   const targetSlug = SOLUTION_ALIASES[params.slug] || params.slug;
   let liveSol = null;
   try {
-    // Fetch solution by slug
-    liveSol = await getLiveSolutionBySlug(targetSlug);
+    // Direct Axios call for solution metadata
+    const res = await api.get(`/api/v1/solutions/${targetSlug}`);
+    liveSol = res.data?.data || res.data?.solution || res.data;
   } catch (err) {
     // Fallback to baseSol
   }
@@ -730,10 +731,11 @@ export default async function SolutionDetailPage({ params }) {
   const targetSlug = SOLUTION_ALIASES[params.slug] || params.slug;
   let liveSol = null;
   try {
-    // Fetch solution by slug
-    liveSol = await getLiveSolutionBySlug(targetSlug);
+    // Direct Axios call inside Solution detail page
+    const res = await api.get(`/api/v1/solutions/${targetSlug}`);
+    liveSol = res.data?.data || res.data?.solution || res.data;
   } catch (err) {
-    console.warn("Solution live detail notice:", err.message);
+    console.warn("Solution live detail notice:", err?.message || err);
   }
 
   const baseSol = solutionsData[targetSlug];

@@ -6,7 +6,7 @@ import Button from "@/components/Button";
 import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import { posts, getPost } from "@/lib/data";
-import { getLiveBlogPostBySlug, getLiveBlogPosts } from "@/lib/api";
+import api from "@/lib/axios";
 import { buildMetadata, generateArticleSchema, generateBreadcrumbSchema } from "@/lib/seo";
 import {
   ArrowLeft,
@@ -28,8 +28,9 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   try {
-    // Fetch blog posts
-    const live = await getLiveBlogPosts();
+    // Direct Axios call for blog slugs
+    const res = await api.get("/api/v1/resources/blog");
+    const live = res.data?.data || res.data?.posts || (Array.isArray(res.data) ? res.data : null);
     if (Array.isArray(live) && live.length > 0) {
       return live.map((p) => ({ slug: p.slug }));
     }
@@ -40,8 +41,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   let live = null;
   try {
-    // Fetch blog post by slug
-    live = await getLiveBlogPostBySlug(params.slug);
+    // Direct Axios call for blog metadata
+    const res = await api.get(`/api/v1/resources/blog/${params.slug}`);
+    live = res.data?.data || res.data?.post || res.data;
   } catch (err) {}
 
   const p = live ? { ...getPost(params.slug), ...live } : getPost(params.slug);
@@ -71,8 +73,9 @@ export async function generateMetadata({ params }) {
 export default async function BlogPostPage({ params }) {
   let p = null;
   try {
-    // Fetch blog post by slug
-    const live = await getLiveBlogPostBySlug(params.slug);
+    // Direct Axios call inside Blog slug page
+    const res = await api.get(`/api/v1/resources/blog/${params.slug}`);
+    const live = res.data?.data || res.data?.post || res.data;
     if (live) {
       p = {
         ...getPost(params.slug),

@@ -1,12 +1,13 @@
 import { projects } from "@/lib/data";
 import ProjectDetailView from "@/components/ProjectDetailView";
-import { getLiveProjects, getLiveProjectBySlug } from "@/lib/api";
+import api from "@/lib/axios";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 export async function generateStaticParams() {
   try {
-    // Fetch all project slugs
-    const live = await getLiveProjects();
+    // Direct Axios call for project slugs
+    const res = await api.get("/api/v1/projects");
+    const live = res.data?.data || res.data?.projects || (Array.isArray(res.data) ? res.data : null);
     if (Array.isArray(live) && live.length > 0) {
       return live.map((p) => ({ slug: p.slug }));
     }
@@ -17,8 +18,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   let p = null;
   try {
-    // Fetch project metadata
-    p = await getLiveProjectBySlug(params.slug);
+    // Direct Axios call for project metadata
+    const res = await api.get(`/api/v1/projects/${params.slug}`);
+    p = res.data?.data || res.data?.project || res.data;
   } catch (err) {}
   if (!p) {
     p = projects.find((x) => x.slug === params.slug);
@@ -42,8 +44,9 @@ export async function generateMetadata({ params }) {
 export default async function ProjectDetailPage({ params }) {
   let project = null;
   try {
-    // Fetch project details by slug
-    project = await getLiveProjectBySlug(params.slug);
+    // Direct Axios call inside Project Detail page
+    const res = await api.get(`/api/v1/projects/${params.slug}`);
+    project = res.data?.data || res.data?.project || res.data;
   } catch (err) {}
   if (!project) {
     project = projects.find((x) => x.slug === params.slug);

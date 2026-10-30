@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, CheckCircle2, AlertCircle, RefreshCw } from "lucide-react";
+import api from "@/lib/axios";
 import Field, { emailOk } from "./Field";
 import { products } from "@/lib/data";
 
@@ -74,12 +75,12 @@ export default function DemoFlow() {
       };
 
       try {
-        const { submitDemoRequest, submitContactInquiry } = await import("@/lib/api");
-        await submitDemoRequest(demoPayload);
+        // Direct Axios API call inside Demo Flow
+        await api.post("/api/v1/demo", demoPayload);
 
         // Also sync into CRM leads database as DEMO_REQUEST for 100% visibility
         try {
-          await submitContactInquiry({
+          await api.post("/api/v1/contact", {
             name: demoPayload.contactName,
             company: demoPayload.company,
             email: demoPayload.businessEmail,

@@ -3,7 +3,7 @@ import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import Breadcrumb from "@/components/Breadcrumb";
 import { Handshake, Building2, Code2, Globe2, CheckCircle2, ArrowRight } from "lucide-react";
-import { getLivePartners } from "@/lib/api";
+import api from "@/lib/axios";
 
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
@@ -47,8 +47,9 @@ export const dynamic = "force-dynamic";
 export default async function PartnersPage() {
   let displayPrograms = programs;
   try {
-    // Fetch live partner tracks
-    const live = await getLivePartners();
+    // Direct Axios API call inside Partners page
+    const res = await api.get("/api/v1/partners");
+    const live = res.data?.data || res.data;
     const list = live?.partners || (Array.isArray(live) ? live : null);
     if (Array.isArray(list) && list.length > 0) {
       displayPrograms = list.map((p, idx) => ({

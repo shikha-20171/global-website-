@@ -116,20 +116,21 @@ const mobileFeatures = [
   },
 ];
 
-import { getLiveSolutions } from "@/lib/api";
+import api from "@/lib/axios";
 
 export const dynamic = "force-dynamic";
 
 export default async function SolutionsPage() {
   let liveSolutions = [];
   try {
-    // Fetch solutions
-    const res = await getLiveSolutions();
-    if (Array.isArray(res) && res.length > 0) {
-      liveSolutions = res;
+    // Direct Axios API call inside Solutions page
+    const res = await api.get("/api/v1/solutions");
+    const list = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+    if (Array.isArray(list) && list.length > 0) {
+      liveSolutions = list;
     }
   } catch (err) {
-    console.warn("Solutions live fetch notice:", err.message);
+    console.warn("Solutions live fetch notice:", err?.message || err);
   }
 
   const breadcrumbSchema = generateBreadcrumbSchema([

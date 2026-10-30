@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import ProductCard from "./ProductCard";
 import { products, CATEGORIES, BUSINESS_SIZES, DEPLOYMENTS, industries, startingPrice } from "@/lib/data";
-import { getLiveProducts } from "@/lib/api";
+import api from "@/lib/axios";
 
 const PRICE = [["Any", [0, 1e9]], ["Under $35", [0, 34]], ["$35 – $45", [35, 45]], ["Over $45", [46, 1e9]]];
 
@@ -31,14 +31,16 @@ export default function MarketplaceView() {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
-    getLiveProducts()
-      .then((data) => {
+    // Direct Axios API call inside MarketplaceView
+    api.get("/api/v1/products")
+      .then((res) => {
+        const data = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
         if (Array.isArray(data) && data.length > 0) {
           setLiveProducts(data);
         }
       })
       .catch((err) => {
-        console.warn("Marketplace live data notice:", err.message);
+        console.warn("Marketplace live data notice:", err?.message || err);
       })
       .finally(() => setLoading(false));
   }, []);

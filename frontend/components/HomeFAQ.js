@@ -4,7 +4,7 @@ import { ChevronDown, HelpCircle } from "lucide-react";
 import Heading from "./Heading";
 import Button from "./Button";
 import Reveal from "./Reveal";
-import { getLiveFaqs } from "@/lib/api";
+import api from "@/lib/axios";
 
 const faqs = [
   {
@@ -39,10 +39,11 @@ export default function HomeFAQ() {
 
   useEffect(() => {
     let active = true;
-    getLiveFaqs()
+    // Direct Axios API call inside HomeFAQ component
+    api.get("/api/v1/resources/faqs")
       .then((res) => {
         if (!active) return;
-        const list = Array.isArray(res) ? res : res?.data || [];
+        const list = res.data?.data || res.data?.faqs || (Array.isArray(res.data) ? res.data : []);
         if (list.length > 0) {
           const mapped = list.map((item) => ({
             q: item.question || item.q,

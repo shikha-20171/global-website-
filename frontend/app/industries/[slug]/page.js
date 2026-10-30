@@ -8,7 +8,7 @@ import FAQ from "@/components/FAQ";
 import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import { getIndustry, getProduct, products, projects, industries } from "@/lib/data";
-import { getLiveIndustryBySlug } from "@/lib/api";
+import api from "@/lib/axios";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import {
   CheckCircle2,
@@ -31,8 +31,9 @@ export const generateStaticParams = () => industries.map((i) => ({ slug: i.slug 
 export async function generateMetadata({ params }) {
   let ind = null;
   try {
-    // Fetch industry by slug
-    const liveInd = await getLiveIndustryBySlug(params.slug);
+    // Direct Axios call for industry metadata
+    const res = await api.get(`/api/v1/industries/${params.slug}`);
+    const liveInd = res.data?.data || res.data?.industry || res.data;
     if (liveInd) {
       ind = { ...getIndustry(params.slug), ...liveInd };
     }
@@ -151,8 +152,9 @@ const industryBenchmarks = {
 export default async function IndustryDetailPage({ params }) {
   let ind = null;
   try {
-    // Fetch industry by slug
-    const liveInd = await getLiveIndustryBySlug(params.slug);
+    // Direct Axios call inside Industry Detail page
+    const res = await api.get(`/api/v1/industries/${params.slug}`);
+    const liveInd = res.data?.data || res.data?.industry || res.data;
     if (liveInd) {
       ind = {
         ...getIndustry(params.slug),
