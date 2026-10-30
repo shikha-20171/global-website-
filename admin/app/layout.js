@@ -8,6 +8,11 @@ export const metadata = {
     default: "DEZORYN TECHNOLOGY — Control Plane & Operations",
   },
   description: "Enterprise CMS, SaaS Marketplace, and Platform Operations Console for DEZORYN TECHNOLOGY.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   robots: {
     index: false,
     follow: false,

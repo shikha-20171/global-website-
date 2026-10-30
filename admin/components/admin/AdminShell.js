@@ -100,8 +100,15 @@ export default function AdminShell({ children }) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
-          <span className="text-xs font-mono text-slate-500">Verifying Super Admin Session...</span>
+          <img
+            src="/logo.png"
+            alt="DEZORYN"
+            className="h-12 w-12 rounded-xl object-cover border border-slate-200 shadow-md animate-pulse"
+          />
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+            <span className="text-xs font-mono font-semibold text-slate-500">Loading Control Plane...</span>
+          </div>
         </div>
       </div>
     );

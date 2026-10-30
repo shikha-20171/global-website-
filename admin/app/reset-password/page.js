@@ -67,8 +67,12 @@ function ResetPasswordForm() {
     <div className="w-full max-w-[460px] px-3 sm:px-0 mx-auto">
       {/* Brand Header */}
       <div className="text-center mb-7">
-        <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white font-extrabold text-xl mb-4 shadow-[0_0_35px_rgba(37,99,235,0.35)] ring-4 ring-blue-500/20 font-exo">
-          DZ
+        <div className="inline-flex items-center justify-center mb-4">
+          <img
+            src="/logo.png"
+            alt="DEZORYN Technology Logo"
+            className="h-16 w-16 rounded-2xl object-cover border-2 border-blue-500/40 shadow-[0_0_35px_rgba(37,99,235,0.45)] ring-4 ring-blue-500/20"
+          />
         </div>
         <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white font-exo">
           SET NEW PASSWORD

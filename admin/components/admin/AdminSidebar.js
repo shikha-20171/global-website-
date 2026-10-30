@@ -25,10 +25,14 @@ export default function AdminSidebar({
       <div className="h-18 flex items-center justify-between px-5 border-b border-slate-200 bg-white">
         <Link
           href="/admin"
-          className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg py-1"
+          className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg py-1 group"
         >
-          <div className="h-9 w-9 rounded-xl bg-blue-600 flex items-center justify-center font-extrabold text-white text-base tracking-wider shadow-sm">
-            DZ
+          <div className="relative shrink-0 flex items-center justify-center">
+            <img
+              src="/logo.png"
+              alt="DEZORYN Technology"
+              className="h-10 w-10 rounded-xl object-cover border border-slate-200 shadow-xs transition-transform group-hover:scale-105"
+            />
           </div>
           {!collapsed && (
             <div className="flex flex-col leading-tight">

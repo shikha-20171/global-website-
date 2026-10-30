@@ -40,6 +40,15 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
           <Menu size={22} />
         </button>
 
+        {/* Mobile Brand Logo */}
+        <div className="lg:hidden shrink-0 flex items-center">
+          <img
+            src="/logo.png"
+            alt="DEZORYN"
+            className="h-8 w-8 rounded-lg object-cover border border-slate-200"
+          />
+        </div>
+
         <div className="min-w-0 flex-1">
           <div className="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-wider text-blue-600 truncate">
             DEZORYN TECHNOLOGY
