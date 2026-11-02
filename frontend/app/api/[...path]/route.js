@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60; // Allow Vercel serverless function up to 60s for Render cold starts
 
 function getBackendBase() {
   const raw =
