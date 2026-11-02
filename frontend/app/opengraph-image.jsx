@@ -1,7 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
-
 export const alt = "DEZORYN TECHNOLOGY — Enterprise SaaS & Cloud Platforms";
 export const size = {
   width: 1200,
@@ -65,7 +63,7 @@ export default async function Image() {
         <div style={{ display: "flex", flexDirection: "column", gap: "18px", maxWidth: "1000px" }}>
           <div
             style={{
-              display: "inline-flex",
+              display: "flex",
               alignItems: "center",
               padding: "8px 18px",
               borderRadius: "9999px",
@@ -74,7 +72,7 @@ export default async function Image() {
               color: "#60a5fa",
               fontSize: "18px",
               fontWeight: "600",
-              width: "fit-content",
+              alignSelf: "flex-start",
             }}
           >
             Enterprise Cloud Architecture &amp; AI Automation
@@ -116,9 +114,9 @@ export default async function Image() {
           }}
         >
           <div style={{ display: "flex", gap: "32px", color: "#cbd5e1", fontSize: "20px", fontWeight: "500" }}>
-            <span>✓ Multi-Tenant SaaS</span>
-            <span>✓ 99.99% Uptime</span>
-            <span>✓ Enterprise Security</span>
+            <span>• Multi-Tenant SaaS</span>
+            <span>• 99.99% Uptime</span>
+            <span>• Enterprise Security</span>
           </div>
           <span style={{ fontSize: "22px", color: "#60a5fa", fontWeight: "600" }}>
             www.dezoryn.com
