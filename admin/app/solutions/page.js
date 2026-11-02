@@ -26,6 +26,7 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import { fallbackSolutions } from "@/lib/data";
+import { getLocalItem, saveLocalItem } from "@/lib/storage";
 import {
   getAdminSolutions,
   createAdminSolution,
@@ -34,7 +35,7 @@ import {
 } from "@/lib/api";
 
 export default function AdminSolutionsPage() {
-  const [solutions, setSolutions] = useState(fallbackSolutions);
+  const [solutions, setSolutions] = useState(() => getLocalItem("dezoryn_admin_solutions", fallbackSolutions));
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [toast, setToast] = useState(null);
@@ -45,13 +46,16 @@ export default function AdminSolutionsPage() {
         const list = Array.isArray(data) ? data : data?.solutions || [];
         if (list.length > 0) {
           setSolutions(list);
+          saveLocalItem("dezoryn_admin_solutions", list);
         } else {
-          setSolutions(fallbackSolutions);
+          const saved = getLocalItem("dezoryn_admin_solutions");
+          setSolutions(saved?.length ? saved : fallbackSolutions);
         }
       })
       .catch((err) => {
         console.warn("Using website solutions fallback:", err.message);
-        setSolutions(fallbackSolutions);
+        const saved = getLocalItem("dezoryn_admin_solutions");
+        setSolutions(saved?.length ? saved : fallbackSolutions);
       });
   };
 
@@ -176,15 +180,18 @@ export default function AdminSolutionsPage() {
     } catch (err) {
       console.warn("API solutions save notice:", err.message);
       const exists = solutions.some((s) => s.id === editingSolution.id);
+      let updated;
       if (exists) {
-        setSolutions(solutions.map((s) => (s.id === editingSolution.id ? { ...editingSolution, ...payload } : s)));
+        updated = solutions.map((s) => (s.id === editingSolution.id ? { ...editingSolution, ...payload } : s));
       } else {
-        setSolutions([...solutions, { ...editingSolution, ...payload }]);
+        updated = [...solutions, { ...editingSolution, ...payload }];
       }
+      setSolutions(updated);
+      saveLocalItem("dezoryn_admin_solutions", updated);
       setToast({
-        type: "success",
-        message: "Solution Saved",
-        description: `Saved "${payload.name}".`,
+        type: "warning",
+        message: "Solution Saved Locally",
+        description: `Saved "${payload.name}". Note: Backend synchronization pending.`,
       });
       setIsEditorOpen(false);
     }
@@ -203,7 +210,9 @@ export default function AdminSolutionsPage() {
         description: `"${deleteTarget.name}" deleted from active solutions.`,
       });
     } catch {
-      setSolutions(solutions.filter((s) => s.id !== deleteTarget.id));
+      const updated = solutions.filter((s) => s.id !== deleteTarget.id);
+      setSolutions(updated);
+      saveLocalItem("dezoryn_admin_solutions", updated);
       setToast({
         type: "warning",
         message: "Solution Removed",

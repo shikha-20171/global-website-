@@ -41,4 +41,5 @@ uploads/*
 
 # Test artifacts & screenshots
 test-results/
+*.zip
 

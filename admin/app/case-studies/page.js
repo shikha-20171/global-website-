@@ -31,6 +31,7 @@ import {
   updateAdminCaseStudy,
   deleteAdminCaseStudy,
 } from "@/lib/api";
+import { getLocalItem, saveLocalItem } from "@/lib/storage";
 
 const fallbackCaseStudies = (websiteProjects || []).map((p) => {
   const detail = caseStudiesDetails[p.slug] || {};
@@ -54,7 +55,7 @@ const fallbackCaseStudies = (websiteProjects || []).map((p) => {
 });
 
 export default function AdminCaseStudiesPage() {
-  const [caseStudiesList, setCaseStudiesList] = useState(fallbackCaseStudies);
+  const [caseStudiesList, setCaseStudiesList] = useState(() => getLocalItem("dezoryn_admin_case_studies", fallbackCaseStudies));
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -89,13 +90,16 @@ export default function AdminCaseStudiesPage() {
         }));
         if (mapped.length > 0) {
           setCaseStudiesList(mapped);
+          saveLocalItem("dezoryn_admin_case_studies", mapped);
         } else {
-          setCaseStudiesList(fallbackCaseStudies);
+          const saved = getLocalItem("dezoryn_admin_case_studies");
+          setCaseStudiesList(saved?.length ? saved : fallbackCaseStudies);
         }
       })
       .catch((err) => {
         console.warn("Using website case studies fallback:", err.message);
-        setCaseStudiesList(fallbackCaseStudies);
+        const saved = getLocalItem("dezoryn_admin_case_studies");
+        setCaseStudiesList(saved?.length ? saved : fallbackCaseStudies);
       });
   };
 
@@ -192,36 +196,38 @@ export default function AdminCaseStudiesPage() {
         await createAdminCaseStudy(payload);
       }
 
+      let updated;
       if (exists) {
-        setCaseStudiesList(
-          caseStudiesList.map((c) => (c.slug === editingCase.slug ? editingCase : c))
-        );
+        updated = caseStudiesList.map((c) => (c.slug === editingCase.slug ? editingCase : c));
         setToast({
           type: "success",
           message: "Case Study Updated",
           description: `Changes saved live for "${editingCase.title}".`,
         });
       } else {
-        setCaseStudiesList([...caseStudiesList, editingCase]);
+        updated = [...caseStudiesList, editingCase];
         setToast({
           type: "success",
           message: "Case Study Created",
           description: `Added "${editingCase.title}" to published case studies live.`,
         });
       }
+      setCaseStudiesList(updated);
+      saveLocalItem("dezoryn_admin_case_studies", updated);
     } catch (err) {
       // Graceful local update
+      let updated;
       if (exists) {
-        setCaseStudiesList(
-          caseStudiesList.map((c) => (c.slug === editingCase.slug ? editingCase : c))
-        );
+        updated = caseStudiesList.map((c) => (c.slug === editingCase.slug ? editingCase : c));
       } else {
-        setCaseStudiesList([...caseStudiesList, editingCase]);
+        updated = [...caseStudiesList, editingCase];
       }
+      setCaseStudiesList(updated);
+      saveLocalItem("dezoryn_admin_case_studies", updated);
       setToast({
-        type: "success",
-        message: "Case Study Saved",
-        description: `Saved "${editingCase.title}".`,
+        type: "warning",
+        message: "Case Study Saved Locally",
+        description: `Saved "${editingCase.title}". Note: Backend synchronization pending.`,
       });
     }
     setIsEditorOpen(false);
@@ -236,7 +242,9 @@ export default function AdminCaseStudiesPage() {
     } catch (err) {
       console.warn("Delete case study notice:", err.message);
     }
-    setCaseStudiesList(caseStudiesList.filter((c) => c.slug !== deleteTarget.slug));
+    const updated = caseStudiesList.filter((c) => c.slug !== deleteTarget.slug);
+    setCaseStudiesList(updated);
+    saveLocalItem("dezoryn_admin_case_studies", updated);
     setToast({
       type: "warning",
       message: "Case Study Removed",

@@ -2,10 +2,15 @@ import { PrismaClient } from "@prisma/client";
 import { env } from "./env.js";
 
 // Normalize connection URL if using Neon pooler to prevent idle socket drop errors
-if (process.env.DATABASE_URL && process.env.DATABASE_URL.includes("-pooler")) {
-  if (!process.env.DATABASE_URL.includes("pgbouncer=true")) {
+if (process.env.DATABASE_URL) {
+  if (process.env.DATABASE_URL.includes("-pooler")) {
+    if (!process.env.DATABASE_URL.includes("pgbouncer=true")) {
+      const sep = process.env.DATABASE_URL.includes("?") ? "&" : "?";
+      process.env.DATABASE_URL = `${process.env.DATABASE_URL}${sep}pgbouncer=true&connect_timeout=30&pool_timeout=30`;
+    }
+  } else if (!process.env.DATABASE_URL.includes("connect_timeout")) {
     const sep = process.env.DATABASE_URL.includes("?") ? "&" : "?";
-    process.env.DATABASE_URL = `${process.env.DATABASE_URL}${sep}pgbouncer=true&connect_timeout=30&pool_timeout=30`;
+    process.env.DATABASE_URL = `${process.env.DATABASE_URL}${sep}connect_timeout=30&pool_timeout=30`;
   }
 }
 

@@ -35,6 +35,7 @@ import {
   updateAdminIndustry,
   deleteAdminIndustry,
 } from "@/lib/api";
+import { getLocalItem, saveLocalItem } from "@/lib/storage";
 
 const fallbackIndustries = websiteIndustries.map((ind, idx) => ({
   id: ind.id || `ind_${ind.slug}`,
@@ -52,7 +53,7 @@ const fallbackIndustries = websiteIndustries.map((ind, idx) => ({
 }));
 
 export default function AdminIndustriesPage() {
-  const [industryList, setIndustryList] = useState(fallbackIndustries);
+  const [industryList, setIndustryList] = useState(() => getLocalItem("dezoryn_admin_industries", fallbackIndustries));
 
   const refreshIndustries = () => {
     getAdminIndustries()
@@ -60,13 +61,16 @@ export default function AdminIndustriesPage() {
         const list = Array.isArray(data) ? data : data?.industries || [];
         if (list.length > 0) {
           setIndustryList(list);
+          saveLocalItem("dezoryn_admin_industries", list);
         } else {
-          setIndustryList(fallbackIndustries);
+          const saved = getLocalItem("dezoryn_admin_industries");
+          setIndustryList(saved?.length ? saved : fallbackIndustries);
         }
       })
       .catch((err) => {
         console.warn("Using website industries fallback:", err.message);
-        setIndustryList(fallbackIndustries);
+        const saved = getLocalItem("dezoryn_admin_industries");
+        setIndustryList(saved?.length ? saved : fallbackIndustries);
       });
   };
 
@@ -171,17 +175,18 @@ export default function AdminIndustriesPage() {
     } catch (err) {
       console.warn("API industry save notice:", err.message);
       const exists = industryList.some((i) => i.slug === updated.slug);
+      let nextList;
       if (exists) {
-        setIndustryList(
-          industryList.map((i) => (i.slug === updated.slug ? updated : i))
-        );
+        nextList = industryList.map((i) => (i.slug === updated.slug ? updated : i));
       } else {
-        setIndustryList([...industryList, updated]);
+        nextList = [...industryList, updated];
       }
+      setIndustryList(nextList);
+      saveLocalItem("dezoryn_admin_industries", nextList);
       setToast({
-        type: "success",
-        message: "Industry Blueprint Saved",
-        description: `Saved "${updated.name}".`,
+        type: "warning",
+        message: "Industry Blueprint Saved Locally",
+        description: `Saved "${updated.name}". Note: Backend synchronization pending.`,
       });
       setIsEditorOpen(false);
     }
@@ -200,7 +205,9 @@ export default function AdminIndustriesPage() {
         description: `"${deleteTarget.name}" deleted from active industries.`,
       });
     } catch {
-      setIndustryList(industryList.filter((i) => i.slug !== deleteTarget.slug));
+      const nextList = industryList.filter((i) => i.slug !== deleteTarget.slug);
+      setIndustryList(nextList);
+      saveLocalItem("dezoryn_admin_industries", nextList);
       setToast({
         type: "warning",
         message: "Industry Vertical Removed",

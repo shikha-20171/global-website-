@@ -26,6 +26,7 @@ import EditSectionModal from "./components/EditSectionModal";
 import VersionHistoryModal from "./components/VersionHistoryModal";
 import AdminPreviewPanel from "@/components/admin/AdminPreviewPanel";
 import { getAdminSections, updateAdminSection } from "@/lib/api";
+import { getLocalItem, saveLocalItem } from "@/lib/storage";
 
 export const fallbackHomepageSections = [
   {
@@ -175,7 +176,7 @@ export const fallbackHomepageSections = [
 ];
 
 export default function AdminHomepageBuilderPage() {
-  const [sections, setSections] = useState(fallbackHomepageSections);
+  const [sections, setSections] = useState(() => getLocalItem("dezoryn_homepage_sections", fallbackHomepageSections));
   const [selectedSection, setSelectedSection] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isVersionModalOpen, setIsVersionModalOpen] = useState(false);
@@ -211,14 +212,17 @@ export default function AdminHomepageBuilderPage() {
             lastEdited: "Recently",
           }));
           setSections(mapped);
+          saveLocalItem("dezoryn_homepage_sections", mapped);
         } else {
-          setSections(fallbackHomepageSections);
+          const saved = getLocalItem("dezoryn_homepage_sections");
+          setSections(saved || fallbackHomepageSections);
         }
       })
       .catch((err) => {
-        console.warn("Using fallback homepage sections:", err.message);
+        console.warn("Using stored homepage sections:", err.message);
         if (mounted) {
-          setSections(fallbackHomepageSections);
+          const saved = getLocalItem("dezoryn_homepage_sections");
+          setSections(saved && saved.length > 0 ? saved : fallbackHomepageSections);
         }
       });
 
@@ -237,10 +241,11 @@ export default function AdminHomepageBuilderPage() {
     updated[index - 1].order = index;
     updated[index].order = index + 1;
     setSections(updated);
-    if (updated[index - 1].id && !updated[index - 1].id.startsWith("sec_")) {
+    saveLocalItem("dezoryn_homepage_sections", updated);
+    if (updated[index - 1].id) {
       updateAdminSection(updated[index - 1].id, { displayOrder: index }).catch(() => {});
     }
-    if (updated[index].id && !updated[index].id.startsWith("sec_")) {
+    if (updated[index].id) {
       updateAdminSection(updated[index].id, { displayOrder: index + 1 }).catch(() => {});
     }
     setToast({
@@ -260,10 +265,11 @@ export default function AdminHomepageBuilderPage() {
     updated[index].order = index + 1;
     updated[index + 1].order = index + 2;
     setSections(updated);
-    if (updated[index].id && !updated[index].id.startsWith("sec_")) {
+    saveLocalItem("dezoryn_homepage_sections", updated);
+    if (updated[index].id) {
       updateAdminSection(updated[index].id, { displayOrder: index + 1 }).catch(() => {});
     }
-    if (updated[index + 1].id && !updated[index + 1].id.startsWith("sec_")) {
+    if (updated[index + 1].id) {
       updateAdminSection(updated[index + 1].id, { displayOrder: index + 2 }).catch(() => {});
     }
     setToast({
@@ -279,8 +285,9 @@ export default function AdminHomepageBuilderPage() {
       sec.id === id ? { ...sec, enabled: !sec.enabled, status: !sec.enabled ? "Published" : "Draft" } : sec
     );
     setSections(updated);
+    saveLocalItem("dezoryn_homepage_sections", updated);
     const target = updated.find((s) => s.id === id);
-    if (id && !id.startsWith("sec_")) {
+    if (id) {
       try {
         await updateAdminSection(id, { isEnabled: target.enabled });
       } catch (err) {}
@@ -299,9 +306,10 @@ export default function AdminHomepageBuilderPage() {
       s.id === selectedSection.id ? { ...selectedSection, lastEdited: "Just now" } : s
     );
     setSections(updated);
+    saveLocalItem("dezoryn_homepage_sections", updated);
     setIsEditModalOpen(false);
     try {
-      if (selectedSection.id && !selectedSection.id.startsWith("sec_")) {
+      if (selectedSection.id) {
         await updateAdminSection(selectedSection.id, {
           name: selectedSection.name,
           headline: selectedSection.headline,
@@ -325,28 +333,30 @@ export default function AdminHomepageBuilderPage() {
       });
     } catch (err) {
       setToast({
-        type: "success",
-        message: "Section Configured",
-        description: `Changes to "${selectedSection.name}" saved in layout.`,
+        type: "warning",
+        message: "Section Saved Locally",
+        description: `Changes to "${selectedSection.name}" saved. Note: Backend synchronization pending.`,
       });
     }
   };
 
   const handleSaveDraft = () => {
+    saveLocalItem("dezoryn_homepage_sections", sections);
     setToast({
       type: "success",
       message: "Homepage Draft Saved",
-      description: "All section layouts and content modifications saved.",
+      description: "All section layouts and content modifications saved locally.",
     });
   };
 
   const handlePublishAll = async () => {
     const updated = sections.map((s) => ({ ...s, status: "Published", lastEdited: "Just now" }));
     setSections(updated);
+    saveLocalItem("dezoryn_homepage_sections", updated);
     try {
       for (const s of updated) {
-        if (s.id && !s.id.startsWith("sec_")) {
-          await updateAdminSection(s.id, { status: "PUBLISHED" }).catch(() => {});
+        if (s.id) {
+          await updateAdminSection(s.id, { isEnabled: true, status: "PUBLISHED" }).catch(() => {});
         }
       }
       setToast({
@@ -356,15 +366,16 @@ export default function AdminHomepageBuilderPage() {
       });
     } catch (e) {
       setToast({
-        type: "success",
-        message: "Homepage Published",
-        description: "Layout updated on corporate website.",
+        type: "info",
+        message: "Homepage Layout Saved",
+        description: "All sections saved to browser storage.",
       });
     }
   };
 
   const handleRollback = () => {
     setSections(fallbackHomepageSections);
+    saveLocalItem("dezoryn_homepage_sections", fallbackHomepageSections);
     setIsVersionModalOpen(false);
     setToast({
       type: "info",

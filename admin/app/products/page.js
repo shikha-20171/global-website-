@@ -26,6 +26,7 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminImageUploader from "@/components/admin/AdminImageUploader";
 import { products as websiteProducts } from "@/lib/data";
+import { getLocalItem, saveLocalItem } from "@/lib/storage";
 import {
   getAdminProducts,
   createAdminProduct,
@@ -69,7 +70,7 @@ const DEFAULT_CATEGORIES = [
 ];
 
 export default function AdminProductsPage() {
-  const [productList, setProductList] = useState(fallbackProducts);
+  const [productList, setProductList] = useState(() => getLocalItem("dezoryn_admin_products", fallbackProducts));
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -99,13 +100,16 @@ export default function AdminProductsPage() {
             unlisted: p.status === "DRAFT",
           }));
           setProductList(mapped);
+          saveLocalItem("dezoryn_admin_products", mapped);
         } else {
-          setProductList(fallbackProducts);
+          const saved = getLocalItem("dezoryn_admin_products");
+          setProductList(saved || fallbackProducts);
         }
       })
       .catch((err) => {
-        console.warn("Using website products catalog notice:", err.message);
-        setProductList(fallbackProducts);
+        console.warn("Using stored products catalog notice:", err.message);
+        const saved = getLocalItem("dezoryn_admin_products");
+        setProductList(saved && saved.length > 0 ? saved : fallbackProducts);
       })
       .finally(() => setLoading(false));
   };
@@ -211,42 +215,37 @@ export default function AdminProductsPage() {
       return;
     }
 
+    const updatedList = productList.some((p) => p.slug === editingProduct.slug)
+      ? productList.map((p) => (p.slug === editingProduct.slug ? editingProduct : p))
+      : [editingProduct, ...productList];
+    setProductList(updatedList);
+    saveLocalItem("dezoryn_admin_products", updatedList);
+
     try {
       const exists = productList.find(
         (p) => p.slug === editingProduct.slug || p.id === editingProduct.id
       );
-      if (exists && exists.id && !exists.id.startsWith("prod-")) {
+      if (exists && exists.id && !exists.id.startsWith("prod-") && !exists.id.startsWith("prod_")) {
         await updateAdminProduct(exists.id, editingProduct);
-        setToast({
-          type: "success",
-          message: "Product Updated",
-          description: `Changes saved to PostgreSQL database for "${editingProduct.name}".`,
-        });
       } else {
-        await createAdminProduct(editingProduct);
-        setToast({
-          type: "success",
-          message: "Product Created",
-          description: `"${editingProduct.name}" created in PostgreSQL database.`,
-        });
-      }
-      refreshProducts();
-    } catch (err) {
-      console.warn("API product save notice:", err.message);
-      const exists = productList.some((p) => p.slug === editingProduct.slug);
-      if (exists) {
-        setProductList(
-          productList.map((p) =>
-            p.slug === editingProduct.slug ? editingProduct : p
-          )
-        );
-      } else {
-        setProductList([editingProduct, ...productList]);
+        try {
+          await updateAdminProduct(editingProduct.slug, editingProduct);
+        } catch {
+          await createAdminProduct(editingProduct);
+        }
       }
       setToast({
         type: "success",
-        message: "Product Saved",
-        description: `Changes updated for "${editingProduct.name}".`,
+        message: "Product Updated",
+        description: `Changes saved to Neon PostgreSQL database for "${editingProduct.name}".`,
+      });
+      refreshProducts();
+    } catch (err) {
+      console.warn("API product save notice:", err.message);
+      setToast({
+        type: "warning",
+        message: "Saved in Browser (Backend Offline)",
+        description: `Changes to "${editingProduct.name}" are preserved in your browser! Make sure your backend server is running or connected to sync with Neon database.`,
       });
     }
     setIsEditorOpen(false);
@@ -290,7 +289,9 @@ export default function AdminProductsPage() {
     } catch (err) {
       console.warn("Delete API call notice:", err.message);
     }
-    setProductList(productList.filter((p) => p.slug !== deleteModal.slug));
+    const updatedList = productList.filter((p) => p.slug !== deleteModal.slug);
+    setProductList(updatedList);
+    saveLocalItem("dezoryn_admin_products", updatedList);
     setToast({
       type: "warning",
       message: "Product Removed",

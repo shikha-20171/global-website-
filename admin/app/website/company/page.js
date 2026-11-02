@@ -33,6 +33,7 @@ import LeaderModal from "./components/LeaderModal";
 import OfficeModal from "./components/OfficeModal";
 import { getAdminCompanyProfile, saveAdminCompanyProfile } from "@/lib/api";
 import { modernTechStack } from "@/lib/data";
+import { getLocalItem, saveLocalItem } from "@/lib/storage";
 
 const DEFAULT_PILLARS = [
   {
@@ -63,10 +64,10 @@ const DEFAULT_PILLARS = [
 
 export default function AdminCompanyPage() {
   const [activeTab, setActiveTab] = useState("pillars");
-  const [pillars, setPillars] = useState(DEFAULT_PILLARS);
+  const [pillars, setPillars] = useState(() => getLocalItem("dezoryn_company_pillars", DEFAULT_PILLARS));
   const [techStack, setTechStack] = useState(modernTechStack);
-  const [leaders, setLeaders] = useState([]);
-  const [offices, setOffices] = useState([]);
+  const [leaders, setLeaders] = useState(() => getLocalItem("dezoryn_company_leaders", []));
+  const [offices, setOffices] = useState(() => getLocalItem("dezoryn_company_offices", []));
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -92,8 +93,8 @@ export default function AdminCompanyPage() {
         const data = res?.data || res;
         if (data) {
           if (data.mission || data.vision || data.values) {
-            setPillars((prev) =>
-              prev.map((p) => {
+            setPillars((prev) => {
+              const updated = prev.map((p) => {
                 if (p.id === "mission" && data.mission) return { ...p, statement: data.mission };
                 if (p.id === "vision" && data.vision) return { ...p, statement: data.vision };
                 if (p.id === "values" && data.values) {
@@ -105,25 +106,39 @@ export default function AdminCompanyPage() {
                   return { ...p, statement: valStr };
                 }
                 return p;
-              })
-            );
+              });
+              saveLocalItem("dezoryn_company_pillars", updated);
+              return updated;
+            });
           }
           if (Array.isArray(data.leadershipRoster)) {
-            setLeaders(data.leadershipRoster.map((l, idx) => ({
+            const mappedLeaders = data.leadershipRoster.map((l, idx) => ({
               ...l,
               id: l.id || `lead_${idx + 1}`,
               avatar: l.avatar || "/team/placeholder.jpg",
-            })));
+            }));
+            setLeaders(mappedLeaders);
+            saveLocalItem("dezoryn_company_leaders", mappedLeaders);
           }
           if (Array.isArray(data.officeLocations)) {
-            setOffices(data.officeLocations.map((o, idx) => ({
+            const mappedOffices = data.officeLocations.map((o, idx) => ({
               ...o,
               id: o.id || `off_${idx + 1}`,
-            })));
+            }));
+            setOffices(mappedOffices);
+            saveLocalItem("dezoryn_company_offices", mappedOffices);
           }
         }
       })
-      .catch((err) => console.warn("Live company profile load:", err.message));
+      .catch((err) => {
+        console.warn("Live company profile load notice:", err.message);
+        const storedPillars = getLocalItem("dezoryn_company_pillars");
+        if (storedPillars) setPillars(storedPillars);
+        const storedLeaders = getLocalItem("dezoryn_company_leaders");
+        if (storedLeaders) setLeaders(storedLeaders);
+        const storedOffices = getLocalItem("dezoryn_company_offices");
+        if (storedOffices) setOffices(storedOffices);
+      });
   }, []);
 
   const syncBackend = async (newPillars = pillars, newLeaders = leaders, newOffices = offices) => {
@@ -148,17 +163,20 @@ export default function AdminCompanyPage() {
   const handleSavePillars = async (e) => {
     e.preventDefault();
     setLoading(true);
+    saveLocalItem("dezoryn_company_pillars", pillars);
     const ok = await syncBackend(pillars, leaders, offices);
     setLoading(false);
     if (ok) {
       setToast({ message: "Corporate Mission, Vision & Values updated live on global website!", type: "success" });
     } else {
-      setToast({ message: "Updated locally. Note: Backend synchronization completed.", type: "success" });
+      setToast({ message: "Updated in layout. Note: Backend synchronization pending.", type: "warning" });
     }
   };
 
   const handlePillarChange = (id, newStatement) => {
-    setPillars(pillars.map((p) => (p.id === id ? { ...p, statement: newStatement } : p)));
+    const updated = pillars.map((p) => (p.id === id ? { ...p, statement: newStatement } : p));
+    setPillars(updated);
+    saveLocalItem("dezoryn_company_pillars", updated);
   };
 
   const handleSaveLeader = async (savedLeader) => {
@@ -173,6 +191,7 @@ export default function AdminCompanyPage() {
       setToast({ message: `New executive ${leaderData.name} added!`, type: "success" });
     }
     setLeaders(updated);
+    saveLocalItem("dezoryn_company_leaders", updated);
     setIsLeaderModalOpen(false);
     await syncBackend(pillars, updated, offices);
   };
@@ -189,6 +208,7 @@ export default function AdminCompanyPage() {
       setToast({ message: `New office in ${officeData.city} added!`, type: "success" });
     }
     setOffices(updated);
+    saveLocalItem("dezoryn_company_offices", updated);
     setIsOfficeModalOpen(false);
     await syncBackend(pillars, leaders, updated);
   };
@@ -198,11 +218,13 @@ export default function AdminCompanyPage() {
     if (deleteTarget.type === "leader") {
       const updated = leaders.filter((l) => l.id !== deleteTarget.item.id);
       setLeaders(updated);
+      saveLocalItem("dezoryn_company_leaders", updated);
       setToast({ message: "Leader removed from executive board", type: "success" });
       await syncBackend(pillars, updated, offices);
     } else if (deleteTarget.type === "office") {
       const updated = offices.filter((o) => o.id !== deleteTarget.item.id);
       setOffices(updated);
+      saveLocalItem("dezoryn_company_offices", updated);
       setToast({ message: "Office location removed", type: "success" });
       await syncBackend(pillars, leaders, updated);
     }

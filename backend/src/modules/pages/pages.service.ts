@@ -212,8 +212,16 @@ export class PagesService {
   }
 
   async updateSection(id: string, input: UpdateSectionInput, actorName: string) {
+    const existing = await prisma.pageSection.findFirst({
+      where: {
+        OR: [{ id }, { sectionKey: id }],
+      },
+    });
+
+    const targetId = existing ? existing.id : id;
+
     const updated = await prisma.pageSection.update({
-      where: { id },
+      where: { id: targetId },
       data: input,
     });
 
@@ -222,7 +230,7 @@ export class PagesService {
       action: "Updated Page Section",
       module: "Website CMS",
       entityType: "PageSection",
-      entityId: id,
+      entityId: targetId,
       details: `Updated section "${updated.name}" (${updated.sectionKey})`,
       result: AuditResult.SUCCESS,
     });
