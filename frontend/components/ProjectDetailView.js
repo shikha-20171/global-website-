@@ -15,10 +15,35 @@ import {
 } from "lucide-react";
 
 export default function ProjectDetailView({ params, initialProject }) {
-  const p = initialProject || projects.find((x) => x.slug === params.slug);
-  if (!p) notFound();
+  const safeSlug = params?.slug || initialProject?.slug;
+  const matchedStatic = projects.find((x) => x.slug === safeSlug) || {};
+  const raw = initialProject || matchedStatic;
 
-  const details = caseStudiesDetails[params.slug];
+  if (!raw || (!raw.name && !raw.slug && !matchedStatic.slug)) {
+    notFound();
+  }
+
+  const p = {
+    ...matchedStatic,
+    ...(raw || {}),
+    slug: safeSlug || raw?.slug || "project",
+    name: raw?.name || raw?.title || matchedStatic?.name || "Project Specification",
+    industry: raw?.industry || raw?.category || matchedStatic?.industry || "Enterprise",
+    type: raw?.type || raw?.category || matchedStatic?.type || "SaaS",
+    result: raw?.result || raw?.shortDescription || raw?.summary || matchedStatic?.result || "Production enterprise software deployment.",
+    tech: Array.isArray(raw?.techStack)
+      ? raw.techStack
+      : Array.isArray(raw?.tech)
+      ? raw.tech
+      : Array.isArray(matchedStatic?.tech)
+      ? matchedStatic.tech
+      : ["Next.js", "Node.js", "Cloud Architecture"],
+    image: raw?.featuredImage || raw?.image || matchedStatic?.image,
+    hue: raw?.hue ?? matchedStatic?.hue ?? 210,
+    product: raw?.product || matchedStatic?.product,
+  };
+
+  const details = safeSlug ? caseStudiesDetails[safeSlug] : null;
 
   return (
     <>
@@ -112,7 +137,7 @@ export default function ProjectDetailView({ params, initialProject }) {
               <div className="mt-6 rounded-xl border border-white/10 bg-[#070b16] p-5">
                 <div className="text-xs font-mono text-white mb-2">Technology Stack</div>
                 <div className="flex flex-wrap gap-2">
-                  {p.tech.map((t) => (
+                  {(Array.isArray(p.tech) ? p.tech : ["Next.js", "Node.js", "Cloud Architecture"]).map((t) => (
                     <span key={t} className="rounded border border-line bg-white/5 px-2.5 py-1 text-xs font-mono text-cool">
                       {t}
                     </span>
@@ -185,15 +210,17 @@ export default function ProjectDetailView({ params, initialProject }) {
                 <p className="text-xs text-white/90 leading-relaxed">{details.solution}</p>
               </div>
 
-              <div className="mt-8">
-                <Link
-                  href={`/case-studies/${p.slug}`}
-                  className="btn btn-secondary h-10 px-5 text-xs font-medium inline-flex items-center gap-1.5"
-                >
-                  <span>View Full Architectural Milestones</span>
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
+              {p.slug && (
+                <div className="mt-8">
+                  <Link
+                    href={`/case-studies/${p.slug}`}
+                    className="btn btn-secondary h-10 px-5 text-xs font-medium inline-flex items-center gap-1.5"
+                  >
+                    <span>View Full Architectural Milestones</span>
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </section>
