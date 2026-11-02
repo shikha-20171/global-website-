@@ -174,6 +174,14 @@ export class ProductsService {
     const data: any = { ...input };
     if (input.slug) data.slug = input.slug.toLowerCase().trim();
 
+    delete data.id;
+    delete data.category;
+    delete data.features;
+    delete data.plans;
+    delete data.comparisonValues;
+    delete data.createdAt;
+    delete data.updatedAt;
+
     const existing = await prisma.product.findFirst({
       where: { OR: [{ id }, { slug: id }] },
     });

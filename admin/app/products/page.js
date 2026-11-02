@@ -103,13 +103,17 @@ export default function AdminProductsPage() {
           saveLocalItem("dezoryn_admin_products", mapped);
         } else {
           const saved = getLocalItem("dezoryn_admin_products");
-          setProductList(saved || fallbackProducts);
+          if (saved && saved.length > 0) {
+            setProductList(saved);
+          }
         }
       })
       .catch((err) => {
         console.warn("Using stored products catalog notice:", err.message);
         const saved = getLocalItem("dezoryn_admin_products");
-        setProductList(saved && saved.length > 0 ? saved : fallbackProducts);
+        if (saved && saved.length > 0) {
+          setProductList(saved);
+        }
       })
       .finally(() => setLoading(false));
   };
@@ -215,37 +219,59 @@ export default function AdminProductsPage() {
       return;
     }
 
-    const updatedList = productList.some((p) => p.slug === editingProduct.slug)
-      ? productList.map((p) => (p.slug === editingProduct.slug ? editingProduct : p))
-      : [editingProduct, ...productList];
+    const payload = {
+      ...editingProduct,
+      name: editingProduct.name.trim(),
+      slug: editingProduct.slug.toLowerCase().trim(),
+      tagline: editingProduct.tagline || editingProduct.name,
+      description: editingProduct.description || editingProduct.tagline || editingProduct.name,
+      category: typeof editingProduct.category === "object" ? editingProduct.category?.name : editingProduct.category,
+      size: String(editingProduct.size || "MEDIUM").toUpperCase(),
+      deployment: String(editingProduct.deployment || "CLOUD").toUpperCase().replace("-", "_"),
+      isAiPowered: Boolean(editingProduct.isAiPowered || editingProduct.ai),
+      isFeatured: Boolean(editingProduct.isFeatured || editingProduct.featured),
+      featured: Boolean(editingProduct.isFeatured || editingProduct.featured),
+      status: String(editingProduct.status || (editingProduct.unlisted ? "DRAFT" : "PUBLISHED")).toUpperCase(),
+      features: Array.isArray(editingProduct.features) ? editingProduct.features : [],
+      featuresList: Array.isArray(editingProduct.features) ? editingProduct.features : [],
+    };
+
+    const updatedList = productList.some((p) => p.slug === payload.slug)
+      ? productList.map((p) => (p.slug === payload.slug ? { ...p, ...payload } : p))
+      : [{ ...editingProduct, ...payload }, ...productList];
     setProductList(updatedList);
     saveLocalItem("dezoryn_admin_products", updatedList);
 
     try {
       const exists = productList.find(
-        (p) => p.slug === editingProduct.slug || p.id === editingProduct.id
+        (p) => p.slug === payload.slug || p.id === editingProduct.id
       );
-      if (exists && exists.id && !exists.id.startsWith("prod-") && !exists.id.startsWith("prod_")) {
-        await updateAdminProduct(exists.id, editingProduct);
-      } else {
+      const targetIdentifier = exists?.id && !exists.id.startsWith("prod-") && !exists.id.startsWith("prod_")
+        ? exists.id
+        : payload.slug;
+
+      try {
+        await updateAdminProduct(targetIdentifier, payload);
+      } catch (innerErr) {
         try {
-          await updateAdminProduct(editingProduct.slug, editingProduct);
+          await updateAdminProduct(payload.slug, payload);
         } catch {
-          await createAdminProduct(editingProduct);
+          await createAdminProduct(payload);
         }
       }
+
       setToast({
         type: "success",
         message: "Product Updated",
-        description: `Changes saved to Neon PostgreSQL database for "${editingProduct.name}".`,
+        description: `Changes saved to Neon PostgreSQL database for "${payload.name}".`,
       });
       refreshProducts();
     } catch (err) {
       console.warn("API product save notice:", err.message);
       setToast({
         type: "warning",
-        message: "Saved in Browser (Backend Offline)",
-        description: `Changes to "${editingProduct.name}" are preserved in your browser! Make sure your backend server is running or connected to sync with Neon database.`,
+        message: "Saved in Browser",
+        description: `Changes to "${payload.name}" preserved in browser! (Backend sync pending)`,
       });
     }
     setIsEditorOpen(false);

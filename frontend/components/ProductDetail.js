@@ -48,12 +48,26 @@ const SECURITY_ICON_MAP = {
 
 const id = (s) => s.toLowerCase().replace(/\s+/g, "-");
 
-export default function ProductDetail({ product: p }) {
+export default function ProductDetail({ product: initialP }) {
+  const [p, setP] = useState(initialP);
   const [active, setActive] = useState("Overview");
   const [mod, setMod] = useState(0);
   const [cycle, setCycle] = useState("monthly");
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [pricingHoveredIdx, setPricingHoveredIdx] = useState(null);
+
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("dezoryn_admin_products");
+      if (local) {
+        const parsed = JSON.parse(local);
+        const match = parsed.find((item) => item.slug === initialP?.slug);
+        if (match) {
+          setP((prev) => ({ ...prev, ...match }));
+        }
+      }
+    } catch (_) {}
+  }, [initialP?.slug]);
 
   const relatedProject = projects.find((proj) => proj.product === p.slug);
   const caseDetails = relatedProject ? caseStudiesDetails[relatedProject.slug] : null;

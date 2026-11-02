@@ -1,10 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 export default function AnimatedHeroTitle({
-  text = "Technology That Moves Businesses Forward.",
+  text: initialText = "Technology That Moves Businesses Forward.",
 }) {
+  const [text, setText] = useState(initialText);
+
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("dezoryn_homepage_sections");
+      if (local) {
+        const parsed = JSON.parse(local);
+        const hero = parsed.find((s) => s.id === "sec_hero" || s.sectionKey === "sec_hero");
+        if (hero?.headline) {
+          setText(hero.headline);
+        }
+      }
+    } catch (_) {}
+  }, []);
+
   // Split words to animate each word with smooth staggered physics
   const words = text.trim().split(/\s+/);
 

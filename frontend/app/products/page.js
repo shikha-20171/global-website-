@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
+import ProductCatalogGrid from "@/components/ProductCatalogGrid";
 import Button from "@/components/Button";
 import Heading from "@/components/Heading";
 import Reveal from "@/components/Reveal";
@@ -193,13 +194,7 @@ export default async function ProductsPage() {
             </div>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {liveProducts.map((p, idx) => (
-              <Reveal key={p.slug} delay={idx * 0.04}>
-                <ProductCard product={p} index={idx} compare={true} />
-              </Reveal>
-            ))}
-          </div>
+          <ProductCatalogGrid initialProducts={liveProducts} />
         </div>
       </section>
 

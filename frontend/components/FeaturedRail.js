@@ -1,13 +1,31 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import ProductCard from "./ProductCard";
 import Button from "./Button";
 import Heading from "./Heading";
 import Reveal from "./Reveal";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function FeaturedRail({ items }) {
+export default function FeaturedRail({ items: initialItems = [] }) {
+  const [items, setItems] = useState(initialItems);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    try {
+      const local = localStorage.getItem("dezoryn_admin_products");
+      if (local) {
+        const parsed = JSON.parse(local);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const featured = parsed.filter((p) => p.isFeatured || p.featured);
+          if (featured.length > 0) {
+            setItems(featured.slice(0, 4));
+          } else {
+            setItems(parsed.slice(0, 4));
+          }
+        }
+      }
+    } catch (_) {}
+  }, []);
 
   const scroll = (direction) => {
     if (scrollRef.current) {

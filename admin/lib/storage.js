@@ -27,3 +27,4 @@ export function removeLocalItem(key) {
     localStorage.removeItem(key);
   } catch (_) {}
 }
+

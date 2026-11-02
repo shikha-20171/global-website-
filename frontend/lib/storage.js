@@ -19,3 +19,4 @@ export function saveLocalItem(key, data) {
     localStorage.setItem(key, JSON.stringify(data));
   } catch (_) {}
 }
+

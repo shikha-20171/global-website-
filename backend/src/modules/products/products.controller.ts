@@ -9,7 +9,7 @@ import {
 } from "./products.schema.js";
 import { successResponse } from "../../shared/response.js";
 import { AuthenticatedRequest } from "../../shared/types.js";
-import { PublishStatus } from "@prisma/client";
+import { PublishStatus, BusinessSize, DeploymentType } from "@prisma/client";
 import { prisma } from "../../config/database.js";
 
 async function resolveCategoryId(body: any) {
@@ -32,6 +32,77 @@ async function resolveCategoryId(body: any) {
   }
   const fallback = await prisma.productCategory.findFirst();
   return fallback?.id || "cmvahys4m001ptpwicv7mrc95";
+}
+
+function sanitizeProductInput(body: any, categoryId?: string) {
+  const data: any = {};
+  if (body.name !== undefined) data.name = String(body.name).trim();
+  if (body.slug !== undefined) data.slug = String(body.slug).toLowerCase().trim();
+  if (body.tagline !== undefined) data.tagline = String(body.tagline).trim();
+  if (body.description !== undefined) data.description = String(body.description).trim();
+  if (categoryId) data.categoryId = categoryId;
+  else if (body.categoryId) data.categoryId = body.categoryId;
+  if (body.image !== undefined) data.image = body.image || null;
+  if (body.logoUrl !== undefined && !data.image) data.image = body.logoUrl;
+
+  // Size normalization (BusinessSize: SMALL, MEDIUM, LARGE, ENTERPRISE)
+  if (body.size !== undefined) {
+    const s = String(body.size).toUpperCase().trim();
+    if (["SMALL", "MEDIUM", "LARGE", "ENTERPRISE"].includes(s)) {
+      data.size = s as BusinessSize;
+    } else if (s === "STARTUP") {
+      data.size = BusinessSize.SMALL;
+    } else if (s === "GROWTH") {
+      data.size = BusinessSize.MEDIUM;
+    } else {
+      data.size = BusinessSize.MEDIUM;
+    }
+  }
+
+  // Deployment normalization (DeploymentType: CLOUD, HYBRID, ON_PREMISE)
+  if (body.deployment !== undefined) {
+    const d = String(body.deployment).toUpperCase().trim().replace(/[-\s]+/g, "_");
+    if (["CLOUD", "HYBRID", "ON_PREMISE"].includes(d)) {
+      data.deployment = d as DeploymentType;
+    } else {
+      data.deployment = DeploymentType.CLOUD;
+    }
+  }
+
+  // Booleans
+  if (body.isAiPowered !== undefined) data.isAiPowered = Boolean(body.isAiPowered);
+  else if (body.ai !== undefined) data.isAiPowered = Boolean(body.ai);
+
+  if (body.isFeatured !== undefined) data.isFeatured = Boolean(body.isFeatured);
+  else if (body.featured !== undefined) data.isFeatured = Boolean(body.featured);
+
+  if (body.isTrending !== undefined) data.isTrending = Boolean(body.isTrending);
+
+  // Status normalization (PublishStatus: PUBLISHED, DRAFT, ARCHIVED)
+  if (body.status !== undefined) {
+    const st = String(body.status).toUpperCase().trim();
+    data.status = st === "DRAFT" ? PublishStatus.DRAFT : PublishStatus.PUBLISHED;
+  } else if (body.unlisted !== undefined) {
+    data.status = body.unlisted ? PublishStatus.DRAFT : PublishStatus.PUBLISHED;
+  }
+
+  if (body.displayOrder !== undefined) data.displayOrder = Number(body.displayOrder) || 0;
+  if (body.rating !== undefined) data.rating = String(body.rating);
+
+  // JSON Array fields
+  if (Array.isArray(body.tags)) data.tags = body.tags;
+  if (Array.isArray(body.benefits)) data.benefits = body.benefits;
+  if (Array.isArray(body.modules)) data.modules = body.modules;
+  if (Array.isArray(body.integrations)) data.integrations = body.integrations;
+
+  // Features list
+  if (body.featuresList !== undefined) {
+    data.featuresList = body.featuresList;
+  } else if (Array.isArray(body.features)) {
+    data.featuresList = body.features;
+  }
+
+  return data;
 }
 
 export class ProductsController {
@@ -74,23 +145,22 @@ export class ProductsController {
     const authReq = request as AuthenticatedRequest;
     const body = (request.body as any) || {};
 
-    body.categoryId = await resolveCategoryId(body);
-    if (!body.tagline && body.description) {
-      body.tagline = body.description.slice(0, 100);
-    } else if (!body.tagline) {
-      body.tagline = body.name || "Enterprise SaaS Platform";
+    const categoryId = await resolveCategoryId(body);
+    const sanitized = sanitizeProductInput(body, categoryId);
+
+    if (!sanitized.slug && sanitized.name) {
+      sanitized.slug = sanitized.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     }
-    if (!body.description && body.tagline) {
-      body.description = body.tagline;
+    if (!sanitized.tagline && sanitized.description) {
+      sanitized.tagline = sanitized.description.slice(0, 100);
+    } else if (!sanitized.tagline) {
+      sanitized.tagline = sanitized.name || "Enterprise SaaS Platform";
     }
-    if (body.featured !== undefined && body.isFeatured === undefined) {
-      body.isFeatured = Boolean(body.featured);
-    }
-    if (body.unlisted !== undefined && body.status === undefined) {
-      body.status = body.unlisted ? PublishStatus.DRAFT : PublishStatus.PUBLISHED;
+    if (!sanitized.description && sanitized.tagline) {
+      sanitized.description = sanitized.tagline;
     }
 
-    const input = createProductSchema.parse(body);
+    const input = createProductSchema.parse(sanitized);
     const actorName = authReq.adminUser?.name || "Super Admin";
 
     const created = await productsService.createProduct(input, actorName);
@@ -102,17 +172,15 @@ export class ProductsController {
     const { id } = request.params as { id: string };
     const body = (request.body as any) || {};
 
-    if (body.category && !body.categoryId) {
-      body.categoryId = await resolveCategoryId(body);
-    }
-    if (body.featured !== undefined && body.isFeatured === undefined) {
-      body.isFeatured = Boolean(body.featured);
-    }
-    if (body.unlisted !== undefined && body.status === undefined) {
-      body.status = body.unlisted ? PublishStatus.DRAFT : PublishStatus.PUBLISHED;
+    let categoryId: string | undefined = undefined;
+    if (body.categoryId) {
+      categoryId = body.categoryId;
+    } else if (body.category) {
+      categoryId = await resolveCategoryId(body);
     }
 
-    const input = updateProductSchema.parse(body);
+    const sanitized = sanitizeProductInput(body, categoryId);
+    const input = updateProductSchema.parse(sanitized);
     const actorName = authReq.adminUser?.name || "Super Admin";
 
     const updated = await productsService.updateProduct(id, input, actorName);
