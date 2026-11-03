@@ -70,18 +70,35 @@ export default function ProductDetail({ product: initialP }) {
     } catch (_) {}
 
     // 2. Fetch fresh product data from live API (Neon PostgreSQL)
-    if (initialP?.slug) {
-      fetch(`/api/v1/products/${initialP.slug}`)
-        .then((res) => res.json())
-        .then((data) => {
-          const live = data?.data || data?.product;
-          if (live && live.name) {
-            setP((prev) => ({ ...prev, ...live }));
-          }
-        })
-        .catch(() => {});
-    }
-  }, [initialP?.slug]);
+    const fetchFreshProduct = () => {
+      if (initialP?.slug) {
+        fetch(`/api/v1/products/${initialP.slug}`)
+          .then((res) => res.json())
+          .then((data) => {
+            const live = data?.data || data?.product;
+            if (live && live.name) {
+              setP((prev) => ({ ...prev, ...live }));
+            }
+          })
+          .catch(() => {});
+      }
+    };
+
+    fetchFreshProduct();
+
+    // 3. Real-time Live Sync listener: updates in-place when admin edits without page reload
+    const handleLiveSync = (e) => {
+      if (e?.detail?.domain === "products" || !e?.detail?.domain) {
+        if (e?.detail?.payload && (e.detail.payload.slug === initialP?.slug || e.detail.payload.id === initialP?.id)) {
+          setP((prev) => ({ ...prev, ...e.detail.payload }));
+        }
+        fetchFreshProduct();
+      }
+    };
+
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
+    return () => window.removeEventListener("dezoryn_live_update", handleLiveSync);
+  }, [initialP?.slug, initialP?.id]);
 
   const relatedProject = projects.find((proj) => proj.product === p.slug);
   const caseDetails = relatedProject ? caseStudiesDetails[relatedProject.slug] : null;

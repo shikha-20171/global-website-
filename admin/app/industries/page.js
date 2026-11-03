@@ -35,7 +35,7 @@ import {
   updateAdminIndustry,
   deleteAdminIndustry,
 } from "@/lib/api";
-import { getLocalItem, saveLocalItem } from "@/lib/storage";
+import { getLocalItem, saveLocalItem, notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 const fallbackIndustries = websiteIndustries.map((ind, idx) => ({
   id: ind.id || `ind_${ind.slug}`,
@@ -170,6 +170,7 @@ export default function AdminIndustriesPage() {
           description: `Added "${updated.name}" to vertical industry registry.`,
         });
       }
+      notifyWebsiteLiveUpdate("industries", updated);
       refreshIndustries();
       setIsEditorOpen(false);
     } catch (err) {
@@ -183,6 +184,7 @@ export default function AdminIndustriesPage() {
       }
       setIndustryList(nextList);
       saveLocalItem("dezoryn_admin_industries", nextList);
+      notifyWebsiteLiveUpdate("industries", updated);
       setToast({
         type: "warning",
         message: "Industry Blueprint Saved Locally",

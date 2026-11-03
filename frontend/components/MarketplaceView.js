@@ -31,18 +31,41 @@ export default function MarketplaceView() {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
-    // Direct Axios API call inside MarketplaceView
-    api.get("/api/v1/products")
-      .then((res) => {
-        const data = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
-        if (Array.isArray(data) && data.length > 0) {
-          setLiveProducts(data);
+    const fetchMarketplaceProducts = () => {
+      api.get("/api/v1/products")
+        .then((res) => {
+          const data = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+          if (Array.isArray(data) && data.length > 0) {
+            setLiveProducts(data);
+          }
+        })
+        .catch((err) => {
+          console.warn("Marketplace live data notice:", err?.message || err);
+        })
+        .finally(() => setLoading(false));
+    };
+
+    fetchMarketplaceProducts();
+
+    // Real-time live sync: updates without page reload
+    const handleLiveSync = (e) => {
+      if (e?.detail?.domain === "products" || !e?.detail?.domain) {
+        if (e?.detail?.payload && typeof e.detail.payload === "object") {
+          const updated = e.detail.payload;
+          setLiveProducts((prev) => {
+            const exists = prev.some((p) => p.slug === updated.slug || p.id === updated.id);
+            if (exists) {
+              return prev.map((p) => (p.slug === updated.slug || p.id === updated.id ? { ...p, ...updated } : p));
+            }
+            return [updated, ...prev];
+          });
         }
-      })
-      .catch((err) => {
-        console.warn("Marketplace live data notice:", err?.message || err);
-      })
-      .finally(() => setLoading(false));
+        fetchMarketplaceProducts();
+      }
+    };
+
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
+    return () => window.removeEventListener("dezoryn_live_update", handleLiveSync);
   }, []);
 
   useEffect(() => { const t = setTimeout(() => setDq(q.trim().toLowerCase()), 180); return () => clearTimeout(t); }, [q]);

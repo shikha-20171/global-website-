@@ -26,7 +26,7 @@ import EditSectionModal from "./components/EditSectionModal";
 import VersionHistoryModal from "./components/VersionHistoryModal";
 import AdminPreviewPanel from "@/components/admin/AdminPreviewPanel";
 import { getAdminSections, updateAdminSection } from "@/lib/api";
-import { getLocalItem, saveLocalItem } from "@/lib/storage";
+import { getLocalItem, saveLocalItem, notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 export const fallbackHomepageSections = [
   {
@@ -242,6 +242,7 @@ export default function AdminHomepageBuilderPage() {
     updated[index].order = index + 1;
     setSections(updated);
     saveLocalItem("dezoryn_homepage_sections", updated);
+    notifyWebsiteLiveUpdate("homepage", updated);
     if (updated[index - 1].id) {
       updateAdminSection(updated[index - 1].id, { displayOrder: index }).catch(() => {});
     }
@@ -266,6 +267,7 @@ export default function AdminHomepageBuilderPage() {
     updated[index + 1].order = index + 2;
     setSections(updated);
     saveLocalItem("dezoryn_homepage_sections", updated);
+    notifyWebsiteLiveUpdate("homepage", updated);
     if (updated[index].id) {
       updateAdminSection(updated[index].id, { displayOrder: index + 1 }).catch(() => {});
     }
@@ -286,6 +288,7 @@ export default function AdminHomepageBuilderPage() {
     );
     setSections(updated);
     saveLocalItem("dezoryn_homepage_sections", updated);
+    notifyWebsiteLiveUpdate("homepage", updated);
     const target = updated.find((s) => s.id === id);
     if (id) {
       try {
@@ -307,6 +310,7 @@ export default function AdminHomepageBuilderPage() {
     );
     setSections(updated);
     saveLocalItem("dezoryn_homepage_sections", updated);
+    notifyWebsiteLiveUpdate("homepage", updated);
     setIsEditModalOpen(false);
     try {
       if (selectedSection.id) {

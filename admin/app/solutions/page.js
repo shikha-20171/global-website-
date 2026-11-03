@@ -26,7 +26,7 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import { fallbackSolutions } from "@/lib/data";
-import { getLocalItem, saveLocalItem } from "@/lib/storage";
+import { getLocalItem, saveLocalItem, notifyWebsiteLiveUpdate } from "@/lib/storage";
 import {
   getAdminSolutions,
   createAdminSolution,
@@ -175,6 +175,7 @@ export default function AdminSolutionsPage() {
           description: `Added "${payload.name}" to solutions architecture catalog.`,
         });
       }
+      notifyWebsiteLiveUpdate("solutions", payload);
       refreshSolutions();
       setIsEditorOpen(false);
     } catch (err) {
@@ -188,6 +189,7 @@ export default function AdminSolutionsPage() {
       }
       setSolutions(updated);
       saveLocalItem("dezoryn_admin_solutions", updated);
+      notifyWebsiteLiveUpdate("solutions", payload);
       setToast({
         type: "warning",
         message: "Solution Saved Locally",

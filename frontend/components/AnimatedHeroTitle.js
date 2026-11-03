@@ -9,16 +9,36 @@ export default function AnimatedHeroTitle({
   const [text, setText] = useState(initialText);
 
   useEffect(() => {
-    try {
-      const local = localStorage.getItem("dezoryn_homepage_sections");
-      if (local) {
-        const parsed = JSON.parse(local);
-        const hero = parsed.find((s) => s.id === "sec_hero" || s.sectionKey === "sec_hero");
-        if (hero?.headline) {
-          setText(hero.headline);
+    const updateTitle = () => {
+      try {
+        const local = localStorage.getItem("dezoryn_homepage_sections");
+        if (local) {
+          const parsed = JSON.parse(local);
+          const hero = parsed.find((s) => s.id === "sec_hero" || s.sectionKey === "sec_hero");
+          if (hero?.headline) {
+            setText(hero.headline);
+          }
         }
+      } catch (_) {}
+    };
+
+    updateTitle();
+
+    const handleLiveSync = (e) => {
+      if (e?.detail?.domain === "homepage" || !e?.detail?.domain) {
+        updateTitle();
+        fetch("/api/v1/pages/home")
+          .then((r) => r.json())
+          .then((d) => {
+            const hero = d?.data?.sections?.find((s) => s.sectionKey === "sec_hero" || s.name?.toLowerCase().includes("hero"));
+            if (hero?.headline) setText(hero.headline);
+          })
+          .catch(() => {});
       }
-    } catch (_) {}
+    };
+
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
+    return () => window.removeEventListener("dezoryn_live_update", handleLiveSync);
   }, []);
 
   // Split words to animate each word with smooth staggered physics

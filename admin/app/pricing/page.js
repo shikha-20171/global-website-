@@ -32,6 +32,7 @@ import {
   deleteAdminPricing,
   getAdminProducts,
 } from "@/lib/api";
+import { notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 const fallbackPlans = websiteProducts.flatMap((p) => {
   return (p.plans || []).map((pl) => {
@@ -219,6 +220,7 @@ export default function AdminPricingPlansPage() {
           userLimit: updatedPlan.userLimit,
           usageQuota: updatedPlan.usageLimit,
         });
+        notifyWebsiteLiveUpdate("pricing", updatedPlan);
         setToast({
           type: "success",
           message: "Pricing Plan Updated",

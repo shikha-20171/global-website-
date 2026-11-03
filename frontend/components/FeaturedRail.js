@@ -11,35 +11,48 @@ export default function FeaturedRail({ items: initialItems = [] }) {
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    try {
-      const local = localStorage.getItem("dezoryn_admin_products");
-      if (local) {
-        const parsed = JSON.parse(local);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const featured = parsed.filter((p) => p.isFeatured || p.featured);
-          if (featured.length > 0) {
-            setItems(featured.slice(0, 4));
-          } else {
-            setItems(parsed.slice(0, 4));
+    const fetchFeatured = () => {
+      try {
+        const local = localStorage.getItem("dezoryn_admin_products");
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const featured = parsed.filter((p) => p.isFeatured || p.featured);
+            if (featured.length > 0) {
+              setItems(featured.slice(0, 4));
+            } else {
+              setItems(parsed.slice(0, 4));
+            }
           }
         }
-      }
-    } catch (_) {}
+      } catch (_) {}
 
-    fetch("/api/v1/products")
-      .then((res) => res.json())
-      .then((res) => {
-        const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
-        if (Array.isArray(list) && list.length > 0) {
-          const featured = list.filter((p) => p.isFeatured || p.featured);
-          if (featured.length > 0) {
-            setItems(featured.slice(0, 4));
-          } else {
-            setItems(list.slice(0, 4));
+      fetch("/api/v1/products")
+        .then((res) => res.json())
+        .then((res) => {
+          const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+          if (Array.isArray(list) && list.length > 0) {
+            const featured = list.filter((p) => p.isFeatured || p.featured);
+            if (featured.length > 0) {
+              setItems(featured.slice(0, 4));
+            } else {
+              setItems(list.slice(0, 4));
+            }
           }
-        }
-      })
-      .catch(() => {});
+        })
+        .catch(() => {});
+    };
+
+    fetchFeatured();
+
+    const handleLiveSync = (e) => {
+      if (e?.detail?.domain === "products" || !e?.detail?.domain) {
+        fetchFeatured();
+      }
+    };
+
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
+    return () => window.removeEventListener("dezoryn_live_update", handleLiveSync);
   }, []);
 
   const scroll = (direction) => {

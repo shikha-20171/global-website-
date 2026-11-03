@@ -26,7 +26,7 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminImageUploader from "@/components/admin/AdminImageUploader";
 import { products as websiteProducts } from "@/lib/data";
-import { getLocalItem, saveLocalItem } from "@/lib/storage";
+import { getLocalItem, saveLocalItem, notifyWebsiteLiveUpdate } from "@/lib/storage";
 import {
   getAdminProducts,
   createAdminProduct,
@@ -313,6 +313,7 @@ export default function AdminProductsPage() {
         }
       }
 
+      notifyWebsiteLiveUpdate("products", payload);
       setToast({
         type: "success",
         message: "Product Updated",
@@ -321,6 +322,7 @@ export default function AdminProductsPage() {
       refreshProducts();
     } catch (err) {
       console.warn("API product save notice:", err.message);
+      notifyWebsiteLiveUpdate("products", payload);
       setToast({
         type: "warning",
         message: "Saved in Browser",
@@ -357,6 +359,7 @@ export default function AdminProductsPage() {
         console.warn("Could not persist featured status to backend:", err.message);
       }
     }
+    notifyWebsiteLiveUpdate("products", { slug, isFeatured: isNowFeatured, featured: isNowFeatured });
   };
 
   const handleConfirmDelete = async () => {
@@ -371,6 +374,7 @@ export default function AdminProductsPage() {
     const updatedList = productList.filter((p) => p.slug !== deleteModal.slug);
     setProductList(updatedList);
     saveLocalItem("dezoryn_admin_products", updatedList);
+    notifyWebsiteLiveUpdate("products", updatedList);
     setToast({
       type: "warning",
       message: "Product Removed",

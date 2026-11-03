@@ -26,72 +26,82 @@ export default function PricingView({ productSlug }) {
   useEffect(() => {
     let mounted = true;
 
-    fetch("/api/v1/products")
-      .then((res) => res.json())
-      .then((res) => {
-        const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
-        if (mounted && Array.isArray(list) && list.length > 0) {
-          setLiveProducts(list);
-        }
-      })
-      .catch(() => {});
-
-    // Direct Axios API calls inside PricingView
-    Promise.allSettled([
-      api.get("/api/v1/products").then((r) => r.data?.data || r.data?.products || (Array.isArray(r.data) ? r.data : [])),
-      api.get("/api/v1/pricing").then((r) => r.data?.data || r.data),
-    ]).then(
-      ([prodResult, planResult]) => {
-        if (!mounted) return;
-        let prods = products;
-        if (prodResult.status === "fulfilled" && Array.isArray(prodResult.value) && prodResult.value.length > 0) {
-          prods = prodResult.value;
-        }
-
-        if (planResult.status === "fulfilled" && planResult.value) {
-          const tiers =
-            planResult.value.plans ||
-            planResult.value.productSpecificTiers ||
-            planResult.value.defaultTiers ||
-            (Array.isArray(planResult.value) ? planResult.value : []);
-          if (Array.isArray(tiers) && tiers.length > 0) {
-            prods = prods.map((prod) => {
-              const matchingPlans = tiers.filter(
-                (t) => t.productId === prod.id || t.productSlug === prod.slug || t.product?.slug === prod.slug
-              );
-              if (matchingPlans.length > 0) {
-                return {
-                  ...prod,
-                  plans: matchingPlans.map((mp) => {
-                    const monthly = Number(mp.monthlyPriceUsd ?? mp.monthly_price_usd ?? mp.price ?? 49);
-                    const annual = Number(mp.annualPriceUsd ?? mp.annual_price_usd ?? mp.annual ?? Math.round(monthly * 0.8));
-                    return {
-                      id: mp.id || mp.slug || `plan-${monthly}`,
-                      name: mp.name,
-                      for: mp.for || mp.description || "For modern enterprise teams",
-                      price: monthly,
-                      monthlyPriceUsd: monthly,
-                      monthly_price_usd: monthly,
-                      annual: annual,
-                      annualPriceUsd: annual,
-                      annual_price_usd: annual,
-                      features: Array.isArray(mp.features) ? mp.features : [],
-                      highlight: Boolean(mp.isHighlighted || mp.highlighted),
-                      highlighted: Boolean(mp.isHighlighted || mp.highlighted),
-                    };
-                  }),
-                };
-              }
-              return prod;
-            });
+    const fetchPricingData = () => {
+      fetch("/api/v1/products")
+        .then((res) => res.json())
+        .then((res) => {
+          const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+          if (mounted && Array.isArray(list) && list.length > 0) {
+            setLiveProducts(list);
           }
+        })
+        .catch(() => {});
+
+      // Direct Axios API calls inside PricingView
+      Promise.allSettled([
+        api.get("/api/v1/products").then((r) => r.data?.data || r.data?.products || (Array.isArray(r.data) ? r.data : [])),
+        api.get("/api/v1/pricing").then((r) => r.data?.data || r.data),
+      ]).then(
+        ([prodResult, planResult]) => {
+          if (!mounted) return;
+          let prods = products;
+          if (prodResult.status === "fulfilled" && Array.isArray(prodResult.value) && prodResult.value.length > 0) {
+            prods = prodResult.value;
+          }
+
+          if (planResult.status === "fulfilled" && planResult.value) {
+            const tiers =
+              planResult.value.plans ||
+              planResult.value.productSpecificTiers ||
+              planResult.value.defaultTiers ||
+              (Array.isArray(planResult.value) ? planResult.value : []);
+            if (Array.isArray(tiers) && tiers.length > 0) {
+              prods = prods.map((prod) => {
+                const matchingPlans = tiers.filter(
+                  (t) => t.productId === prod.id || t.productSlug === prod.slug || t.product?.slug === prod.slug
+                );
+                if (matchingPlans.length > 0) {
+                  return {
+                    ...prod,
+                    plans: matchingPlans.map((mp) => {
+                      const monthly = Number(mp.monthlyPriceUsd ?? mp.monthly_price_usd ?? mp.price ?? 49);
+                      const annual = Number(mp.annualPriceUsd ?? mp.annual_price_usd ?? mp.annual ?? Math.round(monthly * 0.8));
+                      return {
+                        id: mp.id || mp.slug || `plan-${monthly}`,
+                        name: mp.name,
+                        for: mp.for || mp.description || "For modern enterprise teams",
+                        price: monthly,
+                        monthlyPriceUsd: monthly,
+                        monthly_price_usd: monthly,
+                        annual: annual,
+                        annualPriceUsd: annual,
+                        annual_price_usd: annual,
+                        features: Array.isArray(mp.features) ? mp.features : [],
+                        highlight: Boolean(mp.isHighlighted || mp.highlighted),
+                        highlighted: Boolean(mp.isHighlighted || mp.highlighted),
+                      };
+                    }),
+                  };
+                }
+                return prod;
+              });
+            }
+          }
+          setLiveProducts(prods);
         }
-        setLiveProducts(prods);
-      }
-    );
+      );
+    };
+
+    fetchPricingData();
+
+    const handleLiveSync = () => {
+      fetchPricingData();
+    };
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
 
     return () => {
       mounted = false;
+      window.removeEventListener("dezoryn_live_update", handleLiveSync);
     };
   }, []);
 

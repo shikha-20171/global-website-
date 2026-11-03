@@ -151,24 +151,33 @@ export default function Navbar() {
 
   useEffect(() => {
     let mounted = true;
-    // Direct Axios API call for live products
-    api.get("/api/v1/products")
-      .then((res) => {
-        const p = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
-        if (mounted && Array.isArray(p) && p.length > 0) setLiveProducts(p);
-      })
-      .catch(() => {});
 
-    // Direct Axios API call for live industries
-    api.get("/api/v1/industries")
-      .then((res) => {
-        const ind = res.data?.data || (Array.isArray(res.data) ? res.data : null);
-        if (mounted && Array.isArray(ind) && ind.length > 0) setLiveIndustries(ind);
-      })
-      .catch(() => {});
+    const fetchNavData = () => {
+      api.get("/api/v1/products")
+        .then((res) => {
+          const p = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+          if (mounted && Array.isArray(p) && p.length > 0) setLiveProducts(p);
+        })
+        .catch(() => {});
+
+      api.get("/api/v1/industries")
+        .then((res) => {
+          const ind = res.data?.data || (Array.isArray(res.data) ? res.data : null);
+          if (mounted && Array.isArray(ind) && ind.length > 0) setLiveIndustries(ind);
+        })
+        .catch(() => {});
+    };
+
+    fetchNavData();
+
+    const handleLiveSync = () => {
+      if (mounted) fetchNavData();
+    };
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
 
     return () => {
       mounted = false;
+      window.removeEventListener("dezoryn_live_update", handleLiveSync);
     };
   }, []);
 

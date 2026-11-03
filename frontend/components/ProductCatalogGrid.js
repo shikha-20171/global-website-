@@ -16,25 +16,48 @@ export default function ProductCatalogGrid({ initialProducts = [] }) {
       setProductsList(local);
     }
 
-    // 2. Fetch fresh products from live backend API / Neon PostgreSQL
-    fetch("/api/v1/products")
-      .then((res) => res.json())
-      .then((res) => {
-        const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
-        if (Array.isArray(list) && list.length > 0) {
-          setProductsList(list);
-        }
-      })
-      .catch(() => {
-        api.get("/api/v1/products")
-          .then((res) => {
-            const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
-            if (Array.isArray(list) && list.length > 0) {
-              setProductsList(list);
+    const fetchFreshProducts = () => {
+      fetch("/api/v1/products")
+        .then((res) => res.json())
+        .then((res) => {
+          const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+          if (Array.isArray(list) && list.length > 0) {
+            setProductsList(list);
+          }
+        })
+        .catch(() => {
+          api.get("/api/v1/products")
+            .then((res) => {
+              const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+              if (Array.isArray(list) && list.length > 0) {
+                setProductsList(list);
+              }
+            })
+            .catch(() => {});
+        });
+    };
+
+    fetchFreshProducts();
+
+    // 2. Real-time Live Sync listener: updates in-place when admin edits without page reload
+    const handleLiveSync = (e) => {
+      if (e?.detail?.domain === "products" || !e?.detail?.domain) {
+        if (e?.detail?.payload && typeof e.detail.payload === "object") {
+          const updated = e.detail.payload;
+          setProductsList((prev) => {
+            const exists = prev.some((p) => p.slug === updated.slug || p.id === updated.id);
+            if (exists) {
+              return prev.map((p) => (p.slug === updated.slug || p.id === updated.id ? { ...p, ...updated } : p));
             }
-          })
-          .catch(() => {});
-      });
+            return [updated, ...prev];
+          });
+        }
+        fetchFreshProducts();
+      }
+    };
+
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
+    return () => window.removeEventListener("dezoryn_live_update", handleLiveSync);
   }, []);
 
   return (
