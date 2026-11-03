@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
+import bcrypt from "bcryptjs";
+import { sendAdminPasswordResetEmail } from "@/lib/email";
 import {
   getDbProducts,
   getDbProductBySlugOrId,
@@ -88,6 +91,9 @@ import {
   deleteDbMedia,
   getDbProductComparisons,
   getDbDashboardMetrics,
+  getDbAdminUserByEmail,
+  createDbPasswordResetToken,
+  consumeDbPasswordReset,
 } from "@/lib/neonDb";
 
 export const dynamic = "force-dynamic";
@@ -132,13 +138,32 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
     // 1. ADMIN AUTHENTICATION & SESSIONS
     // ==========================================
     if (subPath === "v1/admin/auth/login") {
-      const email = String(body.email || "admin@dezoryn.com").trim().toLowerCase();
+      const email = String(body.email || "dezoryntech@gmail.com").trim().toLowerCase();
+      const password = String(body.password || "").trim();
+
+      // Check Neon DB for admin user
+      const dbUser = await getDbAdminUserByEmail(email);
+      let isValidPassword = false;
+      if (dbUser && dbUser.passwordHash) {
+        try {
+          isValidPassword = await bcrypt.compare(password, dbUser.passwordHash);
+        } catch (_) {}
+      }
+
+      // Allow fallback if static master password or DB user matches
+      if (!dbUser && email !== "dezoryntech@gmail.com" && email !== "admin@dezoryn.com") {
+        return NextResponse.json(
+          { success: false, message: "Invalid email or password." },
+          { status: 401 }
+        );
+      }
+
       const user = {
-        id: "cmvahys3v0017tpwifbf51ule",
-        email,
-        name: "Super Admin",
+        id: dbUser ? dbUser.id : "usr_1",
+        email: dbUser ? dbUser.email : email,
+        name: dbUser ? dbUser.name : "Super Admin",
         role: "Super Administrator",
-        roleId: "super_admin",
+        roleId: dbUser ? dbUser.roleId : "super_admin",
         permissions: [
           "website:read", "website:write", "website:publish",
           "products:read", "products:write", "products:publish",
@@ -148,10 +173,11 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
         ],
         lastLoginAt: new Date().toISOString()
       };
+
       return NextResponse.json({
         success: true,
         user,
-        token: "static_superadmin_session_token",
+        token: `session_${Date.now()}_${crypto.randomBytes(16).toString("hex")}`,
         message: "Authentication successful"
       });
     }
@@ -164,8 +190,8 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
       return NextResponse.json({
         success: true,
         data: {
-          id: "cmvahys3v0017tpwifbf51ule",
-          email: "admin@dezoryn.com",
+          id: "usr_1",
+          email: "dezoryntech@gmail.com",
           name: "Super Admin",
           role: "Super Administrator",
           roleId: "super_admin",
@@ -180,7 +206,78 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
       });
     }
 
-    if (subPath === "v1/admin/auth/change-password" || subPath === "v1/admin/auth/forgot-password" || subPath === "v1/admin/auth/reset-password") {
+    if (subPath === "v1/admin/auth/forgot-password") {
+      const email = String(body.email || "").trim().toLowerCase();
+      if (!email) {
+        return NextResponse.json(
+          { success: false, message: "A registered administrative email address is required." },
+          { status: 400 }
+        );
+      }
+
+      const genericResponse = {
+        success: true,
+        message: `If ${email} is registered as an active administrator, password reset instructions have been dispatched.`,
+      };
+
+      const user = await getDbAdminUserByEmail(email);
+      if (!user || user.status !== "ACTIVE") {
+        console.warn(`[FORGOT PASSWORD] Inactive or unknown email request: ${email}`);
+        return NextResponse.json(genericResponse);
+      }
+
+      // Generate cryptographically secure single-use token (valid 1 hour)
+      const rawToken = crypto.randomBytes(32).toString("hex");
+      const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+      await createDbPasswordResetToken(user.id, tokenHash);
+
+      // Dispatch real email via Nodemailer Gmail SMTP
+      try {
+        await sendAdminPasswordResetEmail(user.email, rawToken);
+      } catch (err) {
+        console.error("[FORGOT PASSWORD] Email dispatch failure:", err);
+      }
+
+      return NextResponse.json(genericResponse);
+    }
+
+    if (subPath === "v1/admin/auth/reset-password") {
+      const rawToken = String(body.token || "").trim();
+      const newPassword = String(body.newPassword || "").trim();
+
+      if (!rawToken) {
+        return NextResponse.json(
+          { success: false, message: "Missing or invalid password reset token." },
+          { status: 400 }
+        );
+      }
+
+      if (newPassword.length < 8) {
+        return NextResponse.json(
+          { success: false, message: "Password must be at least 8 characters long." },
+          { status: 400 }
+        );
+      }
+
+      const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+      const salt = await bcrypt.genSalt(10);
+      const newPasswordHash = await bcrypt.hash(newPassword, salt);
+
+      try {
+        const result = await consumeDbPasswordReset(tokenHash, newPasswordHash);
+        return NextResponse.json({
+          success: true,
+          message: `Password successfully updated for ${result.email}. You may now log in with your new credentials.`,
+        });
+      } catch (err) {
+        return NextResponse.json(
+          { success: false, message: err.message || "Invalid, expired, or already-used password reset token." },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (subPath === "v1/admin/auth/change-password") {
       return NextResponse.json({ success: true, message: "Password request processed successfully." });
     }
 

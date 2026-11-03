@@ -283,7 +283,7 @@ export default function AdminHeader({ setMobileOpen, pageTitle, currentUser }) {
                     Super Admin
                   </div>
                   <div className="text-xs text-slate-500 font-mono mt-0.5 truncate">
-                    {currentUser?.email || "admin@dezoryn.com"}
+                    {currentUser?.email || "dezoryntech@gmail.com"}
                   </div>
                   <div className="mt-1 inline-block text-[10px] font-mono font-bold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-200">
                     Role: Super Admin

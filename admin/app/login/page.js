@@ -20,7 +20,7 @@ import { adminLogin } from "@/lib/api";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@dezoryn.com");
+  const [email, setEmail] = useState("dezoryntech@gmail.com");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
     }
 
     if (!validateEmailFormat(sanitizedEmail)) {
-      setError("Please enter a valid administrative email format (e.g. admin@dezoryn.com).");
+      setError("Please enter a valid administrative email format (e.g. dezoryntech@gmail.com).");
       return;
     }
 
@@ -127,7 +127,7 @@ export default function AdminLoginPage() {
           <button
             type="button"
             onClick={() => {
-              setEmail("admin@dezoryn.com");
+              setEmail("dezoryntech@gmail.com");
               setEmailValid(true);
               setPassword("SuperSecretAdminPassword2026!");
               if (error) setError(null);
@@ -172,7 +172,7 @@ export default function AdminLoginPage() {
                 required
                 autoComplete="email"
                 className="h-11 w-full rounded-xl border border-slate-700/80 bg-slate-950/60 pl-10 pr-3.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 transition shadow-inner font-mono text-xs sm:text-sm"
-                placeholder="admin@dezoryn.com"
+                placeholder="dezoryntech@gmail.com"
               />
             </div>
           </div>

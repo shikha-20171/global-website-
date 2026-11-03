@@ -73,7 +73,7 @@ export default function ContactSalesPage() {
                 <Mail size={18} className="mt-0.5 text-electric shrink-0" />
                 <div>
                   <div className="text-xs font-mono text-cool uppercase">Enterprise Sales Desk</div>
-                  <div className="text-white font-medium">sales@dezoryn.com</div>
+                  <div className="text-white font-medium">dezoryntech@gmail.com / sales@dezoryn.com</div>
                 </div>
               </li>
               <li className="flex gap-3">

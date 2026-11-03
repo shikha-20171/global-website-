@@ -130,7 +130,7 @@ export default function ForgotPasswordPage() {
                     }}
                     required
                     autoComplete="email"
-                    placeholder="admin@dezoryn.com"
+                    placeholder="dezoryntech@gmail.com"
                     className="h-11 w-full rounded-xl border border-slate-700/80 bg-slate-950/60 pl-10 pr-3.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/25 transition shadow-inner font-mono text-xs sm:text-sm"
                   />
                 </div>

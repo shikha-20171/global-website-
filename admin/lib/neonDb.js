@@ -1613,3 +1613,98 @@ export async function deleteDbPricingPlan(idOrSlug) {
   await neonQuery(`DELETE FROM "ProductPlan" WHERE "id" = $1 OR "slug" = $1;`, [clean]);
   return { success: true };
 }
+
+/**
+ * Authentication & Password Reset Management
+ */
+export async function getDbAdminUserByEmail(email) {
+  const cleanEmail = String(email || "").trim().toLowerCase();
+  const sql = `
+    SELECT id, email, "passwordHash", name, "roleId", status, "twoFactorEnforced", "lastLoginAt"
+    FROM "AdminUser"
+    WHERE LOWER(TRIM(email)) = $1
+    LIMIT 1;
+  `;
+  const rows = await neonQuery(sql, [cleanEmail]);
+  return rows[0] || null;
+}
+
+function parseDbUtcDate(dt) {
+  if (!dt) return null;
+  if (dt instanceof Date) return dt;
+  const s = String(dt).trim();
+  return new Date(s.includes("Z") || s.includes("+") ? s : s.replace(" ", "T") + "Z");
+}
+
+export async function createDbPasswordResetToken(adminUserId, tokenHash) {
+  const tokenId = `rst_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  // Invalidate previous unused reset tokens
+  await neonQuery(
+    `UPDATE "PasswordResetToken" SET "usedAt" = NOW() WHERE "adminUserId" = $1 AND "usedAt" IS NULL;`,
+    [adminUserId]
+  );
+
+  const sql = `
+    INSERT INTO "PasswordResetToken" (id, "adminUserId", "tokenHash", "expiresAt", "createdAt")
+    VALUES ($1, $2, $3, NOW() + interval '1 hour', NOW())
+    RETURNING id, "adminUserId", "expiresAt", "createdAt";
+  `;
+  const rows = await neonQuery(sql, [tokenId, adminUserId, tokenHash]);
+  return rows[0] || null;
+}
+
+export async function getDbPasswordResetToken(tokenHash) {
+  const sql = `
+    SELECT 
+      t.id, t."adminUserId", t."tokenHash", t."expiresAt", t."usedAt", t."createdAt",
+      u.email as "adminEmail", u.name as "adminName", u.status as "adminStatus"
+    FROM "PasswordResetToken" t
+    JOIN "AdminUser" u ON t."adminUserId" = u.id
+    WHERE t."tokenHash" = $1
+    LIMIT 1;
+  `;
+  const rows = await neonQuery(sql, [tokenHash]);
+  return rows[0] || null;
+}
+
+export async function consumeDbPasswordReset(tokenHash, newPasswordHash) {
+  const token = await getDbPasswordResetToken(tokenHash);
+  if (!token) {
+    throw new Error("Invalid or unrecognized password reset token.");
+  }
+  if (token.usedAt) {
+    throw new Error("This password recovery link has already been used.");
+  }
+  const expiryDate = parseDbUtcDate(token.expiresAt);
+  if (expiryDate && expiryDate.getTime() < Date.now()) {
+    throw new Error("This password recovery link has expired (1-hour validity). Please request a new link.");
+  }
+  if (token.adminStatus !== "ACTIVE") {
+    throw new Error("This administrative account is not active.");
+  }
+
+  // Update user password
+  await neonQuery(
+    `UPDATE "AdminUser" SET "passwordHash" = $1, "updatedAt" = NOW() WHERE id = $2;`,
+    [newPasswordHash, token.adminUserId]
+  );
+
+  // Mark token as consumed
+  await neonQuery(
+    `UPDATE "PasswordResetToken" SET "usedAt" = NOW() WHERE id = $1;`,
+    [token.id]
+  );
+
+  // Revoke previous sessions
+  await neonQuery(
+    `UPDATE "AdminSession" SET "revokedAt" = NOW() WHERE "adminUserId" = $1 AND "revokedAt" IS NULL;`,
+    [token.adminUserId]
+  );
+
+  return {
+    success: true,
+    email: token.adminEmail,
+    name: token.adminName,
+  };
+}
+

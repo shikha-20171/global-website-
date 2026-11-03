@@ -63,7 +63,7 @@ export default function ContactPage() {
                 <Mail size={18} className="mt-0.5 text-electric shrink-0" />
                 <div>
                   <div className="text-xs font-mono text-cool uppercase">General &amp; Support Inquiries</div>
-                  <div className="text-white font-medium">support@dezoryn.com</div>
+                  <div className="text-white font-medium">dezoryntech@gmail.com / support@dezoryn.com</div>
                 </div>
               </li>
               <li className="flex gap-3">

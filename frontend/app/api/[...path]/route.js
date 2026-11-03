@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
+import bcrypt from "bcryptjs";
+import { sendInquiryNotification } from "@/lib/email";
 import {
   getDbProducts,
   getDbProductBySlugOrId,
@@ -132,9 +135,9 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
     // 1. ADMIN AUTHENTICATION & SESSIONS
     // ==========================================
     if (subPath === "v1/admin/auth/login") {
-      const email = String(body.email || "admin@dezoryn.com").trim().toLowerCase();
+      const email = String(body.email || "dezoryntech@gmail.com").trim().toLowerCase();
       const user = {
-        id: "cmvahys3v0017tpwifbf51ule",
+        id: "usr_1",
         email,
         name: "Super Admin",
         role: "Super Administrator",
@@ -151,7 +154,7 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
       return NextResponse.json({
         success: true,
         user,
-        token: "static_superadmin_session_token",
+        token: `session_${Date.now()}_static_token`,
         message: "Authentication successful"
       });
     }
@@ -164,8 +167,8 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
       return NextResponse.json({
         success: true,
         data: {
-          id: "cmvahys3v0017tpwifbf51ule",
-          email: "admin@dezoryn.com",
+          id: "usr_1",
+          email: "dezoryntech@gmail.com",
           name: "Super Admin",
           role: "Super Administrator",
           roleId: "super_admin",
@@ -655,6 +658,9 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
     if (subPath === "v1/leads" || subPath === "v1/contact" || subPath === "v1/data-deletion") {
       if (method === "POST") {
         const lead = await createDbLead(body);
+        sendInquiryNotification({ type: subPath.replace("v1/", ""), data: body }).catch((err) => {
+          console.warn("[LEAD EMAIL NOTIFICATION WARNING]:", err?.message || err);
+        });
         return NextResponse.json(
           { success: true, data: lead, message: "Request received and securely logged successfully!" },
           { status: 201 }
@@ -691,6 +697,9 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
     if (subPath === "v1/demos" || subPath === "v1/demo") {
       if (method === "POST") {
         const demo = await createDbDemo(body);
+        sendInquiryNotification({ type: "demo", data: body }).catch((err) => {
+          console.warn("[DEMO EMAIL NOTIFICATION WARNING]:", err?.message || err);
+        });
         return NextResponse.json(
           { success: true, data: demo, message: "Demo scheduled successfully!" },
           { status: 201 }

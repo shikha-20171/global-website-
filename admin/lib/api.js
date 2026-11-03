@@ -83,7 +83,7 @@ export async function adminLogin(email, password) {
     if (isStaticMatch) {
       const staticUser = {
         id: "cmvahys3v0017tpwifbf51ule",
-        email: cleanEmail || "admin@dezoryn.com",
+        email: cleanEmail || "dezoryntech@gmail.com",
         name: "Super Admin",
         role: "Super Administrator",
         roleId: "super_admin",
