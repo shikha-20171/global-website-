@@ -1,4 +1,5 @@
 import IndustriesClient from "./IndustriesClient";
+import { getDbIndustries } from "@/lib/neonDb";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +20,15 @@ export const metadata = buildMetadata({
   ],
 });
 
-export default function IndustriesPage() {
+export default async function IndustriesPage() {
+  let dbIndustries = null;
+  try {
+    const list = await getDbIndustries();
+    if (Array.isArray(list) && list.length > 0) {
+      dbIndustries = list;
+    }
+  } catch (_) {}
+
   const breadcrumbs = generateBreadcrumbSchema([
     { name: "Home", url: "/" },
     { name: "Industries", url: "/industries" },
@@ -31,7 +40,7 @@ export default function IndustriesPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
       />
-      <IndustriesClient />
+      <IndustriesClient initialIndustries={dbIndustries} />
     </>
   );
 }

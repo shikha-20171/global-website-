@@ -24,6 +24,7 @@ import {
   updateAdminNavigation,
   deleteAdminNavigation,
 } from "@/lib/api";
+import { notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 const defaultHeaderLinks = [
   { id: "nav_products", label: "Products", href: "/products", badge: "18", hasMega: true },
@@ -231,6 +232,7 @@ export default function AdminNavigationPage() {
       }
     }
     setHeaderLinks((prev) => prev.filter((l) => l.id !== id));
+    notifyWebsiteLiveUpdate("navigation", { deleted: id });
     setToast({
       type: "info",
       message: "Link Removed",
@@ -288,6 +290,7 @@ export default function AdminNavigationPage() {
       console.warn("Navigation API sync warning:", err.message);
     }
 
+    notifyWebsiteLiveUpdate("navigation", { headerLinks, footerCols });
     setToast({
       type: "success",
       message: "Navigation Menu Published",

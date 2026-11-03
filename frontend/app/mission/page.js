@@ -43,15 +43,21 @@ const pillars = [
   },
 ];
 
+import { getDbCompanyProfile } from "@/lib/neonDb";
 import api from "@/lib/axios";
+
+export const dynamic = "force-dynamic";
 
 export default async function MissionPage() {
   let profile = null;
   try {
-    // Direct Axios API call inside Mission page
-    const res = await api.get("/api/v1/company");
-    profile = res.data?.data || res.data?.profile || res.data;
-  } catch (err) {}
+    profile = await getDbCompanyProfile();
+  } catch (_) {
+    try {
+      const res = await api.get("/api/v1/company");
+      profile = res.data?.data || res.data?.profile || res.data;
+    } catch (err) {}
+  }
 
   const missionText = profile?.mission || "To make powerful technology accessible, scalable and intelligent for businesses everywhere.";
   const visionText = profile?.vision || "To build a global ecosystem of software products that powers the next generation of businesses.";

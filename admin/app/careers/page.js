@@ -27,6 +27,7 @@ import {
   updateAdminCareer,
   deleteAdminCareer,
 } from "@/lib/api";
+import { notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 const fallbackJobs = [
   {
@@ -170,41 +171,43 @@ export default function AdminCareersPage() {
       return;
     }
 
+    const payload = {
+      title: jobData.title,
+      department: jobData.department,
+      location: jobData.location,
+      experienceLevel: jobData.experience,
+      description: jobData.description,
+      requirements: jobData.requirements ? (Array.isArray(jobData.requirements) ? jobData.requirements : jobData.requirements.split("\n").filter(Boolean)) : [],
+    };
+
     const exists = jobs.some((j) => j.id === jobData.id);
     if (exists) {
       setJobs(jobs.map((j) => (j.id === jobData.id ? jobData : j)));
-      if (jobData.id && !jobData.id.startsWith("job_")) {
+      if (jobData.id && !jobData.id.startsWith("job_") && !jobData.id.startsWith("job-")) {
         try {
-          await updateAdminCareer(jobData.id, {
-            title: jobData.title,
-            department: jobData.department,
-            location: jobData.location,
-            experienceLevel: jobData.experience,
-            description: jobData.description,
-            requirements: jobData.requirements ? jobData.requirements.split("\n").filter(Boolean) : [],
-          });
+          await updateAdminCareer(jobData.id, payload);
         } catch (err) {
-          console.warn("Could not update career on backend:", err.message);
+          try {
+            await createAdminCareer(payload);
+          } catch (_) {}
         }
+      } else {
+        try {
+          await createAdminCareer(payload);
+        } catch (_) {}
       }
       setToast({ type: "success", message: "Job posting updated successfully!" });
     } else {
       setJobs([jobData, ...jobs]);
       try {
-        await createAdminCareer({
-          title: jobData.title,
-          department: jobData.department,
-          location: jobData.location,
-          experienceLevel: jobData.experience,
-          description: jobData.description,
-          requirements: jobData.requirements ? jobData.requirements.split("\n").filter(Boolean) : [],
-        });
+        await createAdminCareer(payload);
         refreshCareers();
       } catch (err) {
         console.warn("Could not create career on backend:", err.message);
       }
       setToast({ type: "success", message: "New job posting published successfully!" });
     }
+    notifyWebsiteLiveUpdate("careers", jobData);
     setIsModalOpen(false);
     setEditingJob(null);
   };
@@ -213,13 +216,14 @@ export default function AdminCareersPage() {
     if (!deleteTarget) return;
     const targetId = deleteTarget.id;
     setJobs(jobs.filter((j) => j.id !== targetId));
-    if (targetId && !targetId.startsWith("job_")) {
+    if (targetId && !targetId.startsWith("job_") && !targetId.startsWith("job-")) {
       try {
         await deleteAdminCareer(targetId);
       } catch (err) {
         console.warn("Could not delete career on backend:", err.message);
       }
     }
+    notifyWebsiteLiveUpdate("careers", { id: targetId, deleted: true });
     setToast({ type: "success", message: `Removed job posting "${deleteTarget.title}"` });
     setDeleteTarget(null);
   };

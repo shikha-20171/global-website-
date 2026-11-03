@@ -31,7 +31,7 @@ import {
   updateAdminCaseStudy,
   deleteAdminCaseStudy,
 } from "@/lib/api";
-import { getLocalItem, saveLocalItem } from "@/lib/storage";
+import { getLocalItem, saveLocalItem, notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 const fallbackCaseStudies = (websiteProjects || []).map((p) => {
   const detail = caseStudiesDetails[p.slug] || {};
@@ -190,10 +190,18 @@ export default function AdminCaseStudiesPage() {
     };
 
     try {
-      if (exists?.id) {
-        await updateAdminCaseStudy(exists.id, payload);
+      if (exists?.id && !exists.id.startsWith("cs_")) {
+        try {
+          await updateAdminCaseStudy(exists.id, payload);
+        } catch (_) {
+          await createAdminCaseStudy(payload);
+        }
       } else {
-        await createAdminCaseStudy(payload);
+        try {
+          await updateAdminCaseStudy(payload.slug, payload);
+        } catch (_) {
+          await createAdminCaseStudy(payload);
+        }
       }
 
       let updated;
@@ -214,6 +222,7 @@ export default function AdminCaseStudiesPage() {
       }
       setCaseStudiesList(updated);
       saveLocalItem("dezoryn_admin_case_studies", updated);
+      notifyWebsiteLiveUpdate("case_studies", payload);
     } catch (err) {
       // Graceful local update
       let updated;
@@ -224,6 +233,7 @@ export default function AdminCaseStudiesPage() {
       }
       setCaseStudiesList(updated);
       saveLocalItem("dezoryn_admin_case_studies", updated);
+      notifyWebsiteLiveUpdate("case_studies", payload);
       setToast({
         type: "warning",
         message: "Case Study Saved Locally",
@@ -236,7 +246,7 @@ export default function AdminCaseStudiesPage() {
   const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
     try {
-      if (deleteTarget.id) {
+      if (deleteTarget.id && !deleteTarget.id.startsWith("cs_")) {
         await deleteAdminCaseStudy(deleteTarget.id);
       }
     } catch (err) {
@@ -245,6 +255,7 @@ export default function AdminCaseStudiesPage() {
     const updated = caseStudiesList.filter((c) => c.slug !== deleteTarget.slug);
     setCaseStudiesList(updated);
     saveLocalItem("dezoryn_admin_case_studies", updated);
+    notifyWebsiteLiveUpdate("case_studies", { slug: deleteTarget.slug, deleted: true });
     setToast({
       type: "warning",
       message: "Case Study Removed",

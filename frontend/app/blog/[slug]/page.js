@@ -6,6 +6,7 @@ import Button from "@/components/Button";
 import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import { posts, getPost } from "@/lib/data";
+import { getDbBlogPostBySlugOrId } from "@/lib/neonDb";
 import api from "@/lib/axios";
 import { buildMetadata, generateArticleSchema, generateBreadcrumbSchema } from "@/lib/seo";
 import {
@@ -41,10 +42,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   let live = null;
   try {
-    // Direct Axios call for blog metadata
-    const res = await api.get(`/api/v1/resources/blog/${params.slug}`);
-    live = res.data?.data || res.data?.post || res.data;
-  } catch (err) {}
+    live = await getDbBlogPostBySlugOrId(params.slug);
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/resources/blog/${params.slug}`);
+      live = res.data?.data || res.data?.post || res.data;
+    } catch (err) {}
+  }
 
   const p = live ? { ...getPost(params.slug), ...live } : getPost(params.slug);
   if (!p) {
@@ -73,16 +77,24 @@ export async function generateMetadata({ params }) {
 export default async function BlogPostPage({ params }) {
   let p = null;
   try {
-    // Direct Axios call inside Blog slug page
-    const res = await api.get(`/api/v1/resources/blog/${params.slug}`);
-    const live = res.data?.data || res.data?.post || res.data;
+    const live = await getDbBlogPostBySlugOrId(params.slug);
     if (live) {
       p = {
         ...getPost(params.slug),
         ...live,
       };
     }
-  } catch (err) {
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/resources/blog/${params.slug}`);
+      const live = res.data?.data || res.data?.post || res.data;
+      if (live) {
+        p = {
+          ...getPost(params.slug),
+          ...live,
+        };
+      }
+    } catch (err) {}
   }
   if (!p) p = getPost(params.slug);
   if (!p) notFound();

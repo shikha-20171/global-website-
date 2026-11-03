@@ -94,35 +94,55 @@ const VALUES = [
   },
 ];
 
-export default function CareersClient() {
-  const [jobs, setJobs] = useState(INITIAL_JOBS);
+export default function CareersClient({ initialJobs }) {
+  const mapJobs = (list) =>
+    list.map((j) => ({
+      id: j.id,
+      title: j.title,
+      dept: j.department || j.dept || "Core Engineering",
+      type: j.employmentType === "FULL_TIME" ? "Full-Time" : (j.employmentType || j.type || "Full-Time"),
+      location: j.location && !j.location.toLowerCase().includes("remote") ? j.location : "Bhopal, India (Work From Office)",
+      experience: j.experienceLevel || j.experience || "3+ Years",
+      desc: j.description || j.desc || "",
+      tags: Array.isArray(j.requirements) ? j.requirements.slice(0, 5) : (j.tags || ["Bhopal HQ", "Global SaaS"]),
+    }));
+
+  const [jobs, setJobs] = useState(() => {
+    if (Array.isArray(initialJobs) && initialJobs.length > 0) {
+      return mapJobs(initialJobs);
+    }
+    return INITIAL_JOBS;
+  });
   const [selectedDept, setSelectedDept] = useState("All");
   const [activeJobForModal, setActiveJobForModal] = useState(null);
 
   useEffect(() => {
     let mounted = true;
-    // Direct Axios API call inside CareersClient
-    api.get("/api/v1/careers")
-      .then((res) => {
-        const data = res.data?.data || res.data;
-        const list = data?.careers || (Array.isArray(data) ? data : null);
-        if (mounted && Array.isArray(list) && list.length > 0) {
-          const mapped = list.map((j) => ({
-            id: j.id,
-            title: j.title,
-            dept: j.department,
-            type: j.employmentType === "FULL_TIME" ? "Full-Time" : (j.employmentType || "Full-Time"),
-            location: j.location && !j.location.toLowerCase().includes("remote") ? j.location : "Bhopal, India (Work From Office)",
-            experience: j.experienceLevel || "3+ Years",
-            desc: j.description,
-            tags: Array.isArray(j.requirements) ? j.requirements.slice(0, 5) : ["Bhopal HQ", "Global SaaS"],
-          }));
-          setJobs(mapped);
-        }
-      })
-      .catch(() => { });
+
+    const fetchCareers = () => {
+      api.get("/api/v1/careers")
+        .then((res) => {
+          const data = res.data?.data || res.data;
+          const list = data?.careers || (Array.isArray(data) ? data : null);
+          if (mounted && Array.isArray(list) && list.length > 0) {
+            setJobs(mapJobs(list));
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchCareers();
+
+    const handleLiveSync = (e) => {
+      if (e?.detail?.domain === "careers" || !e?.detail?.domain) {
+        fetchCareers();
+      }
+    };
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
+
     return () => {
       mounted = false;
+      window.removeEventListener("dezoryn_live_update", handleLiveSync);
     };
   }, []);
 

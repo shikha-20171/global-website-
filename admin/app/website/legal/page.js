@@ -26,6 +26,7 @@ import AdminTabs from "@/components/admin/AdminTabs";
 import AdminToast from "@/components/admin/AdminToast";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import { getAdminLegalPolicies, saveAdminLegalPolicy } from "@/lib/api";
+import { notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 export default function AdminLegalPoliciesPage() {
   const [policies, setPolicies] = useState([]);
@@ -110,6 +111,7 @@ export default function AdminLegalPoliciesPage() {
         setPolicies([...policies, editingPolicy]);
         setToast({ message: `New policy "${editingPolicy.title}" created live in database!`, type: "success" });
       }
+      notifyWebsiteLiveUpdate("legal", editingPolicy);
       setIsEditorOpen(false);
     } catch (err) {
       // Fallback update in state
@@ -119,6 +121,7 @@ export default function AdminLegalPoliciesPage() {
       } else {
         setPolicies([...policies, editingPolicy]);
       }
+      notifyWebsiteLiveUpdate("legal", editingPolicy);
       setToast({ message: `Policy "${editingPolicy.title}" updated locally.`, type: "success" });
       setIsEditorOpen(false);
     }
@@ -127,6 +130,7 @@ export default function AdminLegalPoliciesPage() {
   const handleDelete = () => {
     if (!deleteTarget) return;
     setPolicies(policies.filter((p) => p.id !== deleteTarget.id));
+    notifyWebsiteLiveUpdate("legal", { id: deleteTarget.id, deleted: true });
     setToast({ message: `Legal policy removed`, type: "success" });
     setDeleteTarget(null);
   };

@@ -1,5 +1,8 @@
 import InsightsClient from "./InsightsClient";
+import { getDbInsights } from "@/lib/neonDb";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = buildMetadata({
   title: "Industry Insights, Research Papers & Whitepapers | DEZORYN",
@@ -15,7 +18,15 @@ export const metadata = buildMetadata({
   ],
 });
 
-export default function InsightsPage() {
+export default async function InsightsPage() {
+  let dbInsights = null;
+  try {
+    const list = await getDbInsights();
+    if (Array.isArray(list) && list.length > 0) {
+      dbInsights = list;
+    }
+  } catch (_) {}
+
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "/" },
     { name: "Resources", url: "/resources" },
@@ -28,7 +39,7 @@ export default function InsightsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <InsightsClient />
+      <InsightsClient initialInsights={dbInsights} />
     </>
   );
 }

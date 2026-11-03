@@ -95,34 +95,46 @@ export default function PortfolioView() {
 
   useEffect(() => {
     let mounted = true;
-    // Direct Axios API call inside PortfolioView
-    api.get("/api/v1/projects")
-      .then((res) => {
-        const data = res.data?.data || res.data?.projects || (Array.isArray(res.data) ? res.data : []);
-        if (!mounted || !Array.isArray(data) || data.length === 0) return;
-        const normalized = data.map((d) => {
-          const matchedStatic = projects.find((p) => p.slug === d.slug);
-          return {
-            ...(matchedStatic || {}),
-            ...d,
-            name: d.name || d.title || matchedStatic?.name,
-            industry: d.industry || d.category || matchedStatic?.industry || "Enterprise",
-            result: d.shortDescription || d.summary || matchedStatic?.result || "",
-            tech: Array.isArray(d.techStack)
-              ? d.techStack
-              : Array.isArray(d.tech)
-              ? d.tech
-              : matchedStatic?.tech || ["Next.js", "PostgreSQL"],
-          };
+
+    const fetchProjects = () => {
+      api.get("/api/v1/projects")
+        .then((res) => {
+          const data = res.data?.data || res.data?.projects || (Array.isArray(res.data) ? res.data : []);
+          if (!mounted || !Array.isArray(data) || data.length === 0) return;
+          const normalized = data.map((d) => {
+            const matchedStatic = projects.find((p) => p.slug === d.slug);
+            return {
+              ...(matchedStatic || {}),
+              ...d,
+              name: d.name || d.title || matchedStatic?.name,
+              industry: d.industry || d.category || matchedStatic?.industry || "Enterprise",
+              result: d.shortDescription || d.summary || matchedStatic?.result || "",
+              tech: Array.isArray(d.techStack)
+                ? d.techStack
+                : Array.isArray(d.tech)
+                ? d.tech
+                : matchedStatic?.tech || ["Next.js", "PostgreSQL"],
+            };
+          });
+          setLiveProjects(normalized);
+        })
+        .catch((err) => {
+          console.warn("Portfolio live projects notice:", err?.message || err);
         });
-        setLiveProjects(normalized);
-      })
-      .catch((err) => {
-        console.warn("Portfolio live projects notice:", err?.message || err);
-      });
+    };
+
+    fetchProjects();
+
+    const handleLiveSync = (e) => {
+      if (e?.detail?.domain === "case_studies" || e?.detail?.domain === "projects" || !e?.detail?.domain) {
+        fetchProjects();
+      }
+    };
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
 
     return () => {
       mounted = false;
+      window.removeEventListener("dezoryn_live_update", handleLiveSync);
     };
   }, []);
 

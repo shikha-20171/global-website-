@@ -1,4 +1,5 @@
 import CareersClient from "./CareersClient";
+import { getDbCareers } from "@/lib/neonDb";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,15 @@ export const metadata = buildMetadata({
   ],
 });
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  let dbJobs = null;
+  try {
+    const list = await getDbCareers();
+    if (Array.isArray(list) && list.length > 0) {
+      dbJobs = list;
+    }
+  } catch (_) {}
+
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "/" },
     { name: "Careers", url: "/careers" },
@@ -29,7 +38,7 @@ export default function CareersPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <CareersClient />
+      <CareersClient initialJobs={dbJobs} />
     </>
   );
 }

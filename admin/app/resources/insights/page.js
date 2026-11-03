@@ -28,6 +28,7 @@ import {
   updateAdminInsight,
   deleteAdminInsight,
 } from "@/lib/api";
+import { notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 const SECTORS = ["All", "Cloud Operations", "Education Technology", "Healthcare Systems", "AI & Governance"];
 
@@ -117,10 +118,12 @@ export default function AdminInsightsPage() {
         await createAdminInsight(payload);
         setToast({ message: `New whitepaper "${editingInsight.title}" published!`, type: "success" });
       }
+      notifyWebsiteLiveUpdate("insights", payload);
       refreshInsights();
     } catch (err) {
       console.warn("Save insight notice:", err.message);
       setToast({ message: `Saved locally: ${editingInsight.title}`, type: "success" });
+      notifyWebsiteLiveUpdate("insights", editingInsight);
       refreshInsights();
     }
     setIsModalOpen(false);
@@ -139,6 +142,7 @@ export default function AdminInsightsPage() {
       setInsights((prev) => prev.filter((i) => i.id !== deleteTarget.id));
       setToast({ message: `Whitepaper removed`, type: "success" });
     }
+    notifyWebsiteLiveUpdate("insights", { id: deleteTarget.id, deleted: true });
     setDeleteTarget(null);
   };
 

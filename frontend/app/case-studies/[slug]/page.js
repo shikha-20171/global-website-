@@ -7,6 +7,7 @@ import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import { projects } from "@/lib/data";
 import { caseStudiesDetails } from "@/lib/caseStudiesData";
+import { getDbCaseStudyBySlugOrId } from "@/lib/neonDb";
 import api from "@/lib/axios";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import {
@@ -37,10 +38,13 @@ export const generateStaticParams = () => projects.map((p) => ({ slug: p.slug })
 export async function generateMetadata({ params }) {
   let liveStudy = null;
   try {
-    // Direct Axios call for case study metadata
-    const res = await api.get(`/api/v1/case-studies/${params.slug}`);
-    liveStudy = res.data?.data || res.data?.caseStudy || res.data;
-  } catch (err) {}
+    liveStudy = await getDbCaseStudyBySlugOrId(params.slug);
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/case-studies/${params.slug}`);
+      liveStudy = res.data?.data || res.data?.caseStudy || res.data;
+    } catch (err) {}
+  }
 
   const p = projects.find((x) => x.slug === params.slug) || liveStudy;
   const details = caseStudiesDetails[params.slug];
@@ -77,11 +81,14 @@ export async function generateMetadata({ params }) {
 export default async function CaseStudyPage({ params }) {
   let liveStudy = null;
   try {
-    // Direct Axios call inside Case Study slug page
-    const res = await api.get(`/api/v1/case-studies/${params.slug}`);
-    liveStudy = res.data?.data || res.data?.caseStudy || res.data;
-  } catch (err) {
-    console.warn("Case study live notice:", err?.message || err);
+    liveStudy = await getDbCaseStudyBySlugOrId(params.slug);
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/case-studies/${params.slug}`);
+      liveStudy = res.data?.data || res.data?.caseStudy || res.data;
+    } catch (err) {
+      console.warn("Case study live notice:", err?.message || err);
+    }
   }
 
   const p = projects.find((x) => x.slug === params.slug) || liveStudy;

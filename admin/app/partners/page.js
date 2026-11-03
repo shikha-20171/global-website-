@@ -26,6 +26,7 @@ import {
   updateAdminPartner,
   deleteAdminPartner,
 } from "@/lib/api";
+import { notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 const fallbackPartners = [
   {
@@ -140,23 +141,31 @@ export default function AdminPartnersPage() {
     e.preventDefault();
     if (!editingPartner.name) return;
 
+    const payload = {
+      name: editingPartner.name,
+      category: editingPartner.category,
+      websiteUrl: editingPartner.website,
+      tier: editingPartner.tier,
+      logoUrl: editingPartner.logoUrl || null,
+    };
+
     const exists = partners.some((p) => p.id === editingPartner.id);
     if (exists) {
       setPartners(
         partners.map((p) => (p.id === editingPartner.id ? editingPartner : p))
       );
-      if (editingPartner.id && !editingPartner.id.startsWith("ptn_")) {
+      if (editingPartner.id && !editingPartner.id.startsWith("ptn_") && !editingPartner.id.startsWith("part_")) {
         try {
-          await updateAdminPartner(editingPartner.id, {
-            name: editingPartner.name,
-            category: editingPartner.category,
-            websiteUrl: editingPartner.website,
-            tier: editingPartner.tier,
-            logoUrl: editingPartner.logoUrl || null,
-          });
+          await updateAdminPartner(editingPartner.id, payload);
         } catch (err) {
-          console.warn("Could not update partner on backend:", err.message);
+          try {
+            await createAdminPartner(payload);
+          } catch (_) {}
         }
+      } else {
+        try {
+          await createAdminPartner(payload);
+        } catch (_) {}
       }
       setToast({
         type: "success",
@@ -166,13 +175,7 @@ export default function AdminPartnersPage() {
     } else {
       setPartners([...partners, editingPartner]);
       try {
-        await createAdminPartner({
-          name: editingPartner.name,
-          category: editingPartner.category,
-          websiteUrl: editingPartner.website,
-          tier: editingPartner.tier,
-          logoUrl: editingPartner.logoUrl || null,
-        });
+        await createAdminPartner(payload);
         refreshPartners();
       } catch (err) {
         console.warn("Could not create partner on backend:", err.message);
@@ -183,6 +186,7 @@ export default function AdminPartnersPage() {
         description: `Added "${editingPartner.name}" to strategic ecosystem.`,
       });
     }
+    notifyWebsiteLiveUpdate("partners", editingPartner);
     setIsModalOpen(false);
   };
 
@@ -190,13 +194,14 @@ export default function AdminPartnersPage() {
     if (!deleteTarget) return;
     const targetId = deleteTarget.id;
     setPartners(partners.filter((p) => p.id !== targetId));
-    if (targetId && !targetId.startsWith("ptn_")) {
+    if (targetId && !targetId.startsWith("ptn_") && !targetId.startsWith("part_")) {
       try {
         await deleteAdminPartner(targetId);
       } catch (err) {
         console.warn("Could not delete partner on backend:", err.message);
       }
     }
+    notifyWebsiteLiveUpdate("partners", { id: targetId, deleted: true });
     setToast({
       type: "warning",
       message: "Partner Removed",

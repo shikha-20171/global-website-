@@ -24,6 +24,7 @@ import {
   updateAdminFaq,
   deleteAdminFaq,
 } from "@/lib/api";
+import { notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 const fallbackFaqs = [
   {
@@ -168,7 +169,11 @@ export default function AdminFaqsPage() {
 
     try {
       if (!isNew) {
-        await updateAdminFaq(editingFaq.id, payload);
+        try {
+          await updateAdminFaq(editingFaq.id, payload);
+        } catch (_) {
+          await createAdminFaq(payload);
+        }
         setToast({
           type: "success",
           message: "FAQ Updated",
@@ -182,6 +187,7 @@ export default function AdminFaqsPage() {
           description: "New question added to knowledge base.",
         });
       }
+      notifyWebsiteLiveUpdate("faqs", payload);
       refreshFaqs();
       setIsModalOpen(false);
     } catch (err) {
@@ -191,6 +197,7 @@ export default function AdminFaqsPage() {
       } else {
         setFaqs([...faqs, { ...editingFaq, ...payload }]);
       }
+      notifyWebsiteLiveUpdate("faqs", payload);
       setToast({
         type: "success",
         message: isNew ? "FAQ Created" : "FAQ Updated",
@@ -220,6 +227,7 @@ export default function AdminFaqsPage() {
         description: "Question removed from public display.",
       });
     }
+    notifyWebsiteLiveUpdate("faqs", { id: deleteTarget.id, deleted: true });
     setDeleteTarget(null);
   };
 

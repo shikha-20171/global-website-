@@ -4,6 +4,7 @@ import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import { ShieldCheck, FileText, Lock, RefreshCw, Cookie, ArrowRight, ArrowUpRight } from "lucide-react";
 
+import { getDbLegalPolicies } from "@/lib/neonDb";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 export const metadata = buildMetadata({
@@ -64,7 +65,38 @@ const documents = [
 
 export const dynamic = "force-dynamic";
 
-export default function LegalIndexPage() {
+export default async function LegalIndexPage() {
+  let docList = documents;
+  try {
+    const dbPolicies = await getDbLegalPolicies();
+    if (Array.isArray(dbPolicies) && dbPolicies.length > 0) {
+      const merged = documents.map((doc) => {
+        const found = dbPolicies.find((p) => p.slug === doc.slug);
+        if (found) {
+          return {
+            ...doc,
+            title: found.title || doc.title,
+            desc: found.subtitle || doc.desc,
+            updated: found.lastReviewedDate || doc.updated,
+          };
+        }
+        return doc;
+      });
+
+      const newDocs = dbPolicies
+        .filter((p) => !documents.some((d) => d.slug === p.slug))
+        .map((p) => ({
+          slug: p.slug,
+          title: p.title,
+          desc: p.subtitle || "Enterprise legal and compliance documentation.",
+          icon: ShieldCheck,
+          updated: p.lastReviewedDate || "Recently",
+          badge: "Policy",
+        }));
+
+      docList = [...merged, ...newDocs];
+    }
+  } catch (_) {}
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "/" },
     { name: "Legal & Compliance", url: "/legal" },
@@ -99,7 +131,7 @@ export default function LegalIndexPage() {
           </div>
 
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {documents.map((doc, idx) => {
+            {docList.map((doc, idx) => {
               const Icon = doc.icon;
               return (
                 <Reveal key={doc.slug} delay={idx * 0.05}>

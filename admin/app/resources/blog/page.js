@@ -31,6 +31,7 @@ import {
   updateAdminBlogPost,
   deleteAdminBlogPost,
 } from "@/lib/api";
+import { notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 const fallbackArticles = websitePosts.map((p) => ({
   id: p.id || `post_${p.slug}`,
@@ -167,11 +168,15 @@ export default function AdminBlogPage() {
       tags: parsedTags,
     };
 
-    const isNew = editingArticle.id?.startsWith("art_") && !articles.some((a) => a.id === editingArticle.id && !a.id.startsWith("art_"));
+    const isNew = (editingArticle.id?.startsWith("art_") || editingArticle.id?.startsWith("post_")) && !articles.some((a) => a.id === editingArticle.id && !a.id.startsWith("art_") && !a.id.startsWith("post_"));
 
     try {
       if (!isNew) {
-        await updateAdminBlogPost(editingArticle.id, payload);
+        try {
+          await updateAdminBlogPost(editingArticle.id, payload);
+        } catch (_) {
+          await createAdminBlogPost(payload);
+        }
         setToast({
           type: "success",
           message: "Article Updated",
@@ -185,6 +190,7 @@ export default function AdminBlogPage() {
           description: `"${editingArticle.title}" added to blog repository.`,
         });
       }
+      notifyWebsiteLiveUpdate("blog", payload);
       refreshArticles();
       setIsEditorOpen(false);
     } catch (err) {
@@ -195,6 +201,7 @@ export default function AdminBlogPage() {
       } else {
         setArticles([updated, ...articles]);
       }
+      notifyWebsiteLiveUpdate("blog", payload);
       setToast({
         type: "success",
         message: "Article Saved",
@@ -207,7 +214,7 @@ export default function AdminBlogPage() {
   const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
     try {
-      if (deleteTarget.id && !deleteTarget.id.startsWith("art_")) {
+      if (deleteTarget.id && !deleteTarget.id.startsWith("art_") && !deleteTarget.id.startsWith("post_")) {
         await deleteAdminBlogPost(deleteTarget.id);
       }
       refreshArticles();
@@ -224,6 +231,7 @@ export default function AdminBlogPage() {
         description: `"${deleteTarget.title}" deleted from blog articles.`,
       });
     }
+    notifyWebsiteLiveUpdate("blog", { id: deleteTarget.id, deleted: true });
     setDeleteTarget(null);
   };
 

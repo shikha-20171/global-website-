@@ -69,23 +69,36 @@ const industryFaqs = [
   ],
 ];
 
-export default function IndustriesClient() {
+export default function IndustriesClient({ initialIndustries }) {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [liveList, setLiveList] = useState(null);
+  const [liveList, setLiveList] = useState(() => (Array.isArray(initialIndustries) && initialIndustries.length > 0 ? initialIndustries : null));
 
   useEffect(() => {
     let mounted = true;
-    // Direct Axios API call inside IndustriesClient
-    api.get("/api/v1/industries")
-      .then((res) => {
-        const data = res.data?.data || (Array.isArray(res.data) ? res.data : []);
-        if (mounted && Array.isArray(data) && data.length > 0) {
-          setLiveList(data);
-        }
-      })
-      .catch(() => {});
+
+    const fetchIndustries = () => {
+      api.get("/api/v1/industries")
+        .then((res) => {
+          const data = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+          if (mounted && Array.isArray(data) && data.length > 0) {
+            setLiveList(data);
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchIndustries();
+
+    const handleLiveSync = (e) => {
+      if (e?.detail?.domain === "industries" || !e?.detail?.domain) {
+        fetchIndustries();
+      }
+    };
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
+
     return () => {
       mounted = false;
+      window.removeEventListener("dezoryn_live_update", handleLiveSync);
     };
   }, []);
 

@@ -88,43 +88,64 @@ export const whitepapers = [
   },
 ];
 
-export default function InsightsPage() {
+export default function InsightsPage({ initialInsights }) {
   const [downloaded, setDownloaded] = useState({});
-  const [papers, setPapers] = useState(whitepapers);
+
+  const normalizeList = (list) =>
+    list.map((item) => ({
+      id: item.id || item.slug,
+      title: item.title,
+      format: `Executive Whitepaper (${item.pagesCount || 38} Pages)`,
+      pages: `${item.pagesCount || 38} Pages`,
+      date: item.publishedAt
+        ? new Date(item.publishedAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+        : "Recent",
+      category: item.sector || (item.tags && item.tags[0]) || "Research & Architecture",
+      abstract: item.summary || "",
+      keyMetrics: [
+        [`${item.pagesCount || 38} Pages of Analysis`, "Comprehensive system design and technical architecture specifications."],
+        [`${item.downloadCount || 1000}+ Downloads`, "Verified industry citation and benchmark data."],
+        ["Zero Vendor Lock-in", "Open standard compliance and portable deployment specifications."],
+      ],
+      audience: item.author ? `${item.author} & Systems Architects` : "CTOs, Enterprise Architects, Engineering Leaders",
+      downloadUrl: item.pdfAssetUrl || "/resources/insights",
+    }));
+
+  const [papers, setPapers] = useState(() => {
+    if (Array.isArray(initialInsights) && initialInsights.length > 0) {
+      return normalizeList(initialInsights);
+    }
+    return whitepapers;
+  });
 
   useEffect(() => {
     let active = true;
-    // Direct Axios API call inside InsightsClient
-    api.get("/api/v1/resources/insights")
-      .then((response) => {
-        if (!active) return;
-        const res = response.data?.data || (Array.isArray(response.data) ? response.data : []);
-        const list = Array.isArray(res) ? res : res?.data || [];
-        if (list.length > 0) {
-          const normalized = list.map((item) => ({
-            id: item.id || item.slug,
-            title: item.title,
-            format: `Executive Whitepaper (${item.pagesCount || 38} Pages)`,
-            pages: `${item.pagesCount || 38} Pages`,
-            date: item.publishedAt
-              ? new Date(item.publishedAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
-              : "Recent",
-            category: item.sector || (item.tags && item.tags[0]) || "Research & Architecture",
-            abstract: item.summary || "",
-            keyMetrics: [
-              [`${item.pagesCount || 38} Pages of Analysis`, "Comprehensive system design and technical architecture specifications."],
-              [`${item.downloadCount || 1000}+ Downloads`, "Verified industry citation and benchmark data."],
-              ["Zero Vendor Lock-in", "Open standard compliance and portable deployment specifications."],
-            ],
-            audience: item.author ? `${item.author} & Systems Architects` : "CTOs, Enterprise Architects, Engineering Leaders",
-            downloadUrl: item.pdfAssetUrl || "/resources/insights",
-          }));
-          setPapers(normalized);
-        }
-      })
-      .catch(() => {});
+
+    const fetchInsights = () => {
+      api.get("/api/v1/resources/insights")
+        .then((response) => {
+          if (!active) return;
+          const res = response.data?.data || (Array.isArray(response.data) ? response.data : []);
+          const list = Array.isArray(res) ? res : res?.data || [];
+          if (list.length > 0) {
+            setPapers(normalizeList(list));
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchInsights();
+
+    const handleLiveSync = (e) => {
+      if (e?.detail?.domain === "insights" || !e?.detail?.domain) {
+        fetchInsights();
+      }
+    };
+    window.addEventListener("dezoryn_live_update", handleLiveSync);
+
     return () => {
       active = false;
+      window.removeEventListener("dezoryn_live_update", handleLiveSync);
     };
   }, []);
 

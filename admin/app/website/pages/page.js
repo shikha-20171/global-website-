@@ -29,6 +29,7 @@ import {
   updateAdminPage,
   deleteAdminPage,
 } from "@/lib/api";
+import { notifyWebsiteLiveUpdate } from "@/lib/storage";
 
 export default function AdminWebsitePagesPage() {
   const [pagesList, setPagesList] = useState(fallbackWebsitePages);
@@ -201,6 +202,7 @@ export default function AdminWebsitePagesPage() {
           description: `New page "${editingPage.title}" added to CMS.`,
         });
       }
+      notifyWebsiteLiveUpdate("pages", payload);
       refreshPages();
       setIsEditorOpen(false);
     } catch (err) {
@@ -219,6 +221,7 @@ export default function AdminWebsitePagesPage() {
           ...pagesList,
         ]);
       }
+      notifyWebsiteLiveUpdate("pages", payload);
       setToast({
         type: "success",
         message: isNew ? "Page Created" : "Page Updated",
@@ -248,6 +251,7 @@ export default function AdminWebsitePagesPage() {
         description: `"${archiveTarget.title}" has been removed.`,
       });
     }
+    notifyWebsiteLiveUpdate("pages", { id: archiveTarget.id, deleted: true });
     setArchiveTarget(null);
   };
 
