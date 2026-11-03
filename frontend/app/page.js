@@ -52,7 +52,7 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
-  let heroHeadline = "Technology That Moves Businesses Forward.";
+  let heroHeadline = "Technology That Moves Businesses Forward";
   let heroSubheadline =
     "We build software products, enterprise platforms, and digital solutions that help businesses simplify operations, improve efficiency, and grow.";
   let primaryCta = ["Explore Products", "/marketplace"];

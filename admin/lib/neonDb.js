@@ -760,3 +760,856 @@ export async function getDbDashboardMetrics() {
     };
   }
 }
+
+/**
+ * Solutions CRUD
+ */
+export async function createDbSolution(payload = {}) {
+  const id = `sol_${Date.now()}`;
+  const slug = payload.slug || payload.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || id;
+  const sql = `
+    INSERT INTO "Solution" (
+      id, slug, name, tagline, description, capabilities, status, "displayOrder", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6::jsonb, 'PUBLISHED', 0, NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, slug, payload.name || "New Solution", payload.tagline || "",
+    payload.description || "", JSON.stringify(payload.capabilities || [])
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbSolution(idOrSlug) {
+  const clean = String(idOrSlug || "").trim();
+  await neonQuery(`DELETE FROM "Solution" WHERE "id" = $1 OR "slug" = $1;`, [clean]);
+  return { success: true };
+}
+
+/**
+ * Industry Verticals CRUD
+ */
+export async function createDbIndustry(payload = {}) {
+  const id = `ind_${Date.now()}`;
+  const slug = payload.slug || payload.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || id;
+  const sql = `
+    INSERT INTO "Industry" (
+      id, slug, name, icon, "shortDescription", "fullDescription", metrics,
+      status, "displayOrder", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7::jsonb, 'PUBLISHED', 0, NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, slug, payload.name || "New Industry", payload.icon || "Building2",
+    payload.shortDescription || "", payload.fullDescription || "",
+    JSON.stringify(payload.metrics || [])
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbIndustry(idOrSlug) {
+  const clean = String(idOrSlug || "").trim();
+  await neonQuery(`DELETE FROM "Industry" WHERE "id" = $1 OR "slug" = $1;`, [clean]);
+  return { success: true };
+}
+
+/**
+ * Projects Showcase
+ */
+export async function getDbProjects() {
+  const sql = `SELECT * FROM "Project" ORDER BY "displayOrder" ASC, "createdAt" DESC;`;
+  const rows = await neonQuery(sql);
+  return rows.map((r) => ({
+    ...r,
+    metrics: typeof r.metrics === "string" ? JSON.parse(r.metrics) : (r.metrics || {}),
+    techStack: typeof r.techStack === "string" ? JSON.parse(r.techStack) : (r.techStack || []),
+  }));
+}
+
+export async function getDbProjectBySlugOrId(slugOrId) {
+  const clean = String(slugOrId || "").trim();
+  const sql = `SELECT * FROM "Project" WHERE "slug" = $1 OR "id" = $1 LIMIT 1;`;
+  const rows = await neonQuery(sql, [clean]);
+  if (!rows || rows.length === 0) return null;
+  const r = rows[0];
+  return {
+    ...r,
+    metrics: typeof r.metrics === "string" ? JSON.parse(r.metrics) : (r.metrics || {}),
+    techStack: typeof r.techStack === "string" ? JSON.parse(r.techStack) : (r.techStack || []),
+  };
+}
+
+export async function createDbProject(payload = {}) {
+  const id = `proj_${Date.now()}`;
+  const slug = payload.slug || payload.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || id;
+  const sql = `
+    INSERT INTO "Project" (
+      id, slug, name, client, category, "shortDescription", "fullDescription",
+      industry, metrics, "techStack", "demoUrl", "featuredImage", "isFeatured",
+      status, "displayOrder", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10::jsonb, $11, $12, $13, 'PUBLISHED', 0, NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, slug, payload.name || "New Project", payload.client || "Client",
+    payload.category || "Enterprise", payload.shortDescription || "", payload.fullDescription || "",
+    payload.industry || "General", JSON.stringify(payload.metrics || {}),
+    JSON.stringify(payload.techStack || []), payload.demoUrl || "", payload.featuredImage || "",
+    Boolean(payload.isFeatured)
+  ]);
+  return rows[0] || null;
+}
+
+export async function updateDbProject(idOrSlug, payload = {}) {
+  const clean = String(idOrSlug || "").trim();
+  const sql = `
+    UPDATE "Project"
+    SET
+      "name" = COALESCE($2, "name"),
+      "client" = COALESCE($3, "client"),
+      "category" = COALESCE($4, "category"),
+      "shortDescription" = COALESCE($5, "shortDescription"),
+      "fullDescription" = COALESCE($6, "fullDescription"),
+      "industry" = COALESCE($7, "industry"),
+      "metrics" = COALESCE($8::jsonb, "metrics"),
+      "techStack" = COALESCE($9::jsonb, "techStack"),
+      "demoUrl" = COALESCE($10, "demoUrl"),
+      "featuredImage" = COALESCE($11, "featuredImage"),
+      "isFeatured" = COALESCE($12, "isFeatured"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1 OR "slug" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    clean, payload.name, payload.client, payload.category, payload.shortDescription,
+    payload.fullDescription, payload.industry, payload.metrics ? JSON.stringify(payload.metrics) : null,
+    payload.techStack ? JSON.stringify(payload.techStack) : null, payload.demoUrl,
+    payload.featuredImage, payload.isFeatured !== undefined ? Boolean(payload.isFeatured) : null
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbProject(idOrSlug) {
+  const clean = String(idOrSlug || "").trim();
+  await neonQuery(`DELETE FROM "Project" WHERE "id" = $1 OR "slug" = $1;`, [clean]);
+  return { success: true };
+}
+
+/**
+ * Case Studies
+ */
+export async function getDbCaseStudies() {
+  const sql = `SELECT * FROM "CaseStudy" ORDER BY "displayOrder" ASC, "createdAt" DESC;`;
+  const rows = await neonQuery(sql);
+  return rows.map((r) => ({
+    ...r,
+    techStack: typeof r.techStack === "string" ? JSON.parse(r.techStack) : (r.techStack || []),
+  }));
+}
+
+export async function getDbCaseStudyBySlugOrId(slugOrId) {
+  const clean = String(slugOrId || "").trim();
+  const sql = `SELECT * FROM "CaseStudy" WHERE "slug" = $1 OR "id" = $1 LIMIT 1;`;
+  const rows = await neonQuery(sql, [clean]);
+  if (!rows || rows.length === 0) return null;
+  const r = rows[0];
+  return {
+    ...r,
+    techStack: typeof r.techStack === "string" ? JSON.parse(r.techStack) : (r.techStack || []),
+  };
+}
+
+export async function createDbCaseStudy(payload = {}) {
+  const id = `cs_${Date.now()}`;
+  const slug = payload.slug || payload.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || id;
+  const sql = `
+    INSERT INTO "CaseStudy" (
+      id, slug, title, client, industry, timeframe, "metricHighlight",
+      overview, challenge, solution, results, "architectureDesc", "techStack",
+      "testimonialAuthor", "testimonialRole", "testimonialQuote",
+      status, "displayOrder", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::jsonb,
+      $14, $15, $16, 'PUBLISHED', 0, NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, slug, payload.title || "New Case Study", payload.client || "Client",
+    payload.industry || "General", payload.timeframe || "3 Months",
+    payload.metricHighlight || "10x ROI", payload.overview || "",
+    payload.challenge || "", payload.solution || "", payload.results || "",
+    payload.architectureDesc || "", JSON.stringify(payload.techStack || []),
+    payload.testimonialAuthor || "", payload.testimonialRole || "",
+    payload.testimonialQuote || ""
+  ]);
+  return rows[0] || null;
+}
+
+export async function updateDbCaseStudy(idOrSlug, payload = {}) {
+  const clean = String(idOrSlug || "").trim();
+  const sql = `
+    UPDATE "CaseStudy"
+    SET
+      "title" = COALESCE($2, "title"),
+      "client" = COALESCE($3, "client"),
+      "industry" = COALESCE($4, "industry"),
+      "timeframe" = COALESCE($5, "timeframe"),
+      "metricHighlight" = COALESCE($6, "metricHighlight"),
+      "overview" = COALESCE($7, "overview"),
+      "challenge" = COALESCE($8, "challenge"),
+      "solution" = COALESCE($9, "solution"),
+      "results" = COALESCE($10, "results"),
+      "architectureDesc" = COALESCE($11, "architectureDesc"),
+      "techStack" = COALESCE($12::jsonb, "techStack"),
+      "testimonialAuthor" = COALESCE($13, "testimonialAuthor"),
+      "testimonialRole" = COALESCE($14, "testimonialRole"),
+      "testimonialQuote" = COALESCE($15, "testimonialQuote"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1 OR "slug" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    clean, payload.title, payload.client, payload.industry, payload.timeframe,
+    payload.metricHighlight, payload.overview, payload.challenge, payload.solution,
+    payload.results, payload.architectureDesc, payload.techStack ? JSON.stringify(payload.techStack) : null,
+    payload.testimonialAuthor, payload.testimonialRole, payload.testimonialQuote
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbCaseStudy(idOrSlug) {
+  const clean = String(idOrSlug || "").trim();
+  await neonQuery(`DELETE FROM "CaseStudy" WHERE "id" = $1 OR "slug" = $1;`, [clean]);
+  return { success: true };
+}
+
+/**
+ * Insights & Research Reports
+ */
+export async function getDbInsights() {
+  const sql = `SELECT * FROM "InsightReport" ORDER BY "createdAt" DESC;`;
+  const rows = await neonQuery(sql);
+  return rows.map((r) => ({
+    ...r,
+    tags: typeof r.tags === "string" ? JSON.parse(r.tags) : (r.tags || []),
+  }));
+}
+
+export async function getDbInsightBySlugOrId(slugOrId) {
+  const clean = String(slugOrId || "").trim();
+  const sql = `SELECT * FROM "InsightReport" WHERE "slug" = $1 OR "id" = $1 LIMIT 1;`;
+  const rows = await neonQuery(sql, [clean]);
+  if (!rows || rows.length === 0) return null;
+  const r = rows[0];
+  return { ...r, tags: typeof r.tags === "string" ? JSON.parse(r.tags) : (r.tags || []) };
+}
+
+export async function createDbInsight(payload = {}) {
+  const id = `ins_${Date.now()}`;
+  const slug = payload.slug || payload.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || id;
+  const sql = `
+    INSERT INTO "InsightReport" (
+      id, slug, title, sector, author, "pagesCount", "downloadCount",
+      "pdfAssetUrl", summary, tags, status, "publishedAt", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, 0, $7, $8, $9::jsonb, 'PUBLISHED', NOW(), NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, slug, payload.title || "New Insight Report", payload.sector || "Enterprise",
+    payload.author || "Dezoryn Research", Number(payload.pagesCount) || 12,
+    payload.pdfAssetUrl || "", payload.summary || "", JSON.stringify(payload.tags || [])
+  ]);
+  return rows[0] || null;
+}
+
+export async function updateDbInsight(idOrSlug, payload = {}) {
+  const clean = String(idOrSlug || "").trim();
+  const sql = `
+    UPDATE "InsightReport"
+    SET
+      "title" = COALESCE($2, "title"),
+      "sector" = COALESCE($3, "sector"),
+      "author" = COALESCE($4, "author"),
+      "pagesCount" = COALESCE($5, "pagesCount"),
+      "summary" = COALESCE($6, "summary"),
+      "tags" = COALESCE($7::jsonb, "tags"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1 OR "slug" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    clean, payload.title, payload.sector, payload.author,
+    payload.pagesCount !== undefined ? Number(payload.pagesCount) : null,
+    payload.summary, payload.tags ? JSON.stringify(payload.tags) : null
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbInsight(idOrSlug) {
+  const clean = String(idOrSlug || "").trim();
+  await neonQuery(`DELETE FROM "InsightReport" WHERE "id" = $1 OR "slug" = $1;`, [clean]);
+  return { success: true };
+}
+
+export async function getDbRunbooks() {
+  const sql = `SELECT * FROM "DocumentationRunbook" ORDER BY "displayOrder" ASC, "createdAt" ASC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function getDbApiSpecs() {
+  const sql = `SELECT * FROM "ApiResource" ORDER BY "displayOrder" ASC, "createdAt" ASC;`;
+  const rows = await neonQuery(sql);
+  return rows.map((r) => ({
+    ...r,
+    parametersSchema: typeof r.parametersSchema === "string" ? JSON.parse(r.parametersSchema) : (r.parametersSchema || {}),
+    responseSchema: typeof r.responseSchema === "string" ? JSON.parse(r.responseSchema) : (r.responseSchema || {}),
+  }));
+}
+
+/**
+ * Partners
+ */
+export async function getDbPartners() {
+  const sql = `SELECT * FROM "Partner" ORDER BY "displayOrder" ASC, "createdAt" DESC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function createDbPartner(payload = {}) {
+  const id = `part_${Date.now()}`;
+  const sql = `
+    INSERT INTO "Partner" (
+      id, name, category, tier, "websiteUrl", "logoUrl", "commissionRate",
+      "displayOrder", status, "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, 'TIER_1_GLOBAL', $4, $5, $6, 0, 'ACTIVE', NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, payload.name || "New Partner", payload.category || "Technology",
+    payload.websiteUrl || "", payload.logoUrl || "", payload.commissionRate || "15%"
+  ]);
+  return rows[0] || null;
+}
+
+export async function updateDbPartner(id, payload = {}) {
+  const sql = `
+    UPDATE "Partner"
+    SET
+      "name" = COALESCE($2, "name"),
+      "category" = COALESCE($3, "category"),
+      "websiteUrl" = COALESCE($4, "websiteUrl"),
+      "commissionRate" = COALESCE($5, "commissionRate"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [id, payload.name, payload.category, payload.websiteUrl, payload.commissionRate]);
+  return rows[0] || null;
+}
+
+export async function deleteDbPartner(id) {
+  await neonQuery(`DELETE FROM "Partner" WHERE "id" = $1;`, [id]);
+  return { success: true };
+}
+
+/**
+ * Careers CRUD
+ */
+export async function createDbCareer(payload = {}) {
+  const id = `job_${Date.now()}`;
+  const sql = `
+    INSERT INTO "JobPosting" (
+      id, title, department, location, "employmentType", "experienceLevel",
+      "salaryRange", description, requirements, "applicantCount", status,
+      "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, 'FULL_TIME', $5, $6, $7, $8::jsonb, 0, 'PUBLISHED', NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, payload.title || "Senior Software Engineer", payload.department || "Engineering",
+    payload.location || "Remote", payload.experienceLevel || "Mid-Senior",
+    payload.salaryRange || "$120k - $160k", payload.description || "",
+    JSON.stringify(payload.requirements || [])
+  ]);
+  return rows[0] || null;
+}
+
+export async function updateDbCareer(id, payload = {}) {
+  const sql = `
+    UPDATE "JobPosting"
+    SET
+      "title" = COALESCE($2, "title"),
+      "department" = COALESCE($3, "department"),
+      "location" = COALESCE($4, "location"),
+      "salaryRange" = COALESCE($5, "salaryRange"),
+      "description" = COALESCE($6, "description"),
+      "requirements" = COALESCE($7::jsonb, "requirements"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, payload.title, payload.department, payload.location,
+    payload.salaryRange, payload.description, payload.requirements ? JSON.stringify(payload.requirements) : null
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbCareer(id) {
+  await neonQuery(`DELETE FROM "JobPosting" WHERE "id" = $1;`, [id]);
+  return { success: true };
+}
+
+/**
+ * Blog Posts CRUD
+ */
+export async function getDbBlogPostBySlugOrId(slugOrId) {
+  const clean = String(slugOrId || "").trim();
+  const sql = `SELECT * FROM "BlogPost" WHERE "slug" = $1 OR "id" = $1 LIMIT 1;`;
+  const rows = await neonQuery(sql, [clean]);
+  return rows[0] || null;
+}
+
+export async function createDbBlogPost(payload = {}) {
+  const id = `post_${Date.now()}`;
+  const slug = payload.slug || payload.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || id;
+  const sql = `
+    INSERT INTO "BlogPost" (
+      id, slug, title, excerpt, content, category, "coverImage",
+      author, "readTimeMinutes", tags, status, "publishedAt", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, 'PUBLISHED', NOW(), NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, slug, payload.title || "New Blog Post", payload.excerpt || "",
+    payload.content || "", payload.category || "Engineering",
+    payload.coverImage || "", payload.author || "Dezoryn Team",
+    Number(payload.readTimeMinutes) || 5, JSON.stringify(payload.tags || [])
+  ]);
+  return rows[0] || null;
+}
+
+export async function updateDbBlogPost(idOrSlug, payload = {}) {
+  const clean = String(idOrSlug || "").trim();
+  const sql = `
+    UPDATE "BlogPost"
+    SET
+      "title" = COALESCE($2, "title"),
+      "excerpt" = COALESCE($3, "excerpt"),
+      "content" = COALESCE($4, "content"),
+      "category" = COALESCE($5, "category"),
+      "coverImage" = COALESCE($6, "coverImage"),
+      "author" = COALESCE($7, "author"),
+      "tags" = COALESCE($8::jsonb, "tags"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1 OR "slug" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    clean, payload.title, payload.excerpt, payload.content,
+    payload.category, payload.coverImage, payload.author,
+    payload.tags ? JSON.stringify(payload.tags) : null
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbBlogPost(idOrSlug) {
+  const clean = String(idOrSlug || "").trim();
+  await neonQuery(`DELETE FROM "BlogPost" WHERE "id" = $1 OR "slug" = $1;`, [clean]);
+  return { success: true };
+}
+
+/**
+ * FAQs CRUD
+ */
+export async function createDbFaq(payload = {}) {
+  const id = `faq_${Date.now()}`;
+  const sql = `
+    INSERT INTO "Faq" (
+      id, question, answer, category, "displayOrder", "isPublished", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, 0, true, NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, payload.question || "New Question?", payload.answer || "Answer details.",
+    payload.category || "General"
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbFaq(id) {
+  await neonQuery(`DELETE FROM "Faq" WHERE "id" = $1;`, [id]);
+  return { success: true };
+}
+
+/**
+ * Inbound Leads, Demos, Newsletter
+ */
+export async function getDbLeads() {
+  const sql = `SELECT * FROM "LeadEnquiry" ORDER BY "submittedAt" DESC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function createDbLead(payload = {}) {
+  const leadId = `lead_${Date.now()}`;
+  const sql = `
+    INSERT INTO "LeadEnquiry" (
+      id, name, company, email, phone, country, "companySize", 
+      "interestedSolution", "budgetRange", requirement, source, 
+      priority, status, "submittedAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7, 
+      $8, $9, $10, 'GENERAL_CONTACT', 
+      'MEDIUM', 'NEW', NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    leadId,
+    payload.name || "Website Lead",
+    payload.company || "Company",
+    payload.email || "lead@dezoryn.com",
+    payload.phone || null,
+    payload.country || "Global",
+    payload.companySize || "11-50",
+    payload.interestedSolution || payload.product || "General",
+    payload.budgetRange || "$5,000+",
+    payload.requirement || payload.message || "Website contact inquiry",
+  ]);
+  return rows[0] || { id: leadId, ...payload, status: "NEW" };
+}
+
+export async function updateDbLeadStatus(id, status, notes = "") {
+  const sql = `
+    UPDATE "LeadEnquiry"
+    SET
+      "status" = COALESCE($2, "status"),
+      "administrativeNotes" = COALESCE($3, "administrativeNotes"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [id, status, notes || null]);
+  return rows[0] || null;
+}
+
+export async function deleteDbLead(id) {
+  await neonQuery(`DELETE FROM "LeadEnquiry" WHERE "id" = $1;`, [id]);
+  return { success: true };
+}
+
+export async function getDbDemos() {
+  const sql = `SELECT * FROM "DemoRequest" ORDER BY "createdAt" DESC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function createDbDemo(payload = {}) {
+  const demoId = `demo_${Date.now()}`;
+  const sql = `
+    INSERT INTO "DemoRequest" (
+      id, "contactName", company, "businessEmail", country, "productSlug", "preferredDate", 
+      "preferredTime", "timeZone", "attendeesCount", status, "createdAt", "updatedAt", phone
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, COALESCE($7, '2026-11-10'), 
+      COALESCE($8, '10:00 AM'), COALESCE($9, 'UTC'), 1, 'PENDING', NOW(), NOW(), $10
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    demoId,
+    payload.contactName || payload.name || "Demo Request",
+    payload.company || "Company",
+    payload.businessEmail || payload.email || "demo@dezoryn.com",
+    payload.country || "Global",
+    payload.productSlug || payload.product || "schooly-core",
+    payload.preferredDate || null,
+    payload.preferredTime || null,
+    payload.timeZone || payload.timezone || null,
+    payload.phone || null,
+  ]);
+  return rows[0] || { id: demoId, ...payload, status: "PENDING" };
+}
+
+export async function updateDbDemoStatus(id, status, meetingLink = "") {
+  const sql = `
+    UPDATE "DemoRequest"
+    SET
+      "status" = COALESCE($2, "status"),
+      "meetingLink" = COALESCE($3, "meetingLink"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [id, status, meetingLink || null]);
+  return rows[0] || null;
+}
+
+export async function deleteDbDemo(id) {
+  await neonQuery(`DELETE FROM "DemoRequest" WHERE "id" = $1;`, [id]);
+  return { success: true };
+}
+
+export async function getDbNewsletter() {
+  const sql = `SELECT * FROM "NewsletterSubscription" ORDER BY "subscribedAt" DESC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function createDbNewsletter(email, source = "website") {
+  const cleanEmail = String(email || "").trim().toLowerCase();
+  const id = `sub_${Date.now()}`;
+  try {
+    const sql = `
+      INSERT INTO "NewsletterSubscription" (
+        id, email, status, source, "subscribedAt"
+      ) VALUES (
+        $1, $2, 'ACTIVE', $3, NOW()
+      ) ON CONFLICT (email) DO NOTHING
+      RETURNING *;
+    `;
+    const rows = await neonQuery(sql, [id, cleanEmail, source]);
+    return rows[0] || { id, email: cleanEmail, status: "ACTIVE" };
+  } catch (_) {
+    return { id, email: cleanEmail, status: "ACTIVE" };
+  }
+}
+
+export async function deleteDbNewsletter(id) {
+  await neonQuery(`DELETE FROM "NewsletterSubscription" WHERE "id" = $1;`, [id]);
+  return { success: true };
+}
+
+/**
+ * Site Settings & Navigation
+ */
+export async function getDbSiteSettings() {
+  const sql = `SELECT * FROM "SiteSetting" ORDER BY "group" ASC, "key" ASC;`;
+  const rows = await neonQuery(sql);
+  const settingsObj = {};
+  for (const r of rows) {
+    settingsObj[r.key] = r.value;
+  }
+  return settingsObj;
+}
+
+export async function updateDbSiteSettings(payload = {}) {
+  for (const [k, v] of Object.entries(payload)) {
+    if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") {
+      await neonQuery(
+        `UPDATE "SiteSetting" SET "value" = $2, "updatedAt" = NOW() WHERE "key" = $1;`,
+        [k, String(v)]
+      );
+    }
+  }
+  return payload;
+}
+
+export async function getDbNavigation() {
+  const sql = `SELECT * FROM "NavigationItem" ORDER BY "displayOrder" ASC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function createDbNavigationItem(payload = {}) {
+  const id = `nav_${Date.now()}`;
+  const sql = `
+    INSERT INTO "NavigationItem" (
+      id, "menuLocation", label, href, "parentId", "displayOrder",
+      "hasMegaMenu", icon, badge, "isExternal", "isPublished", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, 'HEADER', $2, $3, $4, $5, false, $6, $7, false, true, NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, payload.label || "Link", payload.href || "/", payload.parentId || null,
+    Number(payload.displayOrder) || 0, payload.icon || null, payload.badge || null
+  ]);
+  return rows[0] || null;
+}
+
+export async function updateDbNavigationItem(id, payload = {}) {
+  const sql = `
+    UPDATE "NavigationItem"
+    SET
+      "label" = COALESCE($2, "label"),
+      "href" = COALESCE($3, "href"),
+      "displayOrder" = COALESCE($4, "displayOrder"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [id, payload.label, payload.href, payload.displayOrder !== undefined ? Number(payload.displayOrder) : null]);
+  return rows[0] || null;
+}
+
+export async function deleteDbNavigationItem(id) {
+  await neonQuery(`DELETE FROM "NavigationItem" WHERE "id" = $1;`, [id]);
+  return { success: true };
+}
+
+/**
+ * Admin Users, Roles, Audit Logs, Media
+ */
+export async function getDbAdminUsers() {
+  const sql = `SELECT id, email, name, "roleId", status, "twoFactorEnforced", "lastLoginAt", "createdAt" FROM "AdminUser" ORDER BY "createdAt" ASC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function createDbAdminUser(payload = {}) {
+  const id = `usr_${Date.now()}`;
+  const sql = `
+    INSERT INTO "AdminUser" (
+      id, email, "passwordHash", name, "roleId", status, "twoFactorEnforced", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, 'hash_placeholder', $3, $4, 'ACTIVE', false, NOW(), NOW()
+    ) RETURNING id, email, name, "roleId", status;
+  `;
+  const rows = await neonQuery(sql, [id, payload.email, payload.name, payload.roleId || "admin"]);
+  return rows[0] || null;
+}
+
+export async function updateDbAdminUser(id, payload = {}) {
+  const sql = `
+    UPDATE "AdminUser"
+    SET
+      "name" = COALESCE($2, "name"),
+      "email" = COALESCE($3, "email"),
+      "roleId" = COALESCE($4, "roleId"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1
+    RETURNING id, email, name, "roleId", status;
+  `;
+  const rows = await neonQuery(sql, [id, payload.name, payload.email, payload.roleId]);
+  return rows[0] || null;
+}
+
+export async function deleteDbAdminUser(id) {
+  await neonQuery(`DELETE FROM "AdminUser" WHERE "id" = $1;`, [id]);
+  return { success: true };
+}
+
+export async function getDbRoles() {
+  const sql = `SELECT * FROM "Role" ORDER BY "createdAt" ASC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function getDbAuditLogs(limit = 50) {
+  const sql = `SELECT * FROM "AuditLog" ORDER BY "createdAt" DESC LIMIT $1;`;
+  const rows = await neonQuery(sql, [Number(limit) || 50]);
+  return rows;
+}
+
+export async function getDbMedia() {
+  const sql = `SELECT * FROM "MediaAsset" ORDER BY "createdAt" DESC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function deleteDbMedia(id) {
+  await neonQuery(`DELETE FROM "MediaAsset" WHERE "id" = $1;`, [id]);
+  return { success: true };
+}
+
+/**
+ * Product Comparison Values
+ */
+export async function getDbProductComparisons() {
+  const attrSql = `SELECT * FROM "ComparisonAttribute" WHERE "isPublished" = true ORDER BY "displayOrder" ASC;`;
+  const valSql = `SELECT * FROM "ProductComparisonValue";`;
+  const [attrs, vals] = await Promise.all([neonQuery(attrSql), neonQuery(valSql)]);
+  return {
+    attributes: attrs,
+    values: vals,
+  };
+}
+
+/**
+ * Website Pages CRUD
+ */
+export async function getDbPages() {
+  const sql = `SELECT * FROM "WebsitePage" ORDER BY "title" ASC;`;
+  const rows = await neonQuery(sql);
+  return rows;
+}
+
+export async function createDbPage(payload = {}) {
+  const id = `page_${Date.now()}`;
+  const slug = payload.slug || payload.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || id;
+  const sql = `
+    INSERT INTO "WebsitePage" (
+      id, slug, title, "metaDescription", "seoKeywords", "isPublished", "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, $5::jsonb, true, NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, slug, payload.title || "New Page", payload.metaDescription || "",
+    JSON.stringify(payload.seoKeywords || [])
+  ]);
+  return rows[0] || null;
+}
+
+export async function updateDbPage(idOrSlug, payload = {}) {
+  const clean = String(idOrSlug || "").trim();
+  const sql = `
+    UPDATE "WebsitePage"
+    SET
+      "title" = COALESCE($2, "title"),
+      "metaDescription" = COALESCE($3, "metaDescription"),
+      "seoKeywords" = COALESCE($4::jsonb, "seoKeywords"),
+      "updatedAt" = NOW()
+    WHERE "id" = $1 OR "slug" = $1
+    RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    clean, payload.title, payload.metaDescription,
+    payload.seoKeywords ? JSON.stringify(payload.seoKeywords) : null
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbPage(idOrSlug) {
+  const clean = String(idOrSlug || "").trim();
+  await neonQuery(`DELETE FROM "WebsitePage" WHERE "id" = $1 OR "slug" = $1;`, [clean]);
+  return { success: true };
+}
+
+/**
+ * Pricing Plan Create & Delete
+ */
+export async function createDbPricingPlan(payload = {}) {
+  const id = `plan_${Date.now()}`;
+  const slug = payload.slug || payload.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || id;
+  const monthly = Number(payload.monthlyPriceUsd || payload.price || 49);
+  const sql = `
+    INSERT INTO "ProductPlan" (
+      id, slug, name, description, "monthlyPriceUsd", "annualPriceUsd", "annualDiscountPercent",
+      features, "isPopular", "isHighlighted", "displayOrder", status, "createdAt", "updatedAt"
+    ) VALUES (
+      $1, $2, $3, $4, CAST($5 AS double precision), CAST($5 AS double precision) * 0.8, 20,
+      $6::jsonb, false, $7, 1, 'PUBLISHED', NOW(), NOW()
+    ) RETURNING *;
+  `;
+  const rows = await neonQuery(sql, [
+    id, slug, payload.name || "Standard Plan", payload.description || "",
+    monthly, JSON.stringify(payload.features || []), Boolean(payload.isHighlighted)
+  ]);
+  return rows[0] || null;
+}
+
+export async function deleteDbPricingPlan(idOrSlug) {
+  const clean = String(idOrSlug || "").trim();
+  await neonQuery(`DELETE FROM "ProductPlan" WHERE "id" = $1 OR "slug" = $1;`, [clean]);
+  return { success: true };
+}
