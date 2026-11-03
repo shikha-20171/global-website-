@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
-import { sendInquiryNotification } from "@/lib/email";
+import { sendInquiryNotification, sendNewsletterWelcomeEmail } from "@/lib/email";
 import {
   getDbProducts,
   getDbProductBySlugOrId,
@@ -736,6 +736,9 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
     if (subPath === "v1/newsletter/subscribe") {
       if (method === "POST") {
         const sub = await createDbNewsletter(body.email, body.source);
+        sendNewsletterWelcomeEmail(body.email).catch((err) => {
+          console.warn("[NEWSLETTER EMAIL WARNING]:", err?.message || err);
+        });
         return NextResponse.json({ success: true, data: sub, message: "Subscribed successfully!" }, { status: 201 });
       }
     }
