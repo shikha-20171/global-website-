@@ -442,19 +442,29 @@ export default async function LegalPage({ params }) {
 
         {/* ─── POLICY NAVIGATION TABS ─── */}
         <div className="mt-8 flex gap-2 overflow-x-auto pb-3 [scrollbar-width:none] border-b border-line">
-          {allSlugs.map((s) => (
-            <Link
-              key={s}
-              href={`/legal/${s}`}
-              className={`shrink-0 rounded-lg px-3.5 py-1.5 text-xs font-medium transition ${
-                params.slug === s
-                  ? "bg-electric text-white"
-                  : "border border-line bg-graphite/60 text-cool hover:text-white"
-              }`}
-            >
-              {legalPages[s].title}
-            </Link>
-          ))}
+          {allSlugs.map((s) => {
+            const targetHref =
+              s === "privacy"
+                ? "/privacy-policy"
+                : s === "terms"
+                ? "/terms-and-conditions"
+                : s === "data-deletion"
+                ? "/data-deletion"
+                : `/legal/${s}`;
+            return (
+              <Link
+                key={s}
+                href={targetHref}
+                className={`shrink-0 rounded-lg px-3.5 py-1.5 text-xs font-medium transition ${
+                  params.slug === s
+                    ? "bg-electric text-white font-semibold"
+                    : "border border-line bg-graphite/60 text-cool hover:text-white"
+                }`}
+              >
+                {legalPages[s].title}
+              </Link>
+            );
+          })}
         </div>
 
         {/* ─── HEADER ─── */}

@@ -123,11 +123,9 @@ const cols = [
   [
     "Legal",
     [
-      ["Privacy Policy", "/legal/privacy"],
-      ["Data Deletion", "/legal/data-deletion"],
-      ["Terms & Conditions", "/legal/terms"],
-      ["Google Play Data Safety", "/legal/google-play-data-safety"],
-      ["Meta Data Deletion", "/legal/meta-data-deletion"],
+      ["Privacy Policy", "/privacy-policy"],
+      ["Terms & Conditions", "/terms-and-conditions"],
+      ["Data Deletion", "/data-deletion"],
       ["Security Policy", "/legal/security"],
       ["Refund Policy", "/legal/refund"],
       ["Cookie Policy", "/legal/cookies"],

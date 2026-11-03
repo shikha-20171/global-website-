@@ -160,10 +160,19 @@ export default async function LegalIndexPage() {
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {docList.map((doc, idx) => {
               const Icon = doc.icon;
+              const targetHref =
+                doc.href ||
+                (doc.slug === "privacy"
+                  ? "/privacy-policy"
+                  : doc.slug === "terms"
+                  ? "/terms-and-conditions"
+                  : doc.slug === "data-deletion"
+                  ? "/data-deletion"
+                  : `/legal/${doc.slug}`);
               return (
                 <Reveal key={doc.slug} delay={idx * 0.05}>
                   <Link
-                    href={`/legal/${doc.slug}`}
+                    href={targetHref}
                     className="group card card-hover flex h-full flex-col justify-between overflow-hidden p-6 border-white/10 bg-[#070b16] transition-all duration-300 hover:border-electric/40 hover:-translate-y-1 hover:shadow-xl hover:shadow-electric/10"
                   >
                     <div>

@@ -10,6 +10,25 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/legal/privacy",
+        destination: "/privacy-policy",
+        permanent: true,
+      },
+      {
+        source: "/legal/terms",
+        destination: "/terms-and-conditions",
+        permanent: true,
+      },
+      {
+        source: "/legal/data-deletion",
+        destination: "/data-deletion",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     const rawBackend = (
       process.env.BACKEND_URL ||
