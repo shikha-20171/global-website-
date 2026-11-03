@@ -7,7 +7,6 @@ import Intro from "@/components/Intro";
 import CompareTray from "@/components/CompareTray";
 import { CompareProvider } from "@/components/CompareContext";
 import ScrollToTop from "@/components/ScrollToTop";
-import OneLineSidebar from "@/components/OneLineSidebar";
 
 import {
   SITE_URL,
@@ -118,7 +117,6 @@ export default function RootLayout({ children }) {
         <MotionRoot>
         <CompareProvider>
           <ScrollToTop />
-          <OneLineSidebar />
           <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded focus:bg-electric focus:px-3 focus:py-2">Skip to content</a>
           <Intro />
           <Effects />

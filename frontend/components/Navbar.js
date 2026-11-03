@@ -253,18 +253,20 @@ export default function Navbar() {
         }`}
         style={scrolled || mobile ? { backgroundColor: "#030712" } : {}}
       >
-        <div className="container-x flex h-16 items-center justify-between gap-4">
-          <div onClick={() => handleNav("/")}>
+        <div className="container-x flex h-16 items-center justify-between gap-3 lg:gap-6">
+          <div className="shrink-0 flex items-center pr-2 lg:pr-3 select-none">
             <Logo />
           </div>
 
           {/* ─── DESKTOP NAVIGATION BAR ─── */}
           <nav
             ref={navRef}
-            className="hidden items-center gap-1 xl:flex"
+            className="hidden items-center gap-0.5 2xl:gap-1.5 xl:flex"
             aria-label="Main"
           >
-            {nav.map((n) => {
+            {nav
+              .filter((n) => n.href !== "/")
+              .map((n) => {
               const isMega = Boolean(n.mega);
               const isOpen = menu === n.mega;
               const isActive = path === n.href || (isMega && path.startsWith(n.href));
@@ -279,7 +281,7 @@ export default function Navbar() {
                     <button
                       type="button"
                       onClick={() => setMenu(isOpen ? null : n.mega)}
-                      className={`flex items-center gap-1.5 rounded-md px-3 py-2 text-[13px] transition cursor-pointer select-none ${
+                      className={`flex items-center gap-1 rounded-md px-2.5 2xl:px-3 py-2 text-[13px] transition cursor-pointer select-none whitespace-nowrap ${
                         isActive || isOpen ? "text-white font-semibold" : "text-white/70 hover:text-white"
                       }`}
                       aria-expanded={isOpen}
@@ -321,7 +323,7 @@ export default function Navbar() {
                   key={n.label}
                   type="button"
                   onClick={() => handleNav(n.href)}
-                  className={`flex items-center rounded-md px-3 py-2 text-[13px] transition cursor-pointer ${
+                  className={`flex items-center rounded-md px-2.5 2xl:px-3 py-2 text-[13px] transition cursor-pointer whitespace-nowrap ${
                     isActive ? "text-white font-semibold" : "text-white/70 hover:text-white"
                   }`}
                 >
@@ -333,7 +335,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => handleNav("/pricing")}
-              className={`rounded-md px-3 py-2 text-[13px] transition cursor-pointer ${
+              className={`rounded-md px-2.5 2xl:px-3 py-2 text-[13px] transition cursor-pointer whitespace-nowrap ${
                 path === "/pricing" ? "text-white font-semibold" : "text-white/70 hover:text-white"
               }`}
             >
@@ -342,8 +344,8 @@ export default function Navbar() {
           </nav>
 
           {/* Desktop & Mobile Actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Desktop Normal Search Bar */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Normal Compact Search Button */}
             <button
               type="button"
               onClick={() => {
@@ -351,42 +353,28 @@ export default function Navbar() {
                 setMenu(null);
                 setSearch(true);
               }}
-              className="hidden lg:flex items-center gap-2.5 h-9 w-44 xl:w-56 px-3 rounded-xl border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-sky-400/40 text-xs text-white/60 hover:text-white/90 transition shadow-xs cursor-pointer group"
+              className="flex items-center gap-2 h-9 px-3 rounded-xl border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-sky-400/40 text-xs text-white/70 hover:text-white transition shadow-xs cursor-pointer group shrink-0"
               aria-label="Search products, solutions and resources"
             >
               <Search size={14} className="text-sky-400 shrink-0 group-hover:scale-110 transition-transform" />
-              <span className="truncate flex-1 text-left text-[12.5px] font-normal text-white/60 group-hover:text-white/80">
-                Search products...
+              <span className="hidden sm:inline text-[13px] font-normal text-white/70 group-hover:text-white whitespace-nowrap">
+                Search
               </span>
-              <kbd className="hidden xl:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-white/50 bg-white/10 rounded border border-white/10">
+              <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-white/50 bg-white/10 rounded border border-white/10 ml-0.5">
                 ⌘K
               </kbd>
-            </button>
-
-            {/* Mobile / Tablet Compact Search Icon Button */}
-            <button
-              type="button"
-              onClick={() => {
-                setMobile(false);
-                setMenu(null);
-                setSearch(true);
-              }}
-              className="flex lg:hidden h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/10 transition cursor-pointer"
-              aria-label="Search"
-            >
-              <Search size={16} />
             </button>
 
             <button
               type="button"
               onClick={() => handleNav("/demo")}
-              className="btn btn-primary h-9 px-3.5 sm:px-4 text-[13px] cursor-pointer"
+              className="btn btn-primary h-9 px-3.5 sm:px-4 text-[13px] cursor-pointer whitespace-nowrap shrink-0"
             >
               Get Started
             </button>
             <button
               onClick={() => setMobile(!mobile)}
-              className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-white hover:bg-white/10 active:scale-95 transition xl:hidden cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-white hover:bg-white/10 active:scale-95 transition xl:hidden cursor-pointer shrink-0"
               aria-label={mobile ? "Close menu" : "Open menu"}
               aria-expanded={mobile}
             >

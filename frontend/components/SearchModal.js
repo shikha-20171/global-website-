@@ -11,26 +11,13 @@ import {
   Building2,
   BookOpen,
   ArrowRight,
-  TrendingUp,
 } from "lucide-react";
 import { products, industries, projects, posts } from "@/lib/data";
-
-const CATEGORIES = ["All", "Products", "Solutions", "Industries", "Articles"];
-
-const POPULAR_SEARCHES = [
-  { label: "Schooly Core ERP", query: "schooly" },
-  { label: "Dezo Care EHR", query: "dezo-care" },
-  { label: "Sales CRM Pipeline", query: "crm" },
-  { label: "SocietyOS Community", query: "society" },
-  { label: "Education Cloud", query: "education" },
-  { label: "Commercial Pricing", query: "pricing" },
-];
 
 export default function SearchModal({ open, onClose }) {
   const [q, setQ] = useState("");
   const [dq, setDq] = useState("");
   const [active, setActive] = useState(0);
-  const [selectedCat, setSelectedCat] = useState("All");
   const [liveProducts, setLiveProducts] = useState(products);
   const router = useRouter();
   const inputRef = useRef(null);
@@ -176,29 +163,22 @@ export default function SearchModal({ open, onClose }) {
       setQ("");
       setDq("");
       setActive(0);
-      setSelectedCat("All");
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [open]);
 
   // Filtered search results
   const results = useMemo(() => {
-    let pool = index;
-    if (selectedCat !== "All") {
-      pool = pool.filter((item) => item.category === selectedCat);
-    }
-    if (!dq) {
-      return pool.slice(0, 8);
-    }
+    if (!dq) return [];
     const terms = dq.split(/\s+/).filter(Boolean);
-    return pool
+    return index
       .filter((item) => terms.every((t) => item.k.includes(t)))
       .slice(0, 10);
-  }, [index, dq, selectedCat]);
+  }, [index, dq]);
 
   useEffect(() => {
     setActive(0);
-  }, [dq, selectedCat]);
+  }, [dq]);
 
   const handleSelect = (r) => {
     onClose();
@@ -303,54 +283,24 @@ export default function SearchModal({ open, onClose }) {
               </kbd>
             </div>
 
-            {/* Category Filter Chips */}
-            <div className="flex items-center gap-1.5 overflow-x-auto px-4 py-2.5 border-b border-white/5 bg-[#080d1b] scrollbar-none">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setSelectedCat(cat)}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition cursor-pointer shrink-0 ${
-                    selectedCat === cat
-                      ? "bg-sky-500 text-white shadow-[0_0_12px_rgba(56,189,248,0.4)]"
-                      : "bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/5"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Empty Query Quick Suggestions */}
-            {!dq && (
-              <div className="px-4 py-3 bg-[#080d1b]/60 border-b border-white/5">
-                <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-2">
-                  <TrendingUp size={12} className="text-sky-400" />
-                  <span>Popular Searches</span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {POPULAR_SEARCHES.map((item) => (
-                    <button
-                      key={item.label}
-                      type="button"
-                      onClick={() => setQ(item.query)}
-                      className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-slate-300 hover:border-sky-400/40 hover:bg-sky-500/10 hover:text-sky-200 transition cursor-pointer"
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Results List */}
-            <div className="max-h-[52vh] overflow-y-auto p-2 divide-y divide-white/[0.03]">
-              {results.length === 0 ? (
+            {/* Results List or Empty State */}
+            <div className="max-h-[55vh] overflow-y-auto p-2 divide-y divide-white/[0.03]">
+              {!dq ? (
                 <div className="px-4 py-12 text-center">
-                  <Search size={32} className="mx-auto text-slate-500 mb-2.5 opacity-50" />
+                  <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-400/20 text-sky-400">
+                    <Search size={20} />
+                  </div>
+                  <p className="text-sm font-medium text-white">Search DEZORYN</p>
+                  <p className="mt-1 text-xs text-slate-400 max-w-sm mx-auto">
+                    Type a keyword to instantly search across SaaS products, enterprise solutions, industry platforms, and pricing.
+                  </p>
+                </div>
+              ) : results.length === 0 ? (
+                <div className="px-4 py-12 text-center">
+                  <Search size={28} className="mx-auto text-slate-500 mb-2.5 opacity-50" />
                   <p className="text-sm font-medium text-white">No results found for “{q}”</p>
                   <p className="mt-1 text-xs text-slate-400">
-                    Try searching for "Schooly", "Hospital", "CRM", "Pricing", or "Enterprise".
+                    Try searching for another keyword or check for typos.
                   </p>
                 </div>
               ) : (
@@ -435,7 +385,7 @@ export default function SearchModal({ open, onClose }) {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span>Total {results.length} results</span>
+                <span>{dq ? `Total ${results.length} results` : "Instant search"}</span>
               </div>
             </div>
           </motion.div>
