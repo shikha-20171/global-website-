@@ -283,111 +283,82 @@ export default function SearchModal({ open, onClose }) {
               </kbd>
             </div>
 
-            {/* Results List or Empty State */}
-            <div className="max-h-[55vh] overflow-y-auto p-2 divide-y divide-white/[0.03]">
-              {!dq ? (
-                <div className="px-4 py-12 text-center">
-                  <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-400/20 text-sky-400">
-                    <Search size={20} />
+            {/* Results List */}
+            {dq ? (
+              <div className="max-h-[58vh] overflow-y-auto p-2 divide-y divide-white/[0.03]">
+                {results.length === 0 ? (
+                  <div className="px-4 py-10 text-center">
+                    <Search size={24} className="mx-auto text-slate-500 mb-2 opacity-50" />
+                    <p className="text-sm font-medium text-white">No results found for “{q}”</p>
                   </div>
-                  <p className="text-sm font-medium text-white">Search DEZORYN</p>
-                  <p className="mt-1 text-xs text-slate-400 max-w-sm mx-auto">
-                    Type a keyword to instantly search across SaaS products, enterprise solutions, industry platforms, and pricing.
-                  </p>
-                </div>
-              ) : results.length === 0 ? (
-                <div className="px-4 py-12 text-center">
-                  <Search size={28} className="mx-auto text-slate-500 mb-2.5 opacity-50" />
-                  <p className="text-sm font-medium text-white">No results found for “{q}”</p>
-                  <p className="mt-1 text-xs text-slate-400">
-                    Try searching for another keyword or check for typos.
-                  </p>
-                </div>
-              ) : (
-                results.map((r, i) => {
-                  const isCurrent = i === active;
-                  return (
-                    <button
-                      key={r.href + r.title}
-                      type="button"
-                      onMouseEnter={() => setActive(i)}
-                      onClick={() => handleSelect(r)}
-                      className={`group flex w-full items-center justify-between gap-3 rounded-xl px-3.5 py-3 text-left transition cursor-pointer ${
-                        isCurrent
-                          ? "bg-white/[0.08] border border-sky-400/30 shadow-[0_0_20px_rgba(56,189,248,0.1)]"
-                          : "hover:bg-white/[0.04] border border-transparent"
-                      }`}
-                    >
-                      <div className="flex items-start gap-3 min-w-0">
-                        <div
-                          className={`mt-0.5 rounded-lg p-2 border shrink-0 transition ${
-                            isCurrent
-                              ? "bg-sky-500/20 border-sky-400/40"
-                              : "bg-white/[0.04] border-white/10"
-                          }`}
-                        >
-                          {getTypeIcon(r.type)}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="truncate text-sm font-semibold text-white group-hover:text-sky-300 transition-colors">
-                              {r.title}
-                            </span>
-                            <span
-                              className={`rounded-full border px-2 py-0.5 text-[10px] font-medium shrink-0 ${getTypeBadge(
-                                r.type
-                              )}`}
-                            >
-                              {r.type}
-                            </span>
+                ) : (
+                  results.map((r, i) => {
+                    const isCurrent = i === active;
+                    return (
+                      <button
+                        key={r.href + r.title}
+                        type="button"
+                        onMouseEnter={() => setActive(i)}
+                        onClick={() => handleSelect(r)}
+                        className={`group flex w-full items-center justify-between gap-3 rounded-xl px-3.5 py-3 text-left transition cursor-pointer ${
+                          isCurrent
+                            ? "bg-white/[0.08] border border-sky-400/30 shadow-[0_0_20px_rgba(56,189,248,0.1)]"
+                            : "hover:bg-white/[0.04] border border-transparent"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3 min-w-0">
+                          <div
+                            className={`mt-0.5 rounded-lg p-2 border shrink-0 transition ${
+                              isCurrent
+                                ? "bg-sky-500/20 border-sky-400/40"
+                                : "bg-white/[0.04] border-white/10"
+                            }`}
+                          >
+                            {getTypeIcon(r.type)}
                           </div>
-                          <p className="truncate text-xs text-slate-400 mt-0.5 leading-relaxed">
-                            {r.sub}
-                          </p>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="truncate text-sm font-semibold text-white group-hover:text-sky-300 transition-colors">
+                                {r.title}
+                              </span>
+                              <span
+                                className={`rounded-full border px-2 py-0.5 text-[10px] font-medium shrink-0 ${getTypeBadge(
+                                  r.type
+                                )}`}
+                              >
+                                {r.type}
+                              </span>
+                            </div>
+                            <p className="truncate text-xs text-slate-400 mt-0.5 leading-relaxed">
+                              {r.sub}
+                            </p>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="flex items-center gap-2.5 shrink-0">
-                        {r.meta && (
-                          <span className="hidden sm:inline-block text-[11px] font-mono text-slate-400">
-                            {r.meta}
-                          </span>
-                        )}
-                        {isCurrent ? (
-                          <span className="flex items-center gap-1 rounded bg-sky-500/20 border border-sky-400/30 px-1.5 py-0.5 text-[11px] font-mono text-sky-200">
-                            <span>Open</span>
-                            <CornerDownLeft size={12} />
-                          </span>
-                        ) : (
-                          <ArrowRight
-                            size={14}
-                            className="text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                          />
-                        )}
-                      </div>
-                    </button>
-                  );
-                })
-              )}
-            </div>
-
-            {/* Bottom Keyboard Navigation Helper Bar */}
-            <div className="flex items-center justify-between border-t border-white/10 bg-[#060a16] px-4 py-2.5 text-[11px] font-mono text-slate-400">
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1">
-                  <kbd className="rounded border border-white/15 bg-white/5 px-1.5 py-0.5 text-[10px]">↑</kbd>
-                  <kbd className="rounded border border-white/15 bg-white/5 px-1.5 py-0.5 text-[10px]">↓</kbd>
-                  <span className="ml-1 text-slate-400">Navigate</span>
-                </span>
-                <span className="flex items-center gap-1">
-                  <kbd className="rounded border border-white/15 bg-white/5 px-1.5 py-0.5 text-[10px]">↵</kbd>
-                  <span className="ml-1 text-slate-400">Select</span>
-                </span>
+                        <div className="flex items-center gap-2.5 shrink-0">
+                          {r.meta && (
+                            <span className="hidden sm:inline-block text-[11px] font-mono text-slate-400">
+                              {r.meta}
+                            </span>
+                          )}
+                          {isCurrent ? (
+                            <span className="flex items-center gap-1 rounded bg-sky-500/20 border border-sky-400/30 px-1.5 py-0.5 text-[11px] font-mono text-sky-200">
+                              <span>Open</span>
+                              <CornerDownLeft size={12} />
+                            </span>
+                          ) : (
+                            <ArrowRight
+                              size={14}
+                              className="text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                            />
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <span>{dq ? `Total ${results.length} results` : "Instant search"}</span>
-              </div>
-            </div>
+            ) : null}
           </motion.div>
         </motion.div>
       )}

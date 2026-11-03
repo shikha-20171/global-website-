@@ -253,20 +253,18 @@ export default function Navbar() {
         }`}
         style={scrolled || mobile ? { backgroundColor: "#030712" } : {}}
       >
-        <div className="container-x flex h-16 items-center justify-between gap-3 lg:gap-6">
-          <div className="shrink-0 flex items-center pr-2 lg:pr-3 select-none">
+        <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between gap-2 lg:gap-4">
+          <div className="shrink-0 flex items-center pr-3 xl:pr-6 select-none">
             <Logo />
           </div>
 
           {/* ─── DESKTOP NAVIGATION BAR ─── */}
           <nav
             ref={navRef}
-            className="hidden items-center gap-0.5 2xl:gap-1.5 xl:flex"
+            className="hidden items-center gap-0.5 xl:gap-1 2xl:gap-1.5 xl:flex"
             aria-label="Main"
           >
-            {nav
-              .filter((n) => n.href !== "/")
-              .map((n) => {
+            {nav.map((n) => {
               const isMega = Boolean(n.mega);
               const isOpen = menu === n.mega;
               const isActive = path === n.href || (isMega && path.startsWith(n.href));
@@ -281,7 +279,7 @@ export default function Navbar() {
                     <button
                       type="button"
                       onClick={() => setMenu(isOpen ? null : n.mega)}
-                      className={`flex items-center gap-1 rounded-md px-2.5 2xl:px-3 py-2 text-[13px] transition cursor-pointer select-none whitespace-nowrap ${
+                      className={`flex items-center gap-1 rounded-md px-2 xl:px-2.5 2xl:px-3 py-2 text-[13px] transition cursor-pointer select-none whitespace-nowrap shrink-0 ${
                         isActive || isOpen ? "text-white font-semibold" : "text-white/70 hover:text-white"
                       }`}
                       aria-expanded={isOpen}
@@ -323,7 +321,7 @@ export default function Navbar() {
                   key={n.label}
                   type="button"
                   onClick={() => handleNav(n.href)}
-                  className={`flex items-center rounded-md px-2.5 2xl:px-3 py-2 text-[13px] transition cursor-pointer whitespace-nowrap ${
+                  className={`flex items-center rounded-md px-2 xl:px-2.5 2xl:px-3 py-2 text-[13px] transition cursor-pointer whitespace-nowrap shrink-0 ${
                     isActive ? "text-white font-semibold" : "text-white/70 hover:text-white"
                   }`}
                 >
@@ -335,7 +333,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => handleNav("/pricing")}
-              className={`rounded-md px-2.5 2xl:px-3 py-2 text-[13px] transition cursor-pointer whitespace-nowrap ${
+              className={`rounded-md px-2 xl:px-2.5 2xl:px-3 py-2 text-[13px] transition cursor-pointer whitespace-nowrap shrink-0 ${
                 path === "/pricing" ? "text-white font-semibold" : "text-white/70 hover:text-white"
               }`}
             >
