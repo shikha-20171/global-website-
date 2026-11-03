@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Breadcrumb from "@/components/Breadcrumb";
 import ProductCard from "@/components/ProductCard";
 import CTASection from "@/components/CTASection";
-import { Search, Filter, SlidersHorizontal, ArrowUpRight } from "lucide-react";
+import { Search, Filter, SlidersHorizontal, ArrowUpRight, X } from "lucide-react";
 import { products, CATEGORIES, BUSINESS_SIZES, DEPLOYMENTS } from "@/lib/data";
 import api from "@/lib/axios";
 
@@ -78,14 +78,24 @@ function SearchContent() {
 
           {/* Search Bar Input */}
           <div className="mt-8 relative max-w-2xl">
+            <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sky-400" />
             <input
               type="text"
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search by keyword, product name, or capability (e.g., student roster, hospital EHR, payroll)..."
-              className="w-full rounded-xl border border-line bg-midnight/90 pl-11 pr-4 py-3.5 text-sm text-white placeholder-cool/60 focus:border-electric focus:outline-none focus:ring-1 focus:ring-electric shadow-lg"
+              placeholder="Search by keyword, product name, or capability (e.g. school, hospital, CRM)..."
+              className="w-full rounded-xl border border-white/15 bg-[#0b1222] pl-11 pr-11 py-3.5 text-sm text-white placeholder-slate-400 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 shadow-lg transition"
             />
-            <Search size={18} className="pointer-events-none absolute left-4 top-4 text-cool" />
+            {q && (
+              <button
+                type="button"
+                onClick={() => setQ("")}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white rounded-full hover:bg-white/10 transition cursor-pointer"
+                aria-label="Clear search"
+              >
+                <X size={15} />
+              </button>
+            )}
           </div>
 
           {/* Filter Matrix */}

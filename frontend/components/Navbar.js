@@ -337,17 +337,40 @@ export default function Navbar() {
 
           {/* Desktop & Mobile Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Desktop Normal Search Bar */}
             <button
+              type="button"
               onClick={() => {
                 setMobile(false);
                 setMenu(null);
                 setSearch(true);
               }}
-              className="hidden h-9 w-9 items-center justify-center rounded-md text-white/70 hover:bg-white/5 hover:text-white xl:flex cursor-pointer transition"
-              aria-label="Search (Ctrl K)"
+              className="hidden lg:flex items-center gap-2.5 h-9 w-44 xl:w-56 px-3 rounded-xl border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-sky-400/40 text-xs text-white/60 hover:text-white/90 transition shadow-xs cursor-pointer group"
+              aria-label="Search products, solutions and resources"
             >
-              <Search size={17} />
+              <Search size={14} className="text-sky-400 shrink-0 group-hover:scale-110 transition-transform" />
+              <span className="truncate flex-1 text-left text-[12.5px] font-normal text-white/60 group-hover:text-white/80">
+                Search products...
+              </span>
+              <kbd className="hidden xl:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-white/50 bg-white/10 rounded border border-white/10">
+                ⌘K
+              </kbd>
             </button>
+
+            {/* Mobile / Tablet Compact Search Icon Button */}
+            <button
+              type="button"
+              onClick={() => {
+                setMobile(false);
+                setMenu(null);
+                setSearch(true);
+              }}
+              className="flex lg:hidden h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/10 transition cursor-pointer"
+              aria-label="Search"
+            >
+              <Search size={16} />
+            </button>
+
             <button
               type="button"
               onClick={() => handleNav("/demo")}
@@ -391,14 +414,14 @@ export default function Navbar() {
                   setMobile(false);
                   setSearch(true);
                 }}
-                className="flex h-11 w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-3.5 text-xs text-cool hover:border-white/20 active:bg-white/[0.08] transition shadow-inner cursor-pointer"
+                className="flex h-11 w-full items-center justify-between rounded-xl border border-white/15 bg-white/[0.05] px-3.5 text-xs text-slate-300 hover:border-sky-400/40 hover:bg-white/[0.08] active:scale-[0.99] transition shadow-xs cursor-pointer"
               >
                 <span className="flex items-center gap-2.5">
-                  <Search size={15} className="text-electric" />
-                  <span>Search products, solutions, docs…</span>
+                  <Search size={16} className="text-sky-400" />
+                  <span className="text-white/80 text-[13px]">Search products, solutions, docs…</span>
                 </span>
-                <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono text-cool/80">
-                  Ctrl K
+                <span className="rounded bg-white/10 px-2 py-0.5 text-[11px] font-mono text-white/60 border border-white/10">
+                  Search
                 </span>
               </button>
 
