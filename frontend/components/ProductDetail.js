@@ -57,6 +57,7 @@ export default function ProductDetail({ product: initialP }) {
   const [pricingHoveredIdx, setPricingHoveredIdx] = useState(null);
 
   useEffect(() => {
+    // 1. Instant local override check
     try {
       const local = localStorage.getItem("dezoryn_admin_products");
       if (local) {
@@ -67,6 +68,19 @@ export default function ProductDetail({ product: initialP }) {
         }
       }
     } catch (_) {}
+
+    // 2. Fetch fresh product data from live API (Neon PostgreSQL)
+    if (initialP?.slug) {
+      fetch(`/api/v1/products/${initialP.slug}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const live = data?.data || data?.product;
+          if (live && live.name) {
+            setP((prev) => ({ ...prev, ...live }));
+          }
+        })
+        .catch(() => {});
+    }
   }, [initialP?.slug]);
 
   const relatedProject = projects.find((proj) => proj.product === p.slug);

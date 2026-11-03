@@ -25,6 +25,21 @@ export default function FeaturedRail({ items: initialItems = [] }) {
         }
       }
     } catch (_) {}
+
+    fetch("/api/v1/products")
+      .then((res) => res.json())
+      .then((res) => {
+        const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+        if (Array.isArray(list) && list.length > 0) {
+          const featured = list.filter((p) => p.isFeatured || p.featured);
+          if (featured.length > 0) {
+            setItems(featured.slice(0, 4));
+          } else {
+            setItems(list.slice(0, 4));
+          }
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const scroll = (direction) => {

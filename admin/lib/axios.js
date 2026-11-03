@@ -36,17 +36,16 @@ export function getAdminApiBase() {
     return envUrl.replace(/\/+$/, "");
   }
 
+  // In browser, relative URL routes through Next.js /api/[...path] proxy & Neon database handler
   if (typeof window !== "undefined") {
-    if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-      return "";
-    }
-  }
-
-  if (typeof window === "undefined" && (process.env.VERCEL || process.env.NODE_ENV === "production")) {
     return "";
   }
 
-  return "http://localhost:5001";
+  if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+    return "";
+  }
+
+  return "http://127.0.0.1:5001";
 }
 
 // Centralized Axios instance for DEZORYN TECHNOLOGY Admin Console

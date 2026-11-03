@@ -34,27 +34,34 @@ import {
   deleteAdminProduct,
 } from "@/lib/api";
 
-const fallbackProducts = websiteProducts.map((p, idx) => ({
-  id: p.id || `prod_${p.slug}`,
-  name: p.name,
-  slug: p.slug,
-  tagline: p.tagline || p.description || "",
-  description: p.description || "",
-  category: typeof p.category === "object" ? p.category?.name || "Enterprise" : p.category || "Enterprise",
-  image: p.image || "/products/schooly-core.jpg",
-  size: p.size || "Medium",
-  deployment: p.deployment || "Cloud",
-  ai: Boolean(p.ai),
-  featured: idx < 6,
-  isFeatured: idx < 6,
-  unlisted: false,
-  status: "PUBLISHED",
-  features: Array.isArray(p.features) ? p.features : [],
-  plans: Array.isArray(p.plans) ? p.plans : [],
-  modules: Array.isArray(p.modules) ? p.modules : [],
-  benefits: Array.isArray(p.benefits) ? p.benefits : [],
-  tags: Array.isArray(p.tags) ? p.tags : [],
-}));
+const fallbackProducts = websiteProducts.map((p, idx) => {
+  const pPrice =
+    typeof p.startingPrice === "number" && p.startingPrice > 0
+      ? p.startingPrice
+      : (p.plans?.[0]?.monthly_price_usd || p.plans?.[0]?.monthlyPriceUsd || 49);
+  return {
+    id: p.id || `prod_${p.slug}`,
+    name: p.name,
+    slug: p.slug,
+    tagline: p.tagline || p.description || "",
+    description: p.description || "",
+    category: typeof p.category === "object" ? p.category?.name || "Enterprise" : p.category || "Enterprise",
+    image: p.image || "/products/schooly-core.jpg",
+    size: p.size || "Medium",
+    deployment: p.deployment || "Cloud",
+    ai: Boolean(p.ai),
+    featured: idx < 6,
+    isFeatured: idx < 6,
+    unlisted: false,
+    status: "PUBLISHED",
+    startingPrice: pPrice,
+    features: Array.isArray(p.features) ? p.features : [],
+    plans: Array.isArray(p.plans) ? p.plans : [],
+    modules: Array.isArray(p.modules) ? p.modules : [],
+    benefits: Array.isArray(p.benefits) ? p.benefits : [],
+    tags: Array.isArray(p.tags) ? p.tags : [],
+  };
+});
 
 const DEFAULT_CATEGORIES = [
   "Education",
@@ -93,12 +100,27 @@ export default function AdminProductsPage() {
       .then((data) => {
         const list = Array.isArray(data) ? data : (data?.data || []);
         if (list.length > 0) {
-          const mapped = list.map((p) => ({
-            ...p,
-            category: typeof p.category === "object" ? p.category?.name || "Enterprise" : p.category || "Enterprise",
-            featured: Boolean(p.isFeatured || p.featured),
-            unlisted: p.status === "DRAFT",
-          }));
+          const mapped = list.map((p) => {
+            const pPrice =
+              typeof p.startingPrice === "number" && p.startingPrice > 0
+                ? p.startingPrice
+                : (p.plans?.[0]?.monthly_price_usd || p.plans?.[0]?.monthlyPriceUsd || 49);
+            const plans = Array.isArray(p.plans)
+              ? p.plans.map((pl) => ({
+                  ...pl,
+                  monthly_price_usd: pl.monthly_price_usd ?? pl.monthlyPriceUsd ?? 49,
+                  monthlyPriceUsd: pl.monthly_price_usd ?? pl.monthlyPriceUsd ?? 49,
+                }))
+              : [];
+            return {
+              ...p,
+              category: typeof p.category === "object" ? p.category?.name || "Enterprise" : p.category || "Enterprise",
+              featured: Boolean(p.isFeatured || p.featured),
+              unlisted: p.status === "DRAFT",
+              startingPrice: pPrice,
+              plans,
+            };
+          });
           setProductList(mapped);
           saveLocalItem("dezoryn_admin_products", mapped);
         } else {
@@ -187,7 +209,26 @@ export default function AdminProductsPage() {
   };
 
   const handleOpenEdit = (prod) => {
-    setEditingProduct({ ...prod });
+    const firstPlanPrice = prod.plans?.[0]?.monthly_price_usd || prod.plans?.[0]?.monthlyPriceUsd;
+    const initialPrice =
+      typeof prod.startingPrice === "number" && prod.startingPrice > 0
+        ? prod.startingPrice
+        : (typeof firstPlanPrice === "number" && firstPlanPrice > 0 ? firstPlanPrice : 49);
+
+    const initialPlans = Array.isArray(prod.plans) && prod.plans.length > 0
+      ? prod.plans.map((pl, idx) => (idx === 0 ? { ...pl, monthly_price_usd: initialPrice, monthlyPriceUsd: initialPrice } : pl))
+      : [
+          { slug: "starter", name: "Starter", monthly_price_usd: initialPrice, monthlyPriceUsd: initialPrice },
+          { slug: "growth", name: "Growth", monthly_price_usd: Math.round(initialPrice * 2.5), monthlyPriceUsd: Math.round(initialPrice * 2.5) },
+          { slug: "business", name: "Business", monthly_price_usd: Math.round(initialPrice * 5), monthlyPriceUsd: Math.round(initialPrice * 5) },
+          { slug: "enterprise", name: "Enterprise", monthly_price_usd: Math.round(initialPrice * 10), monthlyPriceUsd: Math.round(initialPrice * 10) },
+        ];
+
+    setEditingProduct({
+      ...prod,
+      startingPrice: initialPrice,
+      plans: initialPlans,
+    });
     setActiveTab("general");
     setIsEditorOpen(true);
   };
@@ -219,6 +260,16 @@ export default function AdminProductsPage() {
       return;
     }
 
+    const priceVal = Number(editingProduct.startingPrice) || 49;
+    const currentPlans = Array.isArray(editingProduct.plans) && editingProduct.plans.length > 0
+      ? editingProduct.plans.map((pl, idx) => (idx === 0 ? { ...pl, monthly_price_usd: priceVal, monthlyPriceUsd: priceVal } : pl))
+      : [
+          { slug: "starter", name: "Starter", monthly_price_usd: priceVal, monthlyPriceUsd: priceVal },
+          { slug: "growth", name: "Growth", monthly_price_usd: Math.round(priceVal * 2.5), monthlyPriceUsd: Math.round(priceVal * 2.5) },
+          { slug: "business", name: "Business", monthly_price_usd: Math.round(priceVal * 5), monthlyPriceUsd: Math.round(priceVal * 5) },
+          { slug: "enterprise", name: "Enterprise", monthly_price_usd: Math.round(priceVal * 10), monthlyPriceUsd: Math.round(priceVal * 10) },
+        ];
+
     const payload = {
       ...editingProduct,
       name: editingProduct.name.trim(),
@@ -232,6 +283,8 @@ export default function AdminProductsPage() {
       isFeatured: Boolean(editingProduct.isFeatured || editingProduct.featured),
       featured: Boolean(editingProduct.isFeatured || editingProduct.featured),
       status: String(editingProduct.status || (editingProduct.unlisted ? "DRAFT" : "PUBLISHED")).toUpperCase(),
+      startingPrice: priceVal,
+      plans: currentPlans,
       features: Array.isArray(editingProduct.features) ? editingProduct.features : [],
       featuresList: Array.isArray(editingProduct.features) ? editingProduct.features : [],
     };
@@ -356,7 +409,10 @@ export default function AdminProductsPage() {
       key: "plans",
       render: (plans, row) => {
         const price =
-          plans?.[0]?.monthly_price_usd || row.startingPrice || 29;
+          row.startingPrice ||
+          plans?.[0]?.monthly_price_usd ||
+          plans?.[0]?.monthlyPriceUsd ||
+          49;
         return (
           <span className="font-mono font-bold text-slate-900 text-sm">
             ${price} / mo
@@ -736,12 +792,17 @@ export default function AdminProductsPage() {
                     <input
                       type="number"
                       value={editingProduct.startingPrice || 49}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        const updatedPlans = Array.isArray(editingProduct.plans) && editingProduct.plans.length > 0
+                          ? editingProduct.plans.map((p, idx) => (idx === 0 ? { ...p, monthly_price_usd: val, monthlyPriceUsd: val } : p))
+                          : [{ slug: "starter", name: "Starter", monthly_price_usd: val, monthlyPriceUsd: val }];
                         setEditingProduct({
                           ...editingProduct,
-                          startingPrice: Number(e.target.value),
-                        })
-                      }
+                          startingPrice: val,
+                          plans: updatedPlans,
+                        });
+                      }}
                       className="w-full text-sm rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-slate-900 font-mono focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition"
                     />
                     <p className="text-xs text-slate-500 mt-1">

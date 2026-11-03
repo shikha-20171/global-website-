@@ -16,15 +16,25 @@ export default function ProductCatalogGrid({ initialProducts = [] }) {
       setProductsList(local);
     }
 
-    // 2. Fetch fresh products from live backend API
-    api.get("/api/v1/products")
+    // 2. Fetch fresh products from live backend API / Neon PostgreSQL
+    fetch("/api/v1/products")
+      .then((res) => res.json())
       .then((res) => {
         const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
         if (Array.isArray(list) && list.length > 0) {
           setProductsList(list);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        api.get("/api/v1/products")
+          .then((res) => {
+            const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+            if (Array.isArray(list) && list.length > 0) {
+              setProductsList(list);
+            }
+          })
+          .catch(() => {});
+      });
   }, []);
 
   return (
@@ -37,3 +47,4 @@ export default function ProductCatalogGrid({ initialProducts = [] }) {
     </div>
   );
 }
+

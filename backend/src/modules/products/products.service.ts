@@ -113,6 +113,7 @@ export class ProductsService {
     return prisma.product.findMany({
       include: {
         category: true,
+        plans: { orderBy: { displayOrder: "asc" } },
         _count: {
           select: { features: true, plans: true },
         },
@@ -174,10 +175,14 @@ export class ProductsService {
     const data: any = { ...input };
     if (input.slug) data.slug = input.slug.toLowerCase().trim();
 
+    const startingPrice = typeof data.startingPrice === "number" ? data.startingPrice : undefined;
+    const plansInput = Array.isArray(data.plans) ? data.plans : undefined;
+
     delete data.id;
     delete data.category;
     delete data.features;
     delete data.plans;
+    delete data.startingPrice;
     delete data.comparisonValues;
     delete data.createdAt;
     delete data.updatedAt;
@@ -192,8 +197,36 @@ export class ProductsService {
     const updated = await prisma.product.update({
       where: { id: existing.id },
       data,
-      include: { category: true },
+      include: {
+        category: true,
+        plans: { orderBy: { displayOrder: "asc" } },
+      },
     });
+
+    if (startingPrice !== undefined && startingPrice > 0) {
+      await prisma.productPlan.updateMany({
+        where: { productId: existing.id, slug: "starter" },
+        data: {
+          monthlyPriceUsd: startingPrice,
+          annualPriceUsd: Math.round(startingPrice * 0.8),
+        },
+      });
+    }
+
+    if (plansInput && plansInput.length > 0) {
+      for (const pl of plansInput) {
+        const monthly = pl.monthly_price_usd ?? pl.monthlyPriceUsd;
+        if (typeof monthly === "number" && monthly > 0 && pl.slug) {
+          await prisma.productPlan.updateMany({
+            where: { productId: existing.id, slug: pl.slug },
+            data: {
+              monthlyPriceUsd: monthly,
+              annualPriceUsd: pl.annual_price_usd ?? pl.annualPriceUsd ?? Math.round(monthly * 0.8),
+            },
+          });
+        }
+      }
+    }
 
     await logAuditEvent({
       adminName: actorName,

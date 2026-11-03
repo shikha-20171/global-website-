@@ -102,6 +102,14 @@ function sanitizeProductInput(body: any, categoryId?: string) {
     data.featuresList = body.features;
   }
 
+  // Pricing & Plans
+  if (body.startingPrice !== undefined) {
+    data.startingPrice = Number(body.startingPrice);
+  }
+  if (Array.isArray(body.plans)) {
+    data.plans = body.plans;
+  }
+
   return data;
 }
 

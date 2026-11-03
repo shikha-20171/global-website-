@@ -32,6 +32,8 @@ export const createProductSchema = z.object({
   featuresList: z.any().default([]),
   modules: z.array(z.string()).default([]),
   integrations: z.array(z.string()).default([]),
+  startingPrice: z.number().optional(),
+  plans: z.any().optional(),
 });
 
 export const updateProductSchema = createProductSchema.partial();

@@ -63,16 +63,24 @@ export default function CompareView() {
 
   useEffect(() => {
     let mounted = true;
-    // Direct Axios API call for live products
-    api.get("/api/v1/products")
+    // Fetch live products
+    fetch("/api/v1/products")
+      .then((res) => res.json())
       .then((res) => {
         const data = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
         if (mounted && Array.isArray(data) && data.length > 0) {
           setLiveCatalog(data);
         }
       })
-      .catch((err) => {
-        console.warn("Compare live catalog notice:", err?.message || err);
+      .catch(() => {
+        api.get("/api/v1/products")
+          .then((res) => {
+            const data = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+            if (mounted && Array.isArray(data) && data.length > 0) {
+              setLiveCatalog(data);
+            }
+          })
+          .catch(() => {});
       });
 
     // Direct Axios API call for comparison matrix

@@ -25,6 +25,17 @@ export default function PricingView({ productSlug }) {
 
   useEffect(() => {
     let mounted = true;
+
+    fetch("/api/v1/products")
+      .then((res) => res.json())
+      .then((res) => {
+        const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+        if (mounted && Array.isArray(list) && list.length > 0) {
+          setLiveProducts(list);
+        }
+      })
+      .catch(() => {});
+
     // Direct Axios API calls inside PricingView
     Promise.allSettled([
       api.get("/api/v1/products").then((r) => r.data?.data || r.data?.products || (Array.isArray(r.data) ? r.data : [])),
