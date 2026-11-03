@@ -221,6 +221,12 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", k);
   }, []);
 
+  useEffect(() => {
+    const handleOpenSearch = () => setSearch(true);
+    window.addEventListener("open-search", handleOpenSearch);
+    return () => window.removeEventListener("open-search", handleOpenSearch);
+  }, []);
+
   if (path?.startsWith("/admin")) return null;
 
   const toggleMobileSec = (id) => {
