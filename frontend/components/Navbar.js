@@ -262,7 +262,7 @@ export default function Navbar() {
         }`}
         style={scrolled || mobile ? { backgroundColor: "#030712" } : {}}
       >
-        <div className="mx-auto w-full max-w-[1440px] px-3 sm:px-6 lg:px-8 flex h-16 items-center justify-between gap-1.5 sm:gap-2 lg:gap-4">
+        <div className="mx-auto w-full max-w-[1720px] px-4 sm:px-6 md:px-8 lg:px-10 xl:px-14 flex h-16 items-center justify-between gap-1.5 sm:gap-2 lg:gap-4">
           <div className="shrink-0 flex items-center mr-2 xl:mr-5 select-none flex-none">
             <Logo />
           </div>

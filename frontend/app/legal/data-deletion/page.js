@@ -47,7 +47,7 @@ export default function DataDeletionPage() {
         />
       )}
 
-      <div className="container-x max-w-4xl">
+      <div className="container-x">
         <Breadcrumb
           items={[
             { label: "Legal", href: "/legal/privacy" },

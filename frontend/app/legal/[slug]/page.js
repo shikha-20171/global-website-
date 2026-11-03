@@ -432,7 +432,7 @@ export default async function LegalPage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
       )}
-      <div className="container-x max-w-4xl">
+      <div className="container-x">
         <Breadcrumb
           items={[
             { label: "Legal", href: "/legal/privacy" },

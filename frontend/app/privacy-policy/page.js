@@ -94,13 +94,6 @@ export default function PrivacyPolicyPage() {
               <FileText size={13} className="text-electric" />
               Terms &amp; Conditions
             </Link>
-            <Link
-              href="/data-deletion"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-950/20 px-3 py-1.5 text-red-300 hover:text-red-200 hover:border-red-400/50 transition font-medium"
-            >
-              <Lock size={13} className="text-red-400" />
-              Submit Data Deletion Request &rarr;
-            </Link>
           </div>
         </header>
 
@@ -656,3 +649,4 @@ export default function PrivacyPolicyPage() {
     </article>
   );
 }
+
