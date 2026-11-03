@@ -31,15 +31,43 @@ export function getNeonHost() {
   return "ep-blue-unit-apumued6.c-7.us-east-1.aws.neon.tech";
 }
 
+// ==============================================================================
+// High-Performance In-Memory Query & SWR Cache
+// ==============================================================================
+const queryCache = new Map();
+const inFlightQueries = new Map();
+const DEFAULT_QUERY_TTL_MS = 25000; // 25 seconds ultra-fast freshness
+const MAX_CACHE_ENTRIES = 500;
+
+export function getNeonCacheKey(query, params) {
+  return `${query.trim()}__${JSON.stringify(params || [])}`;
+}
+
+/**
+ * Invalidates cached queries across the application.
+ */
+export function invalidateNeonCache(pattern = null) {
+  if (!pattern) {
+    queryCache.clear();
+    return;
+  }
+  const regex = typeof pattern === "string" ? new RegExp(pattern, "i") : pattern;
+  for (const key of queryCache.keys()) {
+    if (regex.test(key)) {
+      queryCache.delete(key);
+    }
+  }
+}
+
 /**
  * Executes a parameterized SQL query directly against Neon PostgreSQL HTTP endpoint
  */
-export async function neonQuery(query, params = []) {
+async function executeRawNeonQuery(query, params = []) {
   const host = getNeonHost();
   const connString = getNeonConnectionString();
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 12000);
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
 
   try {
     const res = await fetch(`https://${host}/sql`, {
@@ -71,6 +99,67 @@ export async function neonQuery(query, params = []) {
     console.error("Neon HTTP connection failure:", err.message);
     throw err;
   }
+}
+
+/**
+ * High-Speed Cached Neon Query Runner
+ * - Caches read queries in RAM for sub-millisecond instant retrieval
+ * - Merges concurrent in-flight requests to eliminate duplicate database load
+ * - Automatically purges cache on mutations (INSERT, UPDATE, DELETE)
+ * - Returns stale cache on temporary network glitch or timeout
+ */
+export async function neonQuery(query, params = [], options = {}) {
+  const trimmed = query.trim();
+  const isSelect = /^\s*SELECT/i.test(trimmed);
+
+  // If write or mutation query, wipe cache and run immediately
+  if (!isSelect) {
+    invalidateNeonCache();
+    return executeRawNeonQuery(query, params);
+  }
+
+  const cacheKey = getNeonCacheKey(trimmed, params);
+  const now = Date.now();
+  const ttl = options.ttl || DEFAULT_QUERY_TTL_MS;
+
+  // 1. Instant Cache Hit (0.01ms execution)
+  if (!options.bypassCache && queryCache.has(cacheKey)) {
+    const entry = queryCache.get(cacheKey);
+    if (now - entry.timestamp < ttl) {
+      return entry.data;
+    }
+  }
+
+  // 2. In-flight Promise Deduplication
+  if (inFlightQueries.has(cacheKey)) {
+    return inFlightQueries.get(cacheKey);
+  }
+
+  const queryPromise = (async () => {
+    try {
+      const rows = await executeRawNeonQuery(query, params);
+
+      if (queryCache.size >= MAX_CACHE_ENTRIES) {
+        const firstKey = queryCache.keys().next().value;
+        if (firstKey) queryCache.delete(firstKey);
+      }
+
+      queryCache.set(cacheKey, { data: rows, timestamp: Date.now() });
+      return rows;
+    } catch (err) {
+      // Stale cache fallback on error
+      if (queryCache.has(cacheKey)) {
+        console.warn(`[Neon Cache] Serving stale cache on error for query: ${trimmed.slice(0, 60)}...`);
+        return queryCache.get(cacheKey).data;
+      }
+      throw err;
+    } finally {
+      inFlightQueries.delete(cacheKey);
+    }
+  })();
+
+  inFlightQueries.set(cacheKey, queryPromise);
+  return queryPromise;
 }
 
 /**
@@ -1541,6 +1630,13 @@ export async function getDbPages() {
   const sql = `SELECT * FROM "WebsitePage" ORDER BY "title" ASC;`;
   const rows = await neonQuery(sql);
   return rows;
+}
+
+export async function getDbPage(idOrSlug) {
+  const clean = String(idOrSlug || "").trim();
+  const sql = `SELECT * FROM "WebsitePage" WHERE "id" = $1 OR "slug" = $1 LIMIT 1;`;
+  const rows = await neonQuery(sql, [clean]);
+  return rows[0] || null;
 }
 
 export async function createDbPage(payload = {}) {

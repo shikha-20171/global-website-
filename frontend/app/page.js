@@ -12,8 +12,7 @@ import HomeCareers from "@/components/HomeCareers";
 import HomeFAQ from "@/components/HomeFAQ";
 import CTASection from "@/components/CTASection";
 import { products } from "@/lib/data";
-import { getDbSections, getDbProducts } from "@/lib/neonDb";
-import api from "@/lib/axios";
+import { getDbSections, getDbProducts, getDbPage } from "@/lib/neonDb";
 import { buildMetadata, generateFAQSchema, generateItemListSchema } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -25,9 +24,7 @@ export async function generateMetadata() {
   let canonical = "/";
 
   try {
-    // Direct Axios call for page metadata
-    const res = await api.get("/api/v1/pages/home");
-    const livePage = res.data?.data || res.data?.page || res.data;
+    const livePage = await getDbPage("home");
     if (livePage) {
       if (livePage.seoTitle) seoTitle = livePage.seoTitle;
       if (livePage.metaDescription) seoDesc = livePage.metaDescription;

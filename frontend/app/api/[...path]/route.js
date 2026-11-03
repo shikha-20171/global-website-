@@ -909,7 +909,13 @@ async function handleProxy(request, { params }) {
   // If no separate Fastify backend, route directly to Neon PostgreSQL
   if (!backendBase) {
     try {
-      return await handleDirectNeonFallback(request, pathSegments, parsedBody);
+      const response = await handleDirectNeonFallback(request, pathSegments, parsedBody);
+      const method = (request.method || "GET").toUpperCase();
+      const subPath = pathSegments.join("/");
+      if (method === "GET" && !subPath.includes("admin") && !subPath.includes("auth")) {
+        response.headers.set("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
+      }
+      return response;
     } catch (neonErr) {
       console.error("Direct Neon fallback error:", neonErr);
       return NextResponse.json(
@@ -960,7 +966,13 @@ async function handleProxy(request, { params }) {
 
     const responseHeaders = new Headers();
     responseHeaders.set("Content-Type", resContentType || "application/json");
-    responseHeaders.set("Cache-Control", "no-store, no-cache, must-revalidate");
+    const method = (request.method || "GET").toUpperCase();
+    const subPath = pathSegments.join("/");
+    if (method === "GET" && !subPath.includes("admin") && !subPath.includes("auth")) {
+      responseHeaders.set("Cache-Control", "public, s-maxage=30, stale-while-revalidate=60");
+    } else {
+      responseHeaders.set("Cache-Control", "no-store, no-cache, must-revalidate");
+    }
 
     return new NextResponse(typeof data === "string" ? data : JSON.stringify(data), {
       status: backendRes.status,

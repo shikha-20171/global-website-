@@ -59,12 +59,20 @@ export default function LiveSyncManager() {
     };
     window.addEventListener("storage", handleStorage);
 
-    // 3. Periodic fast poll when tab is active (every 10 seconds) to ensure Neon updates reflect
+    // 3. Tab Visibility Listener — instantly refresh when user returns to this tab
+    const handleVisibility = () => {
+      if (typeof document !== "undefined" && !document.hidden) {
+        router.refresh();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    // 4. Idle fallback poll (every 60s) for background assurance without network lag
     const interval = setInterval(() => {
       if (typeof document !== "undefined" && !document.hidden) {
         router.refresh();
       }
-    }, 12000);
+    }, 60000);
 
     return () => {
       if (bc) {
@@ -73,6 +81,7 @@ export default function LiveSyncManager() {
         } catch (_) {}
       }
       window.removeEventListener("storage", handleStorage);
+      document.removeEventListener("visibilitychange", handleVisibility);
       clearInterval(interval);
     };
   }, [router]);

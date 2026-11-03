@@ -96,3 +96,4 @@ export async function sendInquiryNotification({ type, data }) {
     return { sent: false, error: err.message };
   }
 }
+
