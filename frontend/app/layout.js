@@ -123,7 +123,7 @@ export default function RootLayout({ children }) {
           <Intro />
           <Effects />
           <Navbar />
-          <main id="main">{children}</main>
+          <main id="main" className="w-full max-w-full overflow-x-hidden min-h-screen">{children}</main>
           <Footer />
           <CompareTray />
         </CompareProvider>

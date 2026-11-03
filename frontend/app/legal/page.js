@@ -2,19 +2,22 @@ import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
-import { ShieldCheck, FileText, Lock, RefreshCw, Cookie, ArrowRight, ArrowUpRight } from "lucide-react";
+import { ShieldCheck, FileText, Lock, RefreshCw, Cookie, ArrowRight, ArrowUpRight, Trash2, Smartphone, Share2 } from "lucide-react";
 
 import { getDbLegalPolicies } from "@/lib/neonDb";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
 export const metadata = buildMetadata({
-  title: "Legal & Regulatory Compliance — Privacy, Terms & Security | DEZORYN",
+  title: "Legal & Regulatory Compliance — Privacy, Terms, Data Deletion & Security | DEZORYN",
   description:
-    "Official corporate compliance documentation: Privacy Policy, Terms of Service, Enterprise Security, SLA Commitments, and Cookie Policy.",
+    "Official corporate compliance documentation: Privacy Policy, Data Deletion, Terms of Service, Google Play Data Safety, Meta Data Deletion Instructions, and Security Policies.",
   path: "/legal",
   keywords: [
     "DEZORYN terms",
     "privacy policy",
+    "data deletion",
+    "Google Play data safety",
+    "Meta data deletion",
     "enterprise security policy",
     "legal compliance",
   ],
@@ -24,25 +27,49 @@ const documents = [
   {
     slug: "privacy",
     title: "Privacy Policy",
-    desc: "International data collection, processing disclosures, GDPR/CCPA alignment, and user rights.",
+    desc: "International data collection, storage, third-party sharing disclosures, GDPR/CCPA alignment, and user rights.",
     icon: ShieldCheck,
-    updated: "October 1, 2026",
-    badge: "GDPR / CCPA",
+    updated: "October 2026",
+    badge: "GDPR / CCPA / DPDPA",
+  },
+  {
+    slug: "data-deletion",
+    title: "Data Deletion Policy",
+    desc: "Self-service erasure portal allowing users to execute statutory rights to permanently delete personal and account records.",
+    icon: Trash2,
+    updated: "October 2026",
+    badge: "Self-Service Erasure",
   },
   {
     slug: "terms",
     title: "Terms & Conditions",
-    desc: "Commercial terms governing the use of the DEZORYN platform, SaaS marketplaces, and enterprise software.",
+    desc: "Commercial terms, acceptable app usage rules, and governance for DEZORYN SaaS platforms and APIs.",
     icon: FileText,
-    updated: "October 1, 2026",
+    updated: "October 2026",
     badge: "Master Agreement",
+  },
+  {
+    slug: "google-play-data-safety",
+    title: "Google Play Data Safety",
+    desc: "Official declaration of data collected, processed, encrypted in transit, and user erasure protocols for mobile applications.",
+    icon: Smartphone,
+    updated: "October 2026",
+    badge: "Android & Mobile",
+  },
+  {
+    slug: "meta-data-deletion",
+    title: "Meta Data Deletion Instructions",
+    desc: "Step-by-step instructions and callback specifications for users to remove DEZORYN apps and delete Facebook/Meta platform data.",
+    icon: Share2,
+    updated: "October 2026",
+    badge: "Meta Section 4.f",
   },
   {
     slug: "security",
     title: "Enterprise Security Policy",
     desc: "Architectural security controls, tenant schema isolation, AES-256 encryption, and vulnerability management.",
     icon: Lock,
-    updated: "October 1, 2026",
+    updated: "October 2026",
     badge: "SOC 2 Aligned",
   },
   {
@@ -50,7 +77,7 @@ const documents = [
     title: "Subscription & Refund Policy",
     desc: "Transparent subscription billing cycles in USD, cancellation procedures, and refund eligibility standards.",
     icon: RefreshCw,
-    updated: "October 1, 2026",
+    updated: "October 2026",
     badge: "Billing Terms",
   },
   {
@@ -58,7 +85,7 @@ const documents = [
     title: "Cookie & Tracking Policy",
     desc: "Essential session authentication tokens, UI preferences, and privacy-preserving performance telemetry.",
     icon: Cookie,
-    updated: "October 1, 2026",
+    updated: "October 2026",
     badge: "Telemetry",
   },
 ];

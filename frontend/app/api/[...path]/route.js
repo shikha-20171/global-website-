@@ -650,13 +650,13 @@ async function handleDirectNeonFallback(request, pathSegments, parsedBody = null
     }
 
     // ==========================================
-    // 17. INBOUND LEADS & CONTACT
+    // 17. INBOUND LEADS, CONTACT & DATA DELETION
     // ==========================================
-    if (subPath === "v1/leads" || subPath === "v1/contact") {
+    if (subPath === "v1/leads" || subPath === "v1/contact" || subPath === "v1/data-deletion") {
       if (method === "POST") {
         const lead = await createDbLead(body);
         return NextResponse.json(
-          { success: true, data: lead, message: "Inquiry received successfully!" },
+          { success: true, data: lead, message: "Request received and securely logged successfully!" },
           { status: 201 }
         );
       }
