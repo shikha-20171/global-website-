@@ -4,6 +4,7 @@ import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import Breadcrumb from "@/components/Breadcrumb";
 import { posts } from "@/lib/data";
+import { getDbBlogPosts } from "@/lib/neonDb";
 import { ArrowUpRight, BookOpen } from "lucide-react";
 import api from "@/lib/axios";
 
@@ -28,14 +29,18 @@ export const dynamic = "force-dynamic";
 export default async function BlogPage() {
   let livePosts = posts;
   try {
-    // Direct Axios API call inside Blog page
-    const res = await api.get("/api/v1/resources/blog");
-    const list = res.data?.data || res.data?.posts || (Array.isArray(res.data) ? res.data : null);
-    if (Array.isArray(list) && list.length > 0) {
-      livePosts = list;
+    const dbPosts = await getDbBlogPosts();
+    if (Array.isArray(dbPosts) && dbPosts.length > 0) {
+      livePosts = dbPosts;
     }
-  } catch (err) {
-    console.warn("Using baseline blog posts:", err?.message || err);
+  } catch (_) {
+    try {
+      const res = await api.get("/api/v1/resources/blog");
+      const list = res.data?.data || res.data?.posts || (Array.isArray(res.data) ? res.data : null);
+      if (Array.isArray(list) && list.length > 0) {
+        livePosts = list;
+      }
+    } catch (err) {}
   }
 
   const breadcrumbSchema = generateBreadcrumbSchema([

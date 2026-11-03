@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 import { ShieldCheck, FileText, Lock, AlertTriangle, ArrowRight } from "lucide-react";
+import { getDbLegalPolicies } from "@/lib/neonDb";
 import api from "@/lib/axios";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 
@@ -234,10 +235,14 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   let livePolicy = null;
   try {
-    // Direct Axios call for legal policy metadata
-    const res = await api.get(`/api/v1/legal/${params.slug}`);
-    livePolicy = res.data?.data || res.data?.policy || res.data;
-  } catch (err) {}
+    const policies = await getDbLegalPolicies();
+    livePolicy = policies.find((p) => p.slug === params.slug || p.id === params.slug);
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/legal/${params.slug}`);
+      livePolicy = res.data?.data || res.data?.policy || res.data;
+    } catch (err) {}
+  }
 
   const staticPage = legalPages[params.slug];
   const page = livePolicy || staticPage;
@@ -268,11 +273,13 @@ export const dynamicParams = true;
 export default async function LegalPage({ params }) {
   let livePolicy = null;
   try {
-    // Direct Axios call inside Legal slug page
-    const res = await api.get(`/api/v1/legal/${params.slug}`);
-    livePolicy = res.data?.data || res.data?.policy || res.data;
-  } catch (err) {
-    console.warn("Legal policy live notice:", err?.message || err);
+    const policies = await getDbLegalPolicies();
+    livePolicy = policies.find((p) => p.slug === params.slug || p.id === params.slug);
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/legal/${params.slug}`);
+      livePolicy = res.data?.data || res.data?.policy || res.data;
+    } catch (err) {}
   }
 
   const staticPage = legalPages[params.slug];

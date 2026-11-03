@@ -116,6 +116,7 @@ const mobileFeatures = [
   },
 ];
 
+import { getDbSolutions } from "@/lib/neonDb";
 import api from "@/lib/axios";
 
 export const dynamic = "force-dynamic";
@@ -123,14 +124,18 @@ export const dynamic = "force-dynamic";
 export default async function SolutionsPage() {
   let liveSolutions = [];
   try {
-    // Direct Axios API call inside Solutions page
-    const res = await api.get("/api/v1/solutions");
-    const list = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+    const list = await getDbSolutions();
     if (Array.isArray(list) && list.length > 0) {
       liveSolutions = list;
     }
-  } catch (err) {
-    console.warn("Solutions live fetch notice:", err?.message || err);
+  } catch (_) {
+    try {
+      const res = await api.get("/api/v1/solutions");
+      const list = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+      if (Array.isArray(list) && list.length > 0) {
+        liveSolutions = list;
+      }
+    } catch (err) {}
   }
 
   const breadcrumbSchema = generateBreadcrumbSchema([

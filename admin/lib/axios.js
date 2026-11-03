@@ -12,12 +12,12 @@ export function getAdminApiBase() {
     try {
       const params = new URLSearchParams(window.location.search);
       const paramUrl = params.get("api_url") || params.get("backend");
-      if (paramUrl) {
+      if (paramUrl && !paramUrl.includes(":5001")) {
         localStorage.setItem("dezoryn_backend_url", paramUrl);
         return paramUrl.replace(/\/+$/, "");
       }
       const custom = localStorage.getItem("dezoryn_backend_url");
-      if (custom) return custom.replace(/\/+$/, "");
+      if (custom && !custom.includes(":5001")) return custom.replace(/\/+$/, "");
     } catch (_) {}
   }
 
@@ -32,20 +32,12 @@ export function getAdminApiBase() {
     ""
   ).trim();
 
-  if (envUrl) {
+  if (envUrl && !envUrl.includes(":5001")) {
     return envUrl.replace(/\/+$/, "");
   }
 
-  // In browser, relative URL routes through Next.js /api/[...path] proxy & Neon database handler
-  if (typeof window !== "undefined") {
-    return "";
-  }
-
-  if (process.env.VERCEL || process.env.NODE_ENV === "production") {
-    return "";
-  }
-
-  return "http://127.0.0.1:5001";
+  // In browser, relative URL routes through Next.js /api/[...path] Neon database handler
+  return "";
 }
 
 // Centralized Axios instance for DEZORYN TECHNOLOGY Admin Console

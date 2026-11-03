@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import ProductDetail from "@/components/ProductDetail";
 import { products, getProduct } from "@/lib/data";
+import { getDbProductBySlugOrId } from "@/lib/neonDb";
 import api from "@/lib/axios";
 import {
   buildMetadata,
@@ -15,11 +16,15 @@ export const generateStaticParams = () => products.map((p) => ({ slug: p.slug })
 export async function generateMetadata({ params }) {
   let p = null;
   try {
-    // Direct Axios call for product metadata
-    const res = await api.get(`/api/v1/products/${params.slug}`);
-    const live = res.data?.data || res.data?.product || res.data;
+    const live = await getDbProductBySlugOrId(params.slug);
     if (live && (live.slug || live.name)) p = live;
-  } catch (err) {}
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/products/${params.slug}`);
+      const live = res.data?.data || res.data?.product || res.data;
+      if (live && (live.slug || live.name)) p = live;
+    } catch (err) {}
+  }
   if (!p) p = getProduct(params.slug);
   if (!p) return {};
 
@@ -43,16 +48,24 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   let p = null;
   try {
-    // Direct Axios call inside page
-    const res = await api.get(`/api/v1/products/${params.slug}`);
-    const live = res.data?.data || res.data?.product || res.data;
+    const live = await getDbProductBySlugOrId(params.slug);
     if (live && (live.slug || live.name)) {
       p = {
         ...getProduct(params.slug),
         ...live,
       };
     }
-  } catch (err) {
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/products/${params.slug}`);
+      const live = res.data?.data || res.data?.product || res.data;
+      if (live && (live.slug || live.name)) {
+        p = {
+          ...getProduct(params.slug),
+          ...live,
+        };
+      }
+    } catch (err) {}
   }
   if (!p) p = getProduct(params.slug);
   if (!p) notFound();

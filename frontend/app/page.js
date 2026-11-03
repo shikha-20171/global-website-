@@ -12,6 +12,7 @@ import HomeCareers from "@/components/HomeCareers";
 import HomeFAQ from "@/components/HomeFAQ";
 import CTASection from "@/components/CTASection";
 import { products } from "@/lib/data";
+import { getDbSections, getDbProducts } from "@/lib/neonDb";
 import api from "@/lib/axios";
 import { buildMetadata, generateFAQSchema, generateItemListSchema } from "@/lib/seo";
 
@@ -60,14 +61,17 @@ export default async function Home() {
   let railProducts = products.slice(0, 4);
 
   try {
-    // Direct Axios calls inside Home page
-    const [pageRes, productsRes] = await Promise.allSettled([
-      api.get("/api/v1/pages/home").then((r) => r.data?.data || r.data?.page || r.data),
-      api.get("/api/v1/products").then((r) => r.data?.data || r.data?.products || (Array.isArray(r.data) ? r.data : [])),
+    const [sections, dbProducts] = await Promise.allSettled([
+      getDbSections("home"),
+      getDbProducts(),
     ]);
 
-    if (pageRes.status === "fulfilled" && pageRes.value?.sections) {
-      const hero = pageRes.value.sections.find(
+    const activeSections = sections.status === "fulfilled" && Array.isArray(sections.value) && sections.value.length > 0
+      ? sections.value
+      : null;
+
+    if (activeSections) {
+      const hero = activeSections.find(
         (s) => s.sectionKey === "sec_hero" || s.name?.toLowerCase().includes("hero")
       );
       if (hero) {
@@ -83,12 +87,12 @@ export default async function Home() {
     }
 
     if (
-      productsRes.status === "fulfilled" &&
-      Array.isArray(productsRes.value) &&
-      productsRes.value.length > 0
+      dbProducts.status === "fulfilled" &&
+      Array.isArray(dbProducts.value) &&
+      dbProducts.value.length > 0
     ) {
-      const featuredItems = productsRes.value.filter((p) => p.isFeatured || p.featured);
-      railProducts = featuredItems.length > 0 ? featuredItems.slice(0, 4) : productsRes.value.slice(0, 4);
+      const featuredItems = dbProducts.value.filter((p) => p.isFeatured || p.featured);
+      railProducts = featuredItems.length > 0 ? featuredItems.slice(0, 4) : dbProducts.value.slice(0, 4);
     }
   } catch (err) {
     // Fallback to baseline

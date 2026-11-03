@@ -6,6 +6,7 @@ import Heading from "@/components/Heading";
 import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import { products, formatPrice, startingPrice } from "@/lib/data";
+import { getDbProducts } from "@/lib/neonDb";
 import { ArrowUpRight, Check, Sparkles, Filter, Layers } from "lucide-react";
 import api from "@/lib/axios";
 
@@ -32,14 +33,18 @@ export const dynamic = "force-dynamic";
 export default async function ProductsPage() {
   let liveProducts = products;
   try {
-    // Direct Axios API call inside Products page
-    const res = await api.get("/api/v1/products");
-    const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
-    if (Array.isArray(list) && list.length > 0) {
-      liveProducts = list;
+    const dbList = await getDbProducts();
+    if (Array.isArray(dbList) && dbList.length > 0) {
+      liveProducts = dbList;
     }
-  } catch (err) {
-    console.warn("Using baseline catalog due to API notice:", err?.message || err);
+  } catch (dbErr) {
+    try {
+      const res = await api.get("/api/v1/products");
+      const list = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+      if (Array.isArray(list) && list.length > 0) {
+        liveProducts = list;
+      }
+    } catch (_) {}
   }
 
   const breadcrumbSchema = generateBreadcrumbSchema([

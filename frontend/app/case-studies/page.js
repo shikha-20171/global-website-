@@ -5,6 +5,7 @@ import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import { projects } from "@/lib/data";
 import { caseStudiesDetails } from "@/lib/caseStudiesData";
+import { getDbCaseStudies } from "@/lib/neonDb";
 import { ArrowUpRight, Building2, Clock, ShieldCheck } from "lucide-react";
 import api from "@/lib/axios";
 
@@ -29,10 +30,14 @@ export const dynamic = "force-dynamic";
 export default async function CaseStudiesPage() {
   let liveProjects = projects;
   try {
-    // Direct Axios API call inside Case Studies page
-    const res = await api.get("/api/v1/case-studies");
-    const data = res.data?.data || res.data;
-    const list = data?.caseStudies || (Array.isArray(data) ? data : null);
+    let list = null;
+    try {
+      list = await getDbCaseStudies();
+    } catch (_) {
+      const res = await api.get("/api/v1/case-studies");
+      const data = res.data?.data || res.data;
+      list = data?.caseStudies || (Array.isArray(data) ? data : null);
+    }
     if (Array.isArray(list) && list.length > 0) {
       const merged = projects.map((proj) => {
         const match = list.find((d) => d.slug === proj.slug);

@@ -37,6 +37,8 @@ export const generateStaticParams = () => [
 ];
 
 import { buildMetadata, generateBreadcrumbSchema, generateItemListSchema } from "@/lib/seo";
+import { getDbProducts } from "@/lib/neonDb";
+import api from "@/lib/axios";
 
 export function generateMetadata({ params }) {
   const category = resolveCategory(params.slug);
@@ -55,7 +57,7 @@ export function generateMetadata({ params }) {
     : {};
 }
 
-import api from "@/lib/axios";
+export const dynamic = "force-dynamic";
 
 export default async function MarketplaceCategoryPage({ params }) {
   const category = resolveCategory(params.slug);
@@ -63,14 +65,18 @@ export default async function MarketplaceCategoryPage({ params }) {
 
   let allProducts = products;
   try {
-    // Direct Axios API call inside Marketplace Category page
-    const res = await api.get("/api/v1/products");
-    const live = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
-    if (Array.isArray(live) && live.length > 0) {
-      allProducts = live;
+    const dbList = await getDbProducts();
+    if (Array.isArray(dbList) && dbList.length > 0) {
+      allProducts = dbList;
     }
   } catch (err) {
-    console.warn("Marketplace category live notice:", err?.message || err);
+    try {
+      const res = await api.get("/api/v1/products");
+      const live = res.data?.data || res.data?.products || (Array.isArray(res.data) ? res.data : null);
+      if (Array.isArray(live) && live.length > 0) {
+        allProducts = live;
+      }
+    } catch (_) {}
   }
 
   const matchingProducts = allProducts.filter((p) => {

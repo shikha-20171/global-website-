@@ -1,4 +1,5 @@
 import FAQView, { allFaqs } from "@/components/FAQView";
+import { getDbFaqs } from "@/lib/neonDb";
 import api from "@/lib/axios";
 import { buildMetadata, generateBreadcrumbSchema, generateFAQSchema } from "@/lib/seo";
 
@@ -20,14 +21,18 @@ export const dynamic = "force-dynamic";
 export default async function FAQPage() {
   let liveItems = null;
   try {
-    // Direct Axios call inside FAQ page
-    const res = await api.get("/api/v1/resources/faqs");
-    const faqs = res.data?.data || res.data?.faqs || (Array.isArray(res.data) ? res.data : null);
-    if (Array.isArray(faqs) && faqs.length > 0) {
-      liveItems = faqs.map((f) => [f.question, f.answer]);
+    const dbFaqs = await getDbFaqs();
+    if (Array.isArray(dbFaqs) && dbFaqs.length > 0) {
+      liveItems = dbFaqs.map((f) => [f.question, f.answer]);
     }
-  } catch (err) {
-    // Graceful fallback to default curated FAQs
+  } catch (_) {
+    try {
+      const res = await api.get("/api/v1/resources/faqs");
+      const faqs = res.data?.data || res.data?.faqs || (Array.isArray(res.data) ? res.data : null);
+      if (Array.isArray(faqs) && faqs.length > 0) {
+        liveItems = faqs.map((f) => [f.question, f.answer]);
+      }
+    } catch (err) {}
   }
 
   const breadcrumbSchema = generateBreadcrumbSchema([

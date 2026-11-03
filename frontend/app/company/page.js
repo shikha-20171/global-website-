@@ -7,6 +7,7 @@ import CompanyHeroVisual from "@/components/CompanyHeroVisual";
 import CompanyWhyChooseCards from "@/components/CompanyWhyChooseCards";
 import CompanyTechStackCards from "@/components/CompanyTechStackCards";
 import CompanyPillarsGrid from "@/components/CompanyPillarsGrid";
+import { getDbCompanyProfile } from "@/lib/neonDb";
 import api from "@/lib/axios";
 import {
   Building2,
@@ -115,11 +116,12 @@ export const dynamic = "force-dynamic";
 export default async function CompanyPage() {
   let profile = null;
   try {
-    // Direct Axios API call inside Company page
-    const res = await api.get("/api/v1/company");
-    profile = res.data?.data || res.data?.profile || res.data;
-  } catch (err) {
-    console.warn("Company live profile notice:", err?.message || err);
+    profile = await getDbCompanyProfile();
+  } catch (_) {
+    try {
+      const res = await api.get("/api/v1/company");
+      profile = res.data?.data || res.data?.profile || res.data;
+    } catch (err) {}
   }
 
   const pillars = [

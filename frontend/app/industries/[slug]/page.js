@@ -8,6 +8,7 @@ import FAQ from "@/components/FAQ";
 import Reveal from "@/components/Reveal";
 import CTASection from "@/components/CTASection";
 import { getIndustry, getProduct, products, projects, industries } from "@/lib/data";
+import { getDbIndustries } from "@/lib/neonDb";
 import api from "@/lib/axios";
 import { buildMetadata, generateBreadcrumbSchema } from "@/lib/seo";
 import {
@@ -31,13 +32,20 @@ export const generateStaticParams = () => industries.map((i) => ({ slug: i.slug 
 export async function generateMetadata({ params }) {
   let ind = null;
   try {
-    // Direct Axios call for industry metadata
-    const res = await api.get(`/api/v1/industries/${params.slug}`);
-    const liveInd = res.data?.data || res.data?.industry || res.data;
+    const dbInds = await getDbIndustries();
+    const liveInd = dbInds.find((i) => i.slug === params.slug || i.id === params.slug);
     if (liveInd) {
       ind = { ...getIndustry(params.slug), ...liveInd };
     }
-  } catch (e) {}
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/industries/${params.slug}`);
+      const liveInd = res.data?.data || res.data?.industry || res.data;
+      if (liveInd) {
+        ind = { ...getIndustry(params.slug), ...liveInd };
+      }
+    } catch (e) {}
+  }
   if (!ind) ind = getIndustry(params.slug);
   if (!ind) {
     return buildMetadata({
@@ -152,9 +160,8 @@ const industryBenchmarks = {
 export default async function IndustryDetailPage({ params }) {
   let ind = null;
   try {
-    // Direct Axios call inside Industry Detail page
-    const res = await api.get(`/api/v1/industries/${params.slug}`);
-    const liveInd = res.data?.data || res.data?.industry || res.data;
+    const dbInds = await getDbIndustries();
+    const liveInd = dbInds.find((i) => i.slug === params.slug || i.id === params.slug);
     if (liveInd) {
       ind = {
         ...getIndustry(params.slug),
@@ -163,7 +170,19 @@ export default async function IndustryDetailPage({ params }) {
         solution: liveInd.description || liveInd.solution || getIndustry(params.slug)?.solution,
       };
     }
-  } catch (e) {
+  } catch (_) {
+    try {
+      const res = await api.get(`/api/v1/industries/${params.slug}`);
+      const liveInd = res.data?.data || res.data?.industry || res.data;
+      if (liveInd) {
+        ind = {
+          ...getIndustry(params.slug),
+          ...liveInd,
+          name: liveInd.name || getIndustry(params.slug)?.name,
+          solution: liveInd.description || liveInd.solution || getIndustry(params.slug)?.solution,
+        };
+      }
+    } catch (e) {}
   }
   if (!ind) ind = getIndustry(params.slug);
   if (!ind) notFound();
