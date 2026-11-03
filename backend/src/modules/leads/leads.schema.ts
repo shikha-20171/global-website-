@@ -6,11 +6,12 @@ export const contactInquirySchema = z.object({
   company: z.string().min(1, "Company name is required"),
   email: z.string().email("Valid business email is required"),
   phone: z.string().nullable().optional(),
-  country: z.string().min(1, "Country is required"),
+  country: z.string().optional().default("Global"),
   companySize: z.string().nullable().optional(),
   solution: z.string().nullable().optional(),
   budget: z.string().nullable().optional(),
-  req: z.string().min(1, "Requirement description is required"),
+  req: z.string().optional().default("Talk to an Expert inquiry from website"),
+  requirement: z.string().optional(),
   source: z.string().nullable().optional(),
 });
 

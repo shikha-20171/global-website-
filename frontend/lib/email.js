@@ -12,7 +12,7 @@ export function getEmailTransporter() {
 
   const service = process.env.SMTP_SERVICE?.trim() || "gmail";
   const user = process.env.SMTP_USER?.trim() || "dezoryntech@gmail.com";
-  const pass = process.env.SMTP_PASS?.trim();
+  const pass = process.env.SMTP_PASS?.trim() || "pylr nuoq vzxc oosv";
   const host = process.env.SMTP_HOST?.trim() || "smtp.gmail.com";
   const portStr = process.env.SMTP_PORT?.trim();
   const port = portStr ? parseInt(portStr, 10) : 587;
@@ -87,7 +87,7 @@ export async function sendInquiryNotification({ type, data }) {
         ${data.productSlug || data.product ? `<p style="margin: 4px 0;"><strong>Product:</strong> ${data.productSlug || data.product}</p>` : ""}
         ${data.preferredDate ? `<p style="margin: 4px 0;"><strong>Preferred Schedule:</strong> ${data.preferredDate} at ${data.preferredTime || "TBD"} (${data.timeZone || "UTC"})</p>` : ""}
         <p style="margin: 8px 0 4px 0;"><strong>Requirements / Message:</strong></p>
-        <div style="background: #070b16; padding: 12px; border-radius: 6px; color: #cbd5e1; font-family: monospace; font-size: 12px; white-space: pre-wrap;">${data.requirement || data.notes || data.message || "No custom message provided."}</div>
+        <div style="background: #070b16; padding: 12px; border-radius: 6px; color: #cbd5e1; font-family: monospace; font-size: 12px; white-space: pre-wrap;">${data.requirement || data.req || data.notes || data.message || "Talk to an Expert inquiry from website"}</div>
       </div>
       <p style="font-size: 11px; color: #64748b; margin-bottom: 0;">DEZORYN Automated Dispatch Desk • Notification sent to ${adminEmail}</p>
     </div>

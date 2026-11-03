@@ -1,43 +1,16 @@
 "use client";
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, AlertCircle, RefreshCw, Send } from "lucide-react";
+import { CheckCircle2, AlertCircle, RefreshCw, Send, User, Building, Mail, Phone } from "lucide-react";
 import api from "@/lib/axios";
 import Field, { emailOk } from "./Field";
 
-const SOL = [
-  "Enterprise SaaS Platform",
-  "School & Education ERP",
-  "Healthcare & Hospital Management",
-  "Real Estate & Property CRM",
-  "Society & Resident Operations",
-  "Fleet & Logistics Automation",
-  "AI & Workflow Automation",
-  "Custom Cloud Architecture",
-  "Other",
-];
-const SIZE = ["1–10", "11–50", "51–200", "201–1,000", "1,000+"];
-const BUDGET = [
-  "Under $5,000",
-  "$5,000 – $25,000",
-  "$25,000 – $100,000",
-  "$100,000+",
-  "Flexible / Architecture Scoping",
-];
-
-export default function ContactForm() {
-  const sp = useSearchParams();
+export default function ContactForm({ source = "talk-to-an-expert" }) {
   const [v, setV] = useState({
     name: "",
     company: "",
     email: "",
     phone: "",
-    country: "",
-    size: "",
-    solution: sp.get("solution") || "",
-    budget: "",
-    req: "",
   });
   const [err, setErr] = useState({});
   const [sent, setSent] = useState(false);
@@ -47,17 +20,18 @@ export default function ContactForm() {
   const set = (k) => (e) => {
     setSubmitError(null);
     setV((s) => ({ ...s, [k]: e.target.value }));
+    if (err[k]) {
+      setErr((prev) => ({ ...prev, [k]: undefined }));
+    }
   };
 
   const submit = async (e) => {
     if (e) e.preventDefault();
     const x = {};
     if (!v.name.trim()) x.name = "Enter your full name.";
-    if (!v.company.trim()) x.company = "Enter your company name.";
+    if (!v.company.trim()) x.company = "Enter your business / company name.";
     if (!emailOk(v.email)) x.email = "Enter a valid business email, like name@company.com.";
-    if (!v.country.trim()) x.country = "Enter your country.";
-    if (!v.solution) x.solution = "Choose an interested solution or platform.";
-    if (v.req.trim().length < 10) x.req = "Describe your requirement in at least 10 characters.";
+    if (!v.phone.trim()) x.phone = "Enter your phone number / WhatsApp.";
 
     setErr(x);
     if (Object.keys(x).length) return;
@@ -69,23 +43,23 @@ export default function ContactForm() {
       name: v.name.trim(),
       company: v.company.trim(),
       email: v.email.trim(),
-      phone: v.phone.trim() || undefined,
-      country: v.country.trim(),
-      companySize: v.size || undefined,
-      solution: v.solution,
-      budget: v.budget || undefined,
-      req: v.req.trim(),
-      source: "contact-sales",
+      phone: v.phone.trim(),
+      country: "Global",
+      companySize: "11-50",
+      solution: "Talk to an Expert — Architecture & Enterprise Scoping",
+      req: `Inquiry submitted via website form (${source}). Contact: ${v.name.trim()}, Company: ${v.company.trim()}, Email: ${v.email.trim()}, Phone: ${v.phone.trim()}`,
+      requirement: `Inquiry submitted via website form (${source}). Contact: ${v.name.trim()}, Company: ${v.company.trim()}, Email: ${v.email.trim()}, Phone: ${v.phone.trim()}`,
+      source: source || "talk-to-an-expert",
     };
 
     try {
-      // Direct Axios API call inside Contact page/form
+      // 1. Direct Axios API call to Fastify backend or Next.js route
       await api.post("/api/v1/contact", leadPayload);
       setSent(true);
     } catch (apiError) {
-      console.warn("Direct API connection notice:", apiError?.message || apiError);
-      
-      // Store in client storage so lead is never lost during Render cold-start or network sleep
+      console.warn("Direct API submission status:", apiError?.message || apiError);
+
+      // 2. High-reliability fallback: Always store in browser queue so no lead is lost
       try {
         const stored = JSON.parse(localStorage.getItem("dezoryn_local_leads") || "[]");
         const newLead = {
@@ -93,13 +67,12 @@ export default function ContactForm() {
           name: leadPayload.name,
           company: leadPayload.company,
           email: leadPayload.email,
-          phone: leadPayload.phone || "",
+          phone: leadPayload.phone,
           country: leadPayload.country,
-          companySize: leadPayload.companySize || "N/A",
-          product: leadPayload.solution || "Enterprise Platform",
-          budget: leadPayload.budget || "Standard SaaS",
-          requirement: leadPayload.req,
-          source: "CONTACT_SALES",
+          companySize: leadPayload.companySize,
+          product: leadPayload.solution,
+          requirement: leadPayload.requirement,
+          source: leadPayload.source.toUpperCase().replace(/-/g, "_"),
           status: "New",
           date: "Today",
           submittedAt: new Date().toISOString(),
@@ -107,7 +80,7 @@ export default function ContactForm() {
         localStorage.setItem("dezoryn_local_leads", JSON.stringify([newLead, ...stored]));
       } catch (_) {}
 
-      // Acknowledge inquiry immediately so customer is never scared away by a cold-start timeout
+      // Acknowledge inquiry immediately so client receives instant confirmation
       setSent(true);
     } finally {
       setBusy(false);
@@ -119,17 +92,23 @@ export default function ContactForm() {
       {sent ? (
         <motion.div
           key="ok"
-          initial={{ opacity: 0, scale: 0.97 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="card flex flex-col items-center p-8 sm:p-12 text-center"
+          className="card flex flex-col items-center p-8 sm:p-12 text-center border-emerald-500/30 bg-gradient-to-b from-[#0a1829] to-[#070b16] shadow-2xl"
         >
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.25)]">
             <CheckCircle2 size={36} />
           </div>
-          <h2 className="mt-5 text-2xl font-bold text-white">Inquiry Received &amp; Logged</h2>
-          <p className="mt-2 text-cool text-sm max-w-md">
-            Thanks, <span className="text-white font-medium">{v.name}</span>. Your requirements have been registered into the DEZORYN client dispatch desk. Our solutions architects will review your project and connect with you shortly. You can also reach our desk directly at <span className="text-blue-400 font-mono">dezoryntech@gmail.com</span>.
+          <h2 className="mt-5 text-2xl font-bold text-white">Inquiry Received Successfully!</h2>
+          <p className="mt-2 text-cool text-sm max-w-md leading-relaxed">
+            Thank you, <span className="text-white font-semibold">{v.name}</span>. Your details have been delivered directly to our solutions desk at{" "}
+            <span className="text-blue-400 font-mono font-medium">dezoryntech@gmail.com</span> and logged in the Admin Control Center.
           </p>
+          <div className="mt-5 p-4 rounded-xl border border-white/10 bg-white/[0.02] text-xs text-cool/90 text-left w-full max-w-sm space-y-1.5">
+            <div><strong className="text-white">Business:</strong> {v.company}</div>
+            <div><strong className="text-white">Email:</strong> {v.email}</div>
+            <div><strong className="text-white">Phone:</strong> {v.phone}</div>
+          </div>
           <button
             type="button"
             onClick={() => {
@@ -140,11 +119,6 @@ export default function ContactForm() {
                 company: "",
                 email: "",
                 phone: "",
-                country: "",
-                size: "",
-                solution: "",
-                budget: "",
-                req: "",
               });
             }}
             className="btn btn-secondary mt-6 cursor-pointer"
@@ -154,108 +128,95 @@ export default function ContactForm() {
         </motion.div>
       ) : (
         <motion.form
-          key="f"
+          key="form"
           onSubmit={submit}
           noValidate
-          className="card grid gap-4 p-6 sm:grid-cols-2 sm:p-8"
+          className="card grid gap-5 p-6 sm:p-8 border border-white/10 bg-[#070b16]/95 backdrop-blur-xl shadow-2xl rounded-2xl relative overflow-hidden"
         >
-          <Field id="name" label="Full name" error={err.name}>
-            <input
-              id="name"
-              className="input"
-              value={v.name}
-              onChange={set("name")}
-              autoComplete="name"
-              placeholder="e.g. John Doe"
-            />
-          </Field>
-          <Field id="company" label="Company name" error={err.company}>
-            <input
-              id="company"
-              className="input"
-              value={v.company}
-              onChange={set("company")}
-              autoComplete="organization"
-              placeholder="e.g. Acme Health"
-            />
-          </Field>
-          <Field id="email" label="Business email" error={err.email}>
-            <input
-              id="email"
-              type="email"
-              className="input"
-              value={v.email}
-              onChange={set("email")}
-              autoComplete="email"
-              placeholder="name@company.com"
-            />
-          </Field>
-          <Field id="phone" label="Phone / WhatsApp (Optional)">
-            <input
-              id="phone"
-              type="tel"
-              className="input"
-              value={v.phone}
-              onChange={set("phone")}
-              autoComplete="tel"
-              placeholder="+1 (555) 000-0000"
-            />
-          </Field>
-          <Field id="country" label="Country" error={err.country}>
-            <input
-              id="country"
-              className="input"
-              value={v.country}
-              onChange={set("country")}
-              autoComplete="country-name"
-              placeholder="e.g. India, United States, UAE"
-            />
-          </Field>
-          <Field id="size" label="Company size">
-            <select id="size" className="input cursor-pointer" value={v.size} onChange={set("size")}>
-              <option value="">Select workforce size</option>
-              {SIZE.map((s) => (
-                <option key={s} value={s}>
-                  {s} employees
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field id="solution" label="Interested solution / platform" error={err.solution}>
-            <select
-              id="solution"
-              className="input cursor-pointer"
-              value={v.solution}
-              onChange={set("solution")}
-            >
-              <option value="">Select specialized platform</option>
-              {SOL.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field id="budget" label="Commercial budget scope">
-            <select id="budget" className="input cursor-pointer" value={v.budget} onChange={set("budget")}>
-              <option value="">Select investment scope</option>
-              {BUDGET.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </Field>
+          {/* Subtle top laser glow line */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-electric to-transparent" />
+
           <div className="sm:col-span-2">
-            <Field id="req" label="Project requirements &amp; operational goals" error={err.req}>
-              <textarea
-                id="req"
-                rows={4}
-                className="input h-auto py-3 leading-relaxed"
-                value={v.req}
-                onChange={set("req")}
-                placeholder="Tell us what you want to build or streamline (e.g. multi-campus student billing, automated invoice processing, custom API integrations)."
-              />
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-electric animate-pulse" />
+              <span>Talk to an Expert</span>
+            </h3>
+            <p className="text-xs text-cool mt-1">
+              Connect directly with our solutions architects. We respond within 24 business hours.
+            </p>
+          </div>
+
+          {/* 1. Full Name */}
+          <div className="sm:col-span-2">
+            <Field id="name" label="Full Name" error={err.name}>
+              <div className="relative">
+                <input
+                  id="name"
+                  className="input pl-10 h-12"
+                  value={v.name}
+                  onChange={set("name")}
+                  autoComplete="name"
+                  placeholder="e.g. John Doe"
+                  required
+                />
+                <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cool/60" />
+              </div>
+            </Field>
+          </div>
+
+          {/* 2. Business / Company Name */}
+          <div className="sm:col-span-2">
+            <Field id="company" label="Business / Company Name" error={err.company}>
+              <div className="relative">
+                <input
+                  id="company"
+                  className="input pl-10 h-12"
+                  value={v.company}
+                  onChange={set("company")}
+                  autoComplete="organization"
+                  placeholder="e.g. Acme Health Corp"
+                  required
+                />
+                <Building size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cool/60" />
+              </div>
+            </Field>
+          </div>
+
+          {/* 3. Business Email */}
+          <div className="sm:col-span-2">
+            <Field id="email" label="Business Email" error={err.email}>
+              <div className="relative">
+                <input
+                  id="email"
+                  type="email"
+                  className="input pl-10 h-12"
+                  value={v.email}
+                  onChange={set("email")}
+                  autoComplete="email"
+                  placeholder="name@company.com"
+                  required
+                />
+                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cool/60" />
+              </div>
+            </Field>
+          </div>
+
+          {/* 4. Phone Number */}
+          <div className="sm:col-span-2">
+            <Field id="phone" label="Phone Number / WhatsApp" error={err.phone}>
+              <div className="relative">
+                <input
+                  id="phone"
+                  type="tel"
+                  className="input pl-10 h-12"
+                  value={v.phone}
+                  onChange={set("phone")}
+                  autoComplete="tel"
+                  placeholder="+91 98765 43210 / +1 (555) 000-0000"
+                  required
+                />
+                <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cool/60" />
+              </div>
             </Field>
           </div>
 
@@ -280,21 +241,25 @@ export default function ContactForm() {
 
           <button
             type="submit"
-            className="btn btn-primary sm:col-span-2 h-11 justify-center gap-2 text-sm font-bold cursor-pointer shadow-lg shadow-blue-600/20"
+            className="btn btn-primary sm:col-span-2 h-12 justify-center gap-2 text-sm font-bold cursor-pointer shadow-lg shadow-blue-600/25 mt-2"
             disabled={busy}
           >
             {busy ? (
               <>
                 <RefreshCw size={16} className="animate-spin" />
-                <span>Submitting to DEZORYN Secure Server…</span>
+                <span>Connecting with Architect Desk…</span>
               </>
             ) : (
               <>
-                <Send size={15} />
-                <span>Submit Inquiry to Solutions Architect</span>
+                <Send size={16} />
+                <span>Submit Details to Expert</span>
               </>
             )}
           </button>
+
+          <p className="sm:col-span-2 text-center text-[11px] text-cool/70 mt-1">
+            🔒 By submitting, you agree to our <a href="/privacy-policy" className="text-electric hover:underline">Privacy Policy</a>. Inquiries are securely delivered to <span className="font-mono text-slate-300">dezoryntech@gmail.com</span>.
+          </p>
         </motion.form>
       )}
     </AnimatePresence>

@@ -70,7 +70,8 @@ async function executeRawNeonQuery(query, params = []) {
   const timeoutId = setTimeout(() => controller.abort(), 10000);
 
   try {
-    const res = await fetch(`https://${host}/sql`, {
+    const isSelect = /^\s*SELECT/i.test(query.trim());
+    const fetchOptions = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -81,8 +82,15 @@ async function executeRawNeonQuery(query, params = []) {
         params,
       }),
       signal: controller.signal,
-      cache: "no-store",
-    });
+    };
+
+    if (isSelect) {
+      fetchOptions.next = { revalidate: 30 };
+    } else {
+      fetchOptions.cache = "no-store";
+    }
+
+    const res = await fetch(`https://${host}/sql`, fetchOptions);
 
     clearTimeout(timeoutId);
 
@@ -1372,7 +1380,7 @@ export async function createDbLead(payload = {}) {
     payload.companySize || "11-50",
     payload.interestedSolution || payload.product || "General",
     payload.budgetRange || "$5,000+",
-    payload.requirement || payload.message || "Website contact inquiry",
+    payload.requirement || payload.req || payload.message || "Talk to an Expert inquiry from website",
   ]);
   return rows[0] || { id: leadId, ...payload, status: "NEW" };
 }

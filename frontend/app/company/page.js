@@ -111,7 +111,7 @@ const engineeringStandards = [
   },
 ];
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function CompanyPage() {
   let profile = null;
@@ -126,7 +126,6 @@ export default async function CompanyPage() {
 
   const pillars = [
     {
-      icon: Target,
       title: "Our Mission",
       desc: profile?.mission || corePillars[0].desc,
       tag: "Mission",
@@ -134,7 +133,6 @@ export default async function CompanyPage() {
       accent: "text-blue-400 border-blue-500/30 bg-blue-500/10",
     },
     {
-      icon: Eye,
       title: "Our Vision",
       desc: profile?.vision || corePillars[1].desc,
       tag: "Vision",
@@ -142,7 +140,6 @@ export default async function CompanyPage() {
       accent: "text-violet-400 border-violet-500/30 bg-violet-500/10",
     },
     {
-      icon: Gem,
       title: "Our Values",
       desc: typeof profile?.values === "string" ? profile.values : (Array.isArray(profile?.values) ? profile.values.map((v) => (typeof v === "object" ? `${v.title || ""}: ${v.desc || ""}` : v)).join(" • ") : corePillars[2].desc),
       tag: "Values",

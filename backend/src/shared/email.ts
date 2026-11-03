@@ -58,10 +58,10 @@ let cachedTransporter: Transporter | null = null;
 let lastEnvHash = "";
 
 export function createTransporter(): Transporter | null {
-  const service = process.env.SMTP_SERVICE?.trim(); // e.g. 'gmail'
-  const host = process.env.SMTP_HOST?.trim();
-  const user = process.env.SMTP_USER?.trim();
-  const pass = process.env.SMTP_PASS?.trim();
+  const service = process.env.SMTP_SERVICE?.trim() || "gmail";
+  const host = process.env.SMTP_HOST?.trim() || "smtp.gmail.com";
+  const user = process.env.SMTP_USER?.trim() || "dezoryntech@gmail.com";
+  const pass = process.env.SMTP_PASS?.trim() || "pylr nuoq vzxc oosv";
   const portStr = process.env.SMTP_PORT?.trim();
   const port = portStr ? parseInt(portStr, 10) : 587;
   const secure = process.env.SMTP_SECURE === "true" || port === 465;
@@ -103,7 +103,7 @@ export function createTransporter(): Transporter | null {
 function getSenderAddress(): string {
   return (
     process.env.SMTP_FROM ||
-    (process.env.SMTP_USER ? `"DEZORYN TECHNOLOGY" <${process.env.SMTP_USER}>` : '"DEZORYN TECHNOLOGY" <no-reply@dezoryn.com>')
+    `"DEZORYN TECHNOLOGY" <${process.env.SMTP_USER || "dezoryntech@gmail.com"}>`
   );
 }
 
@@ -112,7 +112,7 @@ function getAdminRecipient(): string {
     process.env.ADMIN_NOTIFICATION_EMAIL ||
     process.env.SMTP_USER ||
     process.env.ADMIN_BOOTSTRAP_EMAIL ||
-    "admin@dezoryn.com"
+    "dezoryntech@gmail.com"
   );
 }
 
