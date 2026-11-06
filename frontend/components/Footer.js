@@ -137,8 +137,10 @@ export default function Footer() {
   const path = usePathname();
   if (path?.startsWith("/admin")) return null;
 
+  const isContactPage = path === "/contact" || path === "/contact-sales";
+
   return (
-    <footer className="border-t border-line bg-midnight">
+    <footer className={`border-t border-line bg-midnight ${isContactPage ? "hidden lg:block" : ""}`}>
       <div className="container-x py-16">
         <div className="grid gap-12 lg:grid-cols-[1.3fr_3fr]">
           <div>

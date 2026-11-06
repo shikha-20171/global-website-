@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, AlertCircle, RefreshCw, Send, User, Building, Mail, Phone } from "lucide-react";
 import api from "@/lib/axios";
-import Field, { emailOk } from "./Field";
+import { emailOk } from "./Field";
 
 export default function ContactForm({ source = "talk-to-an-expert" }) {
   const [v, setV] = useState({
@@ -94,17 +94,17 @@ export default function ContactForm({ source = "talk-to-an-expert" }) {
           key="ok"
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="card flex flex-col items-center p-8 sm:p-12 text-center border-emerald-500/30 bg-gradient-to-b from-[#0a1829] to-[#070b16] shadow-2xl"
+          className="flex flex-col items-center p-8 sm:p-12 text-center rounded-2xl border border-emerald-500/40 bg-gradient-to-b from-[#11253e] via-[#0d1d32] to-[#081220] shadow-[0_20px_50px_rgba(0,0,0,0.6),0_0_35px_rgba(16,185,129,0.2)]"
         >
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-[0_0_25px_rgba(16,185,129,0.25)]">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.35)]">
             <CheckCircle2 size={36} />
           </div>
           <h2 className="mt-5 text-2xl font-bold text-white">Inquiry Received Successfully!</h2>
-          <p className="mt-2 text-cool text-sm max-w-md leading-relaxed">
+          <p className="mt-2 text-slate-300 text-sm max-w-md leading-relaxed">
             Thank you, <span className="text-white font-semibold">{v.name}</span>. Your details have been delivered directly to our solutions desk at{" "}
-            <span className="text-blue-400 font-mono font-medium">dezoryntech@gmail.com</span> and logged in the Admin Control Center.
+            <span className="text-sky-400 font-mono font-medium">dezoryntech@gmail.com</span> and logged in the Admin Control Center.
           </p>
-          <div className="mt-5 p-4 rounded-xl border border-white/10 bg-white/[0.02] text-xs text-cool/90 text-left w-full max-w-sm space-y-1.5">
+          <div className="mt-5 p-4 rounded-xl border border-white/15 bg-white/[0.05] text-xs text-slate-200 text-left w-full max-w-sm space-y-1.5 shadow-inner">
             <div><strong className="text-white">Business:</strong> {v.company}</div>
             <div><strong className="text-white">Email:</strong> {v.email}</div>
             <div><strong className="text-white">Phone:</strong> {v.phone}</div>
@@ -121,7 +121,7 @@ export default function ContactForm({ source = "talk-to-an-expert" }) {
                 phone: "",
               });
             }}
-            className="btn btn-secondary mt-6 cursor-pointer"
+            className="btn btn-secondary mt-6 cursor-pointer border-white/20 bg-white/10 hover:bg-white/15 text-white"
           >
             Submit Another Inquiry
           </button>
@@ -131,97 +131,105 @@ export default function ContactForm({ source = "talk-to-an-expert" }) {
           key="form"
           onSubmit={submit}
           noValidate
-          className="card grid gap-5 p-6 sm:p-8 border border-white/10 bg-[#070b16]/95 backdrop-blur-xl shadow-2xl rounded-2xl relative overflow-hidden"
+          className="grid gap-5 p-6 sm:p-8 rounded-2xl border border-white/20 sm:border-white/25 bg-gradient-to-b from-[#14213d] via-[#0f172a] to-[#0a101f] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7),0_0_35px_rgba(37,99,235,0.2)] backdrop-blur-xl relative overflow-hidden"
         >
           {/* Subtle top laser glow line */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-electric to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-blue-500 via-sky-400 to-indigo-500 shadow-[0_0_12px_#38bdf8]" />
 
           <div className="sm:col-span-2">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-electric animate-pulse" />
+            <h3 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-sky-400 animate-pulse shadow-[0_0_10px_#38bdf8]" />
               <span>Talk to an Expert</span>
             </h3>
-            <p className="text-xs text-cool mt-1">
+            <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
               Connect directly with our solutions architects. We respond within 24 business hours.
             </p>
           </div>
 
           {/* 1. Full Name */}
           <div className="sm:col-span-2">
-            <Field id="name" label="Full Name" error={err.name}>
-              <div className="relative">
-                <input
-                  id="name"
-                  className="input pl-10 h-12"
-                  value={v.name}
-                  onChange={set("name")}
-                  autoComplete="name"
-                  placeholder="e.g. John Doe"
-                  required
-                />
-                <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cool/60" />
-              </div>
-            </Field>
+            <label htmlFor="name" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200">
+              Full Name <span className="text-sky-400">*</span>
+            </label>
+            <div className="relative">
+              <input
+                id="name"
+                className="h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
+                value={v.name}
+                onChange={set("name")}
+                autoComplete="name"
+                placeholder="e.g. John Doe"
+                required
+              />
+              <User size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400" />
+            </div>
+            {err.name && <p role="alert" className="mt-1 text-xs text-rose-400 font-medium">{err.name}</p>}
           </div>
 
           {/* 2. Business / Company Name */}
           <div className="sm:col-span-2">
-            <Field id="company" label="Business / Company Name" error={err.company}>
-              <div className="relative">
-                <input
-                  id="company"
-                  className="input pl-10 h-12"
-                  value={v.company}
-                  onChange={set("company")}
-                  autoComplete="organization"
-                  placeholder="e.g. Acme Health Corp"
-                  required
-                />
-                <Building size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cool/60" />
-              </div>
-            </Field>
+            <label htmlFor="company" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200">
+              Business / Company Name <span className="text-sky-400">*</span>
+            </label>
+            <div className="relative">
+              <input
+                id="company"
+                className="h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
+                value={v.company}
+                onChange={set("company")}
+                autoComplete="organization"
+                placeholder="e.g. Acme Health Corp"
+                required
+              />
+              <Building size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400" />
+            </div>
+            {err.company && <p role="alert" className="mt-1 text-xs text-rose-400 font-medium">{err.company}</p>}
           </div>
 
           {/* 3. Business Email */}
           <div className="sm:col-span-2">
-            <Field id="email" label="Business Email" error={err.email}>
-              <div className="relative">
-                <input
-                  id="email"
-                  type="email"
-                  className="input pl-10 h-12"
-                  value={v.email}
-                  onChange={set("email")}
-                  autoComplete="email"
-                  placeholder="name@company.com"
-                  required
-                />
-                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cool/60" />
-              </div>
-            </Field>
+            <label htmlFor="email" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200">
+              Business Email <span className="text-sky-400">*</span>
+            </label>
+            <div className="relative">
+              <input
+                id="email"
+                type="email"
+                className="h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
+                value={v.email}
+                onChange={set("email")}
+                autoComplete="email"
+                placeholder="name@company.com"
+                required
+              />
+              <Mail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400" />
+            </div>
+            {err.email && <p role="alert" className="mt-1 text-xs text-rose-400 font-medium">{err.email}</p>}
           </div>
 
           {/* 4. Phone Number */}
           <div className="sm:col-span-2">
-            <Field id="phone" label="Phone Number / WhatsApp" error={err.phone}>
-              <div className="relative">
-                <input
-                  id="phone"
-                  type="tel"
-                  className="input pl-10 h-12"
-                  value={v.phone}
-                  onChange={set("phone")}
-                  autoComplete="tel"
-                  placeholder="+91 98765 43210 / +1 (555) 000-0000"
-                  required
-                />
-                <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-cool/60" />
-              </div>
-            </Field>
+            <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200">
+              Phone Number / WhatsApp <span className="text-sky-400">*</span>
+            </label>
+            <div className="relative">
+              <input
+                id="phone"
+                type="tel"
+                className="h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
+                value={v.phone}
+                onChange={set("phone")}
+                autoComplete="tel"
+                placeholder="+91 98765 43210 / +1 (555) 000-0000"
+                required
+              />
+              <Phone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400" />
+            </div>
+            {err.phone && <p role="alert" className="mt-1 text-xs text-rose-400 font-medium">{err.phone}</p>}
           </div>
 
           {submitError && (
-            <div className="sm:col-span-2 p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-300 text-xs flex items-start gap-2.5">
+            <div className="sm:col-span-2 p-3.5 rounded-xl border border-rose-500/40 bg-rose-500/15 text-rose-200 text-xs flex items-start gap-2.5">
               <AlertCircle size={16} className="shrink-0 mt-0.5 text-rose-400" />
               <div className="flex-1">
                 <span className="font-semibold block mb-1">Transmission Notice</span>
@@ -241,7 +249,7 @@ export default function ContactForm({ source = "talk-to-an-expert" }) {
 
           <button
             type="submit"
-            className="btn btn-primary sm:col-span-2 h-12 justify-center gap-2 text-sm font-bold cursor-pointer shadow-lg shadow-blue-600/25 mt-2"
+            className="btn sm:col-span-2 h-12 w-full justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm transition-all duration-200 shadow-[0_8px_25px_rgba(37,99,235,0.4)] hover:shadow-[0_10px_30px_rgba(37,99,235,0.55)] cursor-pointer mt-1 active:scale-[0.99]"
             disabled={busy}
           >
             {busy ? (
@@ -257,8 +265,8 @@ export default function ContactForm({ source = "talk-to-an-expert" }) {
             )}
           </button>
 
-          <p className="sm:col-span-2 text-center text-[11px] text-cool/70 mt-1">
-            🔒 By submitting, you agree to our <a href="/privacy-policy" className="text-electric hover:underline">Privacy Policy</a>. Inquiries are securely delivered to <span className="font-mono text-slate-300">dezoryntech@gmail.com</span>.
+          <p className="sm:col-span-2 text-center text-[11px] text-slate-300 mt-1">
+            🔒 By submitting, you agree to our <a href="/privacy-policy" className="text-sky-400 hover:underline">Privacy Policy</a>. Inquiries are securely delivered to <span className="font-mono text-white font-medium">dezoryntech@gmail.com</span>.
           </p>
         </motion.form>
       )}
