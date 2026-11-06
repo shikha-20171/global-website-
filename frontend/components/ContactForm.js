@@ -131,99 +131,99 @@ export default function ContactForm({ source = "talk-to-an-expert" }) {
           key="form"
           onSubmit={submit}
           noValidate
-          className="grid gap-5 p-6 sm:p-8 rounded-2xl border border-white/20 sm:border-white/25 bg-gradient-to-b from-[#14213d] via-[#0f172a] to-[#0a101f] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7),0_0_35px_rgba(37,99,235,0.2)] backdrop-blur-xl relative overflow-hidden"
+          className="grid gap-4 sm:gap-5 p-4 sm:p-7 md:p-8 rounded-2xl border border-white/20 sm:border-white/25 bg-gradient-to-b from-[#14213d] via-[#0f172a] to-[#0a101f] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.7),0_0_35px_rgba(37,99,235,0.2)] backdrop-blur-xl relative overflow-hidden w-full max-w-full"
         >
           {/* Subtle top laser glow line */}
           <div className="pointer-events-none absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-blue-500 via-sky-400 to-indigo-500 shadow-[0_0_12px_#38bdf8]" />
 
           <div className="sm:col-span-2">
-            <h3 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-sky-400 animate-pulse shadow-[0_0_10px_#38bdf8]" />
+            <h3 className="text-lg sm:text-2xl font-extrabold text-white flex items-center gap-2 sm:gap-2.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-sky-400 animate-pulse shadow-[0_0_10px_#38bdf8] shrink-0" />
               <span>Talk to an Expert</span>
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
               Connect directly with our solutions architects. We respond within 24 business hours.
             </p>
           </div>
 
           {/* 1. Full Name */}
           <div className="sm:col-span-2">
-            <label htmlFor="name" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200">
+            <label htmlFor="name" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
               Full Name <span className="text-sky-400">*</span>
             </label>
             <div className="relative">
               <input
                 id="name"
-                className="h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
+                className="h-11 sm:h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-base sm:text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
                 value={v.name}
                 onChange={set("name")}
                 autoComplete="name"
                 placeholder="e.g. John Doe"
                 required
               />
-              <User size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400" />
+              <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400 shrink-0" />
             </div>
             {err.name && <p role="alert" className="mt-1 text-xs text-rose-400 font-medium">{err.name}</p>}
           </div>
 
           {/* 2. Business / Company Name */}
           <div className="sm:col-span-2">
-            <label htmlFor="company" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200">
+            <label htmlFor="company" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
               Business / Company Name <span className="text-sky-400">*</span>
             </label>
             <div className="relative">
               <input
                 id="company"
-                className="h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
+                className="h-11 sm:h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-base sm:text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
                 value={v.company}
                 onChange={set("company")}
                 autoComplete="organization"
                 placeholder="e.g. Acme Health Corp"
                 required
               />
-              <Building size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400" />
+              <Building size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400 shrink-0" />
             </div>
             {err.company && <p role="alert" className="mt-1 text-xs text-rose-400 font-medium">{err.company}</p>}
           </div>
 
           {/* 3. Business Email */}
           <div className="sm:col-span-2">
-            <label htmlFor="email" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200">
+            <label htmlFor="email" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
               Business Email <span className="text-sky-400">*</span>
             </label>
             <div className="relative">
               <input
                 id="email"
                 type="email"
-                className="h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
+                className="h-11 sm:h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-base sm:text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
                 value={v.email}
                 onChange={set("email")}
                 autoComplete="email"
                 placeholder="name@company.com"
                 required
               />
-              <Mail size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400" />
+              <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400 shrink-0" />
             </div>
             {err.email && <p role="alert" className="mt-1 text-xs text-rose-400 font-medium">{err.email}</p>}
           </div>
 
           {/* 4. Phone Number */}
           <div className="sm:col-span-2">
-            <label htmlFor="phone" className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-200">
+            <label htmlFor="phone" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-200">
               Phone Number / WhatsApp <span className="text-sky-400">*</span>
             </label>
             <div className="relative">
               <input
                 id="phone"
                 type="tel"
-                className="h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
+                className="h-11 sm:h-12 w-full rounded-xl border border-white/20 bg-[#16233f] px-3.5 pl-10 text-base sm:text-sm text-white placeholder:text-slate-400 shadow-inner outline-none transition-all duration-200 hover:border-white/35 hover:bg-[#1b2b4e] focus:border-sky-400 focus:bg-[#1e3057] focus:ring-2 focus:ring-sky-500/35"
                 value={v.phone}
                 onChange={set("phone")}
                 autoComplete="tel"
                 placeholder="+91 98765 43210 / +1 (555) 000-0000"
                 required
               />
-              <Phone size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400" />
+              <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400 shrink-0" />
             </div>
             {err.phone && <p role="alert" className="mt-1 text-xs text-rose-400 font-medium">{err.phone}</p>}
           </div>
@@ -265,7 +265,7 @@ export default function ContactForm({ source = "talk-to-an-expert" }) {
             )}
           </button>
 
-          <p className="sm:col-span-2 text-center text-[11px] text-slate-300 mt-1">
+          <p className="sm:col-span-2 text-center text-[11px] text-slate-300 mt-0.5">
             🔒 By submitting, you agree to our <a href="/privacy-policy" className="text-sky-400 hover:underline">Privacy Policy</a>. Inquiries are securely delivered to <span className="font-mono text-white font-medium">dezoryntech@gmail.com</span>.
           </p>
         </motion.form>
